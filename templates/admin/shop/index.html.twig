@@ -1,0 +1,165 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Gestion Boutique - Admin - Carthage Arena{% endblock %}
+
+{% block body %}
+<div class="app-container">
+    {% include 'admin/_sidebar.html.twig' %}
+
+    <main class="main-content">
+        <div class="page-header">
+            <h1 class="page-title">Gestion de la Boutique</h1>
+            <button class="btn btn-primary">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <line x1="12" y1="8" x2="12" y2="16"></line>
+                    <line x1="8" y1="12" x2="16" y2="12"></line>
+                </svg>
+                Ajouter un Article
+            </button>
+        </div>
+
+        <div class="stats-grid" style="grid-template-columns: repeat(4, 1fr); margin-bottom: 2rem;">
+            <div class="stat-card">
+                <div class="stat-icon" style="background: linear-gradient(135deg, #0099FF 0%, #0066CC 100%);">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="9" cy="21" r="1"></circle>
+                        <circle cx="20" cy="21" r="1"></circle>
+                        <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
+                    </svg>
+                </div>
+                <div class="stat-label">Articles Totaux</div>
+                <div class="stat-value">{{ items|length }}</div>
+                <div class="stat-meta">En stock</div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-icon" style="background: linear-gradient(135deg, #00FF88 0%, #00CC6E 100%);">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline>
+                    </svg>
+                </div>
+                <div class="stat-label">Ventes Totales</div>
+                <div class="stat-value">446</div>
+                <div class="stat-meta" style="color: var(--color-success);">+23 cette semaine</div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-icon" style="background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <line x1="12" y1="1" x2="12" y2="23"></line>
+                        <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
+                    </svg>
+                </div>
+                <div class="stat-label">Revenus Boutique</div>
+                <div class="stat-value" style="font-size: 1.5rem;">737,335 DT</div>
+                <div class="stat-meta" style="color: var(--color-success);">+18% ce mois</div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-icon" style="background: linear-gradient(135deg, #FF0022 0%, #CC001C 100%);">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+                    </svg>
+                </div>
+                <div class="stat-label">Article Populaire</div>
+                <div class="stat-value" style="font-size: 1rem;">AK-47 Asiimov</div>
+                <div class="stat-meta">203 ventes</div>
+            </div>
+        </div>
+
+        <div class="card" style="margin-bottom: 2rem;">
+            <div style="display: flex; gap: 1rem; align-items: center;">
+                <div class="form-group" style="flex: 1; margin: 0;">
+                    <input type="text" class="form-input" placeholder="Rechercher un article...">
+                </div>
+                <select class="form-input" style="width: 200px;">
+                    <option>Tous les jeux</option>
+                    <option>Valorant</option>
+                    <option>League of Legends</option>
+                    <option>CS:GO 2</option>
+                </select>
+                <select class="form-input" style="width: 200px;">
+                    <option>Toutes les raretés</option>
+                    <option>Légendaire</option>
+                    <option>Épique</option>
+                    <option>Premium</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="card">
+            <div style="overflow-x: auto;">
+                <table style="width: 100%; border-collapse: collapse;">
+                    <thead>
+                        <tr style="border-bottom: 2px solid var(--color-border);">
+                            <th style="text-align: left; padding: 1rem; font-size: 0.75rem; color: var(--color-text-muted); text-transform: uppercase; letter-spacing: 0.5px;">ID</th>
+                            <th style="text-align: left; padding: 1rem; font-size: 0.75rem; color: var(--color-text-muted); text-transform: uppercase; letter-spacing: 0.5px;">Article</th>
+                            <th style="text-align: left; padding: 1rem; font-size: 0.75rem; color: var(--color-text-muted); text-transform: uppercase; letter-spacing: 0.5px;">Jeu</th>
+                            <th style="text-align: left; padding: 1rem; font-size: 0.75rem; color: var(--color-text-muted); text-transform: uppercase; letter-spacing: 0.5px;">Prix</th>
+                            <th style="text-align: left; padding: 1rem; font-size: 0.75rem; color: var(--color-text-muted); text-transform: uppercase; letter-spacing: 0.5px;">Ventes</th>
+                            <th style="text-align: left; padding: 1rem; font-size: 0.75rem; color: var(--color-text-muted); text-transform: uppercase; letter-spacing: 0.5px;">Revenus</th>
+                            <th style="text-align: left; padding: 1rem; font-size: 0.75rem; color: var(--color-text-muted); text-transform: uppercase; letter-spacing: 0.5px;">Stock</th>
+                            <th style="text-align: left; padding: 1rem; font-size: 0.75rem; color: var(--color-text-muted); text-transform: uppercase; letter-spacing: 0.5px;">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for item in items %}
+                        <tr style="border-bottom: 1px solid var(--color-border);">
+                            <td style="padding: 1rem; color: var(--color-text-muted);">#{{ item.id }}</td>
+                            <td style="padding: 1rem;">
+                                <div style="font-weight: 600;">{{ item.name }}</div>
+                            </td>
+                            <td style="padding: 1rem;">
+                                <span class="badge badge-{{ item.game == 'VALORANT' ? 'legendary' : (item.game == 'LoL' ? 'epic' : 'secret') }}">
+                                    {{ item.game }}
+                                </span>
+                            </td>
+                            <td style="padding: 1rem;">
+                                <div style="display: flex; align-items: center; gap: 0.25rem;">
+                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="var(--color-warning)">
+                                        <circle cx="12" cy="12" r="10"></circle>
+                                    </svg>
+                                    <span style="font-weight: 700; color: var(--color-warning);">{{ item.price }}</span>
+                                </div>
+                            </td>
+                            <td style="padding: 1rem;">
+                                <div style="font-weight: 600;">{{ item.sales }}</div>
+                            </td>
+                            <td style="padding: 1rem;">
+                                <div style="font-weight: 700; color: var(--color-success);">{{ item.revenue }}</div>
+                            </td>
+                            <td style="padding: 1rem;">
+                                <span class="badge badge-legendary">{{ item.stock }}</span>
+                            </td>
+                            <td style="padding: 1rem;">
+                                <div style="display: flex; gap: 0.5rem;">
+                                    <button class="btn btn-secondary" style="padding: 0.5rem 0.75rem; font-size: 0.875rem;">
+                                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                                            <circle cx="12" cy="12" r="3"></circle>
+                                        </svg>
+                                    </button>
+                                    <button class="btn btn-secondary" style="padding: 0.5rem 0.75rem; font-size: 0.875rem;">
+                                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                            <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                                            <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+                                        </svg>
+                                    </button>
+                                    <button class="btn" style="padding: 0.5rem 0.75rem; font-size: 0.875rem; background-color: var(--color-error); color: white;">
+                                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                            <polyline points="3 6 5 6 21 6"></polyline>
+                                            <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                                        </svg>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </main>
+</div>
+{% endblock %}

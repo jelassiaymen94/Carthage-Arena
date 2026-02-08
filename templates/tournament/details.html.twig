@@ -1,0 +1,221 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Détails du Tournoi - Carthage Arena{% endblock %}
+
+{% block body %}
+<div class="app-container">
+    {% include 'components/_sidebar.html.twig' %}
+
+    <main class="main-content">
+        <div class="page-header" style="margin-bottom: 2rem;">
+            <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 1rem;">
+                <span class="badge badge-open">{{ tournament.status }}</span>
+                <span class="badge badge-season">{{ tournament.game }}</span>
+            </div>
+            <h1 class="page-title" style="font-size: 3rem; font-style: italic; background: linear-gradient(135deg, #FFFFFF 0%, #FF0022 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">
+                {{ tournament.name }}<br>
+                <span style="color: var(--color-primary);">{{ tournament.subtitle }}</span>
+            </h1>
+            <p class="page-subtitle">{{ tournament.description }}</p>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 2rem; margin-bottom: 2rem;">
+            <div class="card">
+                <h3 style="font-size: 1.25rem; font-weight: 700; margin-bottom: 1.5rem; display: flex; align-items: center; gap: 0.5rem;">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="var(--color-primary)" stroke="none">
+                        <path d="M12 2L2 7l10 5 10-5-10-5z"></path>
+                        <path d="M2 17l10 5 10-5"></path>
+                        <path d="M2 12l10 5 10-5"></path>
+                    </svg>
+                    Règlement du Tournoi
+                </h3>
+
+                <div style="display: grid; gap: 1.5rem;">
+                    <div>
+                        <div style="display: flex; align-items: center; gap: 0.75rem; margin-bottom: 0.5rem;">
+                            <div style="width: 32px; height: 32px; background: var(--color-bg-tertiary); border-radius: 6px; display: flex; align-items: center; justify-content: center; color: var(--color-primary); font-weight: 700;">1</div>
+                            <div style="font-weight: 600;">Format</div>
+                        </div>
+                        <div style="color: var(--color-text-secondary); margin-left: 2.5rem;">{{ tournament.format }}</div>
+                    </div>
+
+                    <div>
+                        <div style="display: flex; align-items: center; gap: 0.75rem; margin-bottom: 0.5rem;">
+                            <div style="width: 32px; height: 32px; background: var(--color-bg-tertiary); border-radius: 6px; display: flex; align-items: center; justify-content: center; color: var(--color-primary); font-weight: 700;">2</div>
+                            <div style="font-weight: 600;">Retard</div>
+                        </div>
+                        <div style="color: var(--color-text-secondary); margin-left: 2.5rem;">{{ tournament.retard }}</div>
+                    </div>
+
+                    <div>
+                        <div style="display: flex; align-items: center; gap: 0.75rem; margin-bottom: 0.5rem;">
+                            <div style="width: 32px; height: 32px; background: var(--color-bg-tertiary); border-radius: 6px; display: flex; align-items: center; justify-content: center; color: var(--color-primary); font-weight: 700;">3</div>
+                            <div style="font-weight: 600;">Plateforme</div>
+                        </div>
+                        <div style="color: var(--color-text-secondary); margin-left: 2.5rem;">{{ tournament.platform }}</div>
+                    </div>
+
+                    <div>
+                        <div style="display: flex; align-items: center; gap: 0.75rem; margin-bottom: 0.5rem;">
+                            <div style="width: 32px; height: 32px; background: var(--color-bg-tertiary); border-radius: 6px; display: flex; align-items: center; justify-content: center; color: var(--color-primary); font-weight: 700;">4</div>
+                            <div style="font-weight: 600;">Équipes</div>
+                        </div>
+                        <div style="color: var(--color-text-secondary); margin-left: 2.5rem;">6 joueurs titulaires + 2 remplaçants max</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card" style="background: var(--gradient-card);">
+                <h3 style="font-size: 1.25rem; font-weight: 700; margin-bottom: 1.5rem;">Inscriptions</h3>
+                
+                <div style="text-align: center; margin-bottom: 1.5rem;">
+                    <div style="font-size: 0.875rem; color: var(--color-text-secondary); margin-bottom: 0.5rem;">CASHPRIZE TOTAL</div>
+                    <div style="font-size: 3rem; font-weight: 800; color: var(--color-warning);">{{ tournament.prizePool }}</div>
+                    <div style="font-size: 0.875rem; color: var(--color-text-muted); margin-top: 0.25rem;">Réparti sur le top 3</div>
+                </div>
+
+                <div style="margin-bottom: 1.5rem;">
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
+                        <span style="font-size: 0.875rem; color: var(--color-text-secondary);">Inscriptions</span>
+                        <span style="font-weight: 700;">{{ tournament.inscriptions }} / {{ tournament.maxInscriptions }}</span>
+                    </div>
+                    <div style="background: var(--color-bg-tertiary); height: 8px; border-radius: 4px; overflow: hidden;">
+                        <div style="background: var(--gradient-primary); height: 100%; width: {{ (tournament.inscriptions / tournament.maxInscriptions * 100)|round }}%;"></div>
+                    </div>
+                </div>
+
+                <div style="text-align: center; margin-bottom: 1.5rem;">
+                    {% if tournament.isComplete %}
+                    <div style="display: flex; align-items: center; justify-content: center; gap: 0.5rem; color: var(--color-success); margin-bottom: 0.5rem;">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                            <polyline points="22 4 12 14.01 9 11.01"></polyline>
+                        </svg>
+                        Équipe complète requise
+                    </div>
+                    {% endif %}
+                    {% if tournament.isFree %}
+                    <div style="display: flex; align-items: center; justify-content: center; gap: 0.5rem; color: var(--color-success);">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                            <polyline points="22 4 12 14.01 9 11.01"></polyline>
+                        </svg>
+                        Frais: Gratuit
+                    </div>
+                    {% endif %}
+                </div>
+
+                <div style="text-align: center; margin-bottom: 1.5rem;">
+                    <div style="font-size: 0.875rem; color: var(--color-text-secondary); margin-bottom: 0.5rem;">CLÔTURE DANS</div>
+                    <div style="font-size: 1.5rem; font-weight: 700; color: var(--color-primary);">{{ tournament.deadline }}</div>
+                </div>
+
+                <button class="btn btn-primary" style="width: 100%;">
+                    Rejoindre avec mon équipe
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M5 12h14M12 5l7 7-7 7"/>
+                    </svg>
+                </button>
+            </div>
+        </div>
+
+        <div class="card" style="margin-bottom: 2rem;">
+            <h3 style="font-size: 1.25rem; font-weight: 700; margin-bottom: 1.5rem; display: flex; align-items: center; gap: 0.5rem;">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="var(--color-primary)" stroke="none">
+                    <path d="M12 2L2 7l10 5 10-5-10-5z"></path>
+                </svg>
+                Arbre de compétition
+            </h3>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 2rem; align-items: center;">
+                <div>
+                    <div style="font-size: 0.75rem; color: var(--color-text-muted); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 1rem;">DEMI-FINALE 1</div>
+                    {% for team in tournament.bracket.demiFinale1 %}
+                    <div style="background: var(--color-bg-tertiary); border: 1px solid var(--color-border); border-radius: 8px; padding: 1rem; margin-bottom: 0.5rem; display: flex; justify-content: space-between; align-items: center;">
+                        <div style="display: flex; align-items: center; gap: 0.75rem;">
+                            <div style="width: 32px; height: 32px; background: linear-gradient(135deg, #0099FF 0%, #0066CC 100%); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 0.875rem;">{{ team.name|slice(0, 1) }}</div>
+                            <span style="font-weight: 600;">{{ team.name }}</span>
+                        </div>
+                        <span style="font-weight: 700; font-size: 1.25rem;">{{ team.score }}</span>
+                    </div>
+                    {% endfor %}
+
+                    <div style="margin-top: 2rem;">
+                        <div style="font-size: 0.75rem; color: var(--color-text-muted); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 1rem;">DEMI-FINALE 2</div>
+                        {% for team in tournament.bracket.demiFinale2 %}
+                        <div style="background: var(--color-bg-tertiary); border: 1px solid var(--color-border); border-radius: 8px; padding: 1rem; margin-bottom: 0.5rem; display: flex; justify-content: space-between; align-items: center;">
+                            <div style="display: flex; align-items: center; gap: 0.75rem;">
+                                <div style="width: 32px; height: 32px; background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 0.875rem;">{{ team.name|slice(0, 1) }}</div>
+                                <span style="font-weight: 600;">{{ team.name }}</span>
+                            </div>
+                            <span style="font-weight: 700; font-size: 1.25rem;">{{ team.score }}</span>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <div style="text-align: center;">
+                    <svg width="100" height="200" viewBox="0 0 100 200" style="margin: 0 auto;">
+                        <path d="M 10 50 L 50 50 L 50 100 L 90 100" stroke="var(--color-border)" stroke-width="2" fill="none"/>
+                        <path d="M 10 150 L 50 150 L 50 100 L 90 100" stroke="var(--color-border)" stroke-width="2" fill="none"/>
+                    </svg>
+                </div>
+
+                <div>
+                    <div style="font-size: 0.75rem; color: var(--color-text-muted); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 1rem; text-align: center;">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="var(--color-warning)" style="display: inline; vertical-align: middle;">
+                            <path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"></path>
+                            <path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"></path>
+                            <path d="M4 22h16"></path>
+                            <path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"></path>
+                            <path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"></path>
+                            <path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"></path>
+                        </svg>
+                        GRANDE FINALE
+                    </div>
+                    {% for team in tournament.bracket.finale %}
+                    <div style="background: {% if loop.index == 1 %}linear-gradient(135deg, rgba(0, 153, 255, 0.2) 0%, rgba(0, 102, 204, 0.1) 100%){% else %}linear-gradient(135deg, rgba(153, 102, 255, 0.2) 0%, rgba(102, 51, 204, 0.1) 100%){% endif %}; border: 2px solid {% if loop.index == 1 %}#0099FF{% else %}#9966FF{% endif %}; border-radius: 12px; padding: 1.25rem; margin-bottom: 0.75rem;">
+                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                            <div style="display: flex; align-items: center; gap: 0.75rem;">
+                                <div style="width: 40px; height: 40px; background: {% if loop.index == 1 %}linear-gradient(135deg, #0099FF 0%, #0066CC 100%){% else %}linear-gradient(135deg, #9966FF 0%, #6633CC 100%){% endif %}; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700;">{{ team.name|slice(0, 1) }}</div>
+                                <span style="font-weight: 700; font-size: 1.125rem;">{{ team.name }}</span>
+                            </div>
+                            <span style="font-weight: 700; font-size: 1.5rem; color: var(--color-text-muted);">-</span>
+                        </div>
+                    </div>
+                    {% endfor %}
+                    <div style="text-align: center; margin-top: 1rem;">
+                        <span class="badge" style="background: linear-gradient(135deg, #FF0022 0%, #CC001C 100%); color: white; padding: 0.5rem 1rem;">BIENTÔT EN DIRECT</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+                <h3 style="font-size: 1.25rem; font-weight: 700;">ÉQUIPES INSCRITES</h3>
+                <a href="#" class="text-primary" style="font-size: 0.875rem; font-weight: 600;">Voir tout</a>
+            </div>
+
+            <div style="display: grid; gap: 0.75rem;">
+                {% for team in tournament.registeredTeams %}
+                <div style="background: var(--color-bg-tertiary); border: 1px solid var(--color-border); border-radius: 12px; padding: 1rem; display: flex; justify-content: space-between; align-items: center; transition: all 0.25s ease;">
+                    <div style="display: flex; align-items: center; gap: 1rem;">
+                        <div style="width: 48px; height: 48px; background: linear-gradient(135deg, {{ ['#FF0022', '#0099FF', '#9966FF', '#FF6B00', '#00CC88'][loop.index0 % 5] }} 0%, {{ ['#CC001C', '#0066CC', '#6633CC', '#CC5500', '#00AA66'][loop.index0 % 5] }} 100%); border-radius: 12px; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 1.125rem;">
+                            {{ team.tag }}
+                        </div>
+                        <div>
+                            <div style="font-weight: 700; font-size: 1.125rem;">{{ team.name }}</div>
+                            <div style="font-size: 0.875rem; color: var(--color-text-secondary);">{{ team.members }} membres + 1 vit</div>
+                        </div>
+                    </div>
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--color-text-muted)" stroke-width="2">
+                        <path d="M9 18l6-6-6-6"/>
+                    </svg>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </main>
+</div>
+{% endblock %}

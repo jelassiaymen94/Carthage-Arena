@@ -1,0 +1,191 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Admin Dashboard - Carthage Arena{% endblock %}
+
+{% block body %}
+<div class="app-container">
+    {% include 'admin/_sidebar.html.twig' %}
+
+    <main class="main-content">
+        <div class="page-header">
+            <h1 class="page-title">Tableau de Bord Admin</h1>
+            <p class="page-subtitle">Vue d'ensemble de la plateforme Carthage Arena</p>
+        </div>
+
+        <div class="stats-grid" style="grid-template-columns: repeat(4, 1fr); margin-bottom: 2rem;">
+            <div class="stat-card">
+                <div class="stat-icon" style="background: linear-gradient(135deg, #0099FF 0%, #0066CC 100%);">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                        <circle cx="9" cy="7" r="4"></circle>
+                        <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                        <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                    </svg>
+                </div>
+                <div class="stat-label">Total Utilisateurs</div>
+                <div class="stat-value">{{ stats.totalUsers }}</div>
+                <div class="stat-meta" style="color: var(--color-success);">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display: inline;">
+                        <polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline>
+                    </svg>
+                    {{ stats.activeUsers }} actifs
+                </div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-icon" style="background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"></path>
+                        <path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"></path>
+                        <path d="M4 22h16"></path>
+                        <path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"></path>
+                        <path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"></path>
+                        <path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"></path>
+                    </svg>
+                </div>
+                <div class="stat-label">Tournois</div>
+                <div class="stat-value">{{ stats.totalTournaments }}</div>
+                <div class="stat-meta" style="color: var(--color-success);">
+                    {{ stats.activeTournaments }} en cours
+                </div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-icon" style="background: linear-gradient(135deg, #00FF88 0%, #00CC6E 100%);">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <line x1="12" y1="1" x2="12" y2="23"></line>
+                        <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
+                    </svg>
+                </div>
+                <div class="stat-label">Revenus Totaux</div>
+                <div class="stat-value" style="font-size: 1.75rem;">{{ stats.totalRevenue }}</div>
+                <div class="stat-meta" style="color: var(--color-success);">
+                    +{{ stats.monthlyRevenue }} ce mois
+                </div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-icon" style="background: linear-gradient(135deg, #FF0022 0%, #CC001C 100%);">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M12 2L2 7l10 5 10-5-10-5z"></path>
+                        <path d="M2 17l10 5 10-5"></path>
+                        <path d="M2 12l10 5 10-5"></path>
+                    </svg>
+                </div>
+                <div class="stat-label">Matchs Joués</div>
+                <div class="stat-value">{{ stats.totalMatches }}</div>
+                <div class="stat-meta">
+                    {{ stats.todayMatches }} aujourd'hui
+                </div>
+            </div>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 2rem; margin-bottom: 2rem;">
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="card-title">Nouveaux Utilisateurs</h2>
+                    <a href="{{ path('admin_users') }}" class="text-primary" style="font-size: 0.875rem; font-weight: 600;">Voir tout</a>
+                </div>
+
+                <div style="overflow-x: auto;">
+                    <table style="width: 100%; border-collapse: collapse;">
+                        <thead>
+                            <tr style="border-bottom: 1px solid var(--color-border);">
+                                <th style="text-align: left; padding: 1rem; font-size: 0.75rem; color: var(--color-text-muted); text-transform: uppercase; letter-spacing: 0.5px;">Utilisateur</th>
+                                <th style="text-align: left; padding: 1rem; font-size: 0.75rem; color: var(--color-text-muted); text-transform: uppercase; letter-spacing: 0.5px;">Email</th>
+                                <th style="text-align: left; padding: 1rem; font-size: 0.75rem; color: var(--color-text-muted); text-transform: uppercase; letter-spacing: 0.5px;">Inscrit</th>
+                                <th style="text-align: left; padding: 1rem; font-size: 0.75rem; color: var(--color-text-muted); text-transform: uppercase; letter-spacing: 0.5px;">Statut</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for user in recentUsers %}
+                            <tr style="border-bottom: 1px solid var(--color-border);">
+                                <td style="padding: 1rem;">
+                                    <div style="font-weight: 600;">{{ user.name }}</div>
+                                </td>
+                                <td style="padding: 1rem; color: var(--color-text-secondary);">{{ user.email }}</td>
+                                <td style="padding: 1rem; color: var(--color-text-secondary);">{{ user.joined }}</td>
+                                <td style="padding: 1rem;">
+                                    <span class="badge {% if user.status == 'active' %}badge-legendary{% else %}badge-season{% endif %}">
+                                        {{ user.status }}
+                                    </span>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="card" style="background: var(--gradient-card);">
+                <h2 class="card-title" style="margin-bottom: 1.5rem;">Santé du Système</h2>
+
+                <div style="display: flex; flex-direction: column; gap: 1.5rem;">
+                    <div>
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
+                            <span style="font-size: 0.875rem; color: var(--color-text-secondary);">CPU</span>
+                            <span style="font-weight: 700;">{{ systemHealth.cpuUsage }}%</span>
+                        </div>
+                        <div style="background: var(--color-bg-tertiary); height: 8px; border-radius: 4px; overflow: hidden;">
+                            <div style="background: {% if systemHealth.cpuUsage < 60 %}var(--color-success){% elseif systemHealth.cpuUsage < 80 %}var(--color-warning){% else %}var(--color-error){% endif %}; height: 100%; width: {{ systemHealth.cpuUsage }}%;"></div>
+                        </div>
+                    </div>
+
+                    <div>
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
+                            <span style="font-size: 0.875rem; color: var(--color-text-secondary);">Mémoire</span>
+                            <span style="font-weight: 700;">{{ systemHealth.memoryUsage }}%</span>
+                        </div>
+                        <div style="background: var(--color-bg-tertiary); height: 8px; border-radius: 4px; overflow: hidden;">
+                            <div style="background: {% if systemHealth.memoryUsage < 60 %}var(--color-success){% elseif systemHealth.memoryUsage < 80 %}var(--color-warning){% else %}var(--color-error){% endif %}; height: 100%; width: {{ systemHealth.memoryUsage }}%;"></div>
+                        </div>
+                    </div>
+
+                    <div>
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
+                            <span style="font-size: 0.875rem; color: var(--color-text-secondary);">Disque</span>
+                            <span style="font-weight: 700;">{{ systemHealth.diskUsage }}%</span>
+                        </div>
+                        <div style="background: var(--color-bg-tertiary); height: 8px; border-radius: 4px; overflow: hidden;">
+                            <div style="background: var(--color-success); height: 100%; width: {{ systemHealth.diskUsage }}%;"></div>
+                        </div>
+                    </div>
+
+                    <div style="padding: 1rem; background: var(--color-bg-tertiary); border-radius: var(--radius-lg); text-align: center;">
+                        <div style="font-size: 0.75rem; color: var(--color-text-muted); margin-bottom: 0.25rem;">Uptime</div>
+                        <div style="font-size: 1.5rem; font-weight: 800; color: var(--color-success);">{{ systemHealth.uptime }}</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-header">
+                <h2 class="card-title">Tournois Récents</h2>
+                <a href="{{ path('admin_tournaments') }}" class="text-primary" style="font-size: 0.875rem; font-weight: 600;">Voir tout</a>
+            </div>
+
+            <div style="display: grid; gap: 1rem;">
+                {% for tournament in recentTournaments %}
+                <div style="display: flex; align-items: center; justify-content: space-between; padding: 1.5rem; background: var(--color-bg-tertiary); border-radius: var(--radius-lg); border-left: 3px solid var(--color-primary);">
+                    <div style="flex: 1;">
+                        <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 0.5rem;">
+                            <h3 style="font-size: 1.125rem; font-weight: 700;">{{ tournament.name }}</h3>
+                            <span class="badge badge-{{ tournament.game == 'LoL' ? 'epic' : (tournament.game == 'Valorant' ? 'legendary' : 'secret') }}">{{ tournament.game }}</span>
+                            <span class="badge {% if tournament.status == 'active' %}badge-legendary{% else %}badge-season{% endif %}">{{ tournament.status }}</span>
+                        </div>
+                        <div style="font-size: 0.875rem; color: var(--color-text-secondary);">
+                            {{ tournament.teams }} équipes inscrites
+                        </div>
+                    </div>
+                    <div style="text-align: right;">
+                        <div style="font-size: 0.75rem; color: var(--color-text-muted); margin-bottom: 0.25rem;">Prize Pool</div>
+                        <div style="font-size: 1.5rem; font-weight: 800; color: var(--color-warning);">{{ tournament.prize }}</div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </main>
+</div>
+{% endblock %}
