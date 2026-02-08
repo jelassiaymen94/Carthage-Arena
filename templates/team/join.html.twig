@@ -1,0 +1,47 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Rejoindre une Équipe - Carthage Arena{% endblock %}
+
+{% block body %}
+<div class="app-container">
+    {% include 'components/_sidebar.html.twig' %}
+
+    <main class="main-content">
+         <div style="margin-bottom: 2rem;">
+            <a href="{{ path('app_team') }}" style="display: inline-flex; align-items: center; gap: 0.5rem; color: var(--color-text-secondary); font-size: 0.875rem; font-weight: 600;">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M19 12H5M12 19l-7-7 7-7"/>
+                </svg>
+                Retour
+            </a>
+        </div>
+
+        <div class="card" style="max-width: 600px; margin: 0 auto; text-align: center; padding: 3rem;">
+            <div style="margin-bottom: 2rem;">
+                <div style="width: 64px; height: 64px; background: var(--color-bg-tertiary); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 1.5rem auto;">
+                    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                        <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                    </svg>
+                </div>
+                <h1 class="page-title">Rejoindre une Équipe</h1>
+                <p class="page-subtitle">Entrez le code d'invitation fourni par votre Team Leader.</p>
+            </div>
+
+            <form>
+                <div class="form-group" style="margin-bottom: 2rem;">
+                    <input type="text" class="form-input" placeholder="Ex: X7K-9P2" style="font-size: 2rem; text-align: center; letter-spacing: 0.5rem; text-transform: uppercase; font-weight: 800;">
+                </div>
+
+                <button type="submit" class="btn btn-primary" style="width: 100%; justify-content: center; font-size: 1.125rem; padding: 1rem;">
+                    Rejoindre
+                </button>
+            </form>
+            
+            <p style="margin-top: 2rem; font-size: 0.875rem; color: var(--color-text-muted);">
+                En rejoignant une équipe, vous acceptez de suivre ses règles et de participer aux tournois inscrits par le Leader.
+            </p>
+        </div>
+    </main>
+</div>
+{% endblock %}
