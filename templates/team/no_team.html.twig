@@ -1,0 +1,56 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Créer ou Rejoindre une Équipe - Carthage Arena{% endblock %}
+
+{% block body %}
+<div class="app-container">
+    {% include 'components/_sidebar.html.twig' %}
+
+    <main class="main-content">
+        <div class="page-header" style="text-align: center; margin-bottom: 3rem;">
+            <h1 class="page-title" style="font-size: 2.5rem;">Rejoignez l'Arène en Équipe</h1>
+            <p class="page-subtitle" style="max-width: 600px; margin: 0 auto;">Pour participer aux tournois majeurs, vous devez faire partie d'une équipe. Créez votre propre légende ou rejoignez une alliance existante.</p>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 3rem; max-width: 1000px; margin: 0 auto;">
+            <!-- Create Team Option -->
+            <div class="card" style="text-align: center; padding: 3rem; border: 2px solid var(--color-primary); transition: transform 0.3s ease; cursor: pointer;">
+                <div style="width: 80px; height: 80px; background: rgba(255, 0, 34, 0.1); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 1.5rem auto;">
+                    <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="var(--color-primary)" stroke-width="2">
+                        <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                        <circle cx="8.5" cy="7" r="4"></circle>
+                        <line x1="20" y1="8" x2="20" y2="14"></line>
+                        <line x1="23" y1="11" x2="17" y2="11"></line>
+                    </svg>
+                </div>
+                <h2 style="font-size: 1.75rem; font-weight: 800; margin-bottom: 1rem;">Créer une Équipe</h2>
+                <p style="color: var(--color-text-secondary); margin-bottom: 2rem;">
+                    Fondez votre propre équipe, invitez vos amis et menez-les vers la victoire. En tant que Leader, vous aurez le contrôle total.
+                </p>
+                <a href="{{ path('app_team_create') }}" class="btn btn-primary" style="width: 100%; justify-content: center; font-size: 1.125rem; padding: 1rem;">
+                    Commencer
+                </a>
+            </div>
+
+            <!-- Join Team Option -->
+            <div class="card" style="text-align: center; padding: 3rem; border: 2px solid var(--color-border); transition: transform 0.3s ease; cursor: pointer;">
+                <div style="width: 80px; height: 80px; background: var(--color-bg-tertiary); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 1.5rem auto;">
+                    <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                        <circle cx="9" cy="7" r="4"></circle>
+                        <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                        <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                    </svg>
+                </div>
+                <h2 style="font-size: 1.75rem; font-weight: 800; margin-bottom: 1rem;">Rejoindre une Équipe</h2>
+                <p style="color: var(--color-text-secondary); margin-bottom: 2rem;">
+                    Vous avez un code d'invitation ? Rejoignez une équipe existante et préparez-vous pour la compétition.
+                </p>
+                <a href="{{ path('app_team_join') }}" class="btn btn-secondary" style="width: 100%; justify-content: center; font-size: 1.125rem; padding: 1rem;">
+                    Entrer un Code
+                </a>
+            </div>
+        </div>
+    </main>
+</div>
+{% endblock %}

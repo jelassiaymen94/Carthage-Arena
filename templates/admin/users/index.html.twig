@@ -1,0 +1,127 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Gestion Utilisateurs - Admin - Carthage Arena{% endblock %}
+
+{% block body %}
+<div class="app-container">
+    {% include 'admin/_sidebar.html.twig' %}
+
+    <main class="main-content">
+        <div class="page-header">
+            <h1 class="page-title">Gestion des Utilisateurs</h1>
+            <button class="btn btn-primary">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <line x1="12" y1="8" x2="12" y2="16"></line>
+                    <line x1="8" y1="12" x2="16" y2="12"></line>
+                </svg>
+                Ajouter un Utilisateur
+            </button>
+        </div>
+
+        <div class="card" style="margin-bottom: 2rem;">
+            <div style="display: flex; gap: 1rem; align-items: center;">
+                <div class="form-group" style="flex: 1; margin: 0;">
+                    <input type="text" class="form-input" placeholder="Rechercher par nom ou email...">
+                </div>
+                <select class="form-input" style="width: 200px;">
+                    <option>Tous les statuts</option>
+                    <option>Actif</option>
+                    <option>Suspendu</option>
+                    <option>En attente</option>
+                </select>
+                <select class="form-input" style="width: 200px;">
+                    <option>Tous les rôles</option>
+                    <option>Joueur</option>
+                    <option>Joueur Pro</option>
+                    <option>Admin</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="card">
+            <div style="overflow-x: auto;">
+                <table style="width: 100%; border-collapse: collapse;">
+                    <thead>
+                        <tr style="border-bottom: 2px solid var(--color-border);">
+                            <th style="text-align: left; padding: 1rem; font-size: 0.75rem; color: var(--color-text-muted); text-transform: uppercase; letter-spacing: 0.5px;">ID</th>
+                            <th style="text-align: left; padding: 1rem; font-size: 0.75rem; color: var(--color-text-muted); text-transform: uppercase; letter-spacing: 0.5px;">Utilisateur</th>
+                            <th style="text-align: left; padding: 1rem; font-size: 0.75rem; color: var(--color-text-muted); text-transform: uppercase; letter-spacing: 0.5px;">Email</th>
+                            <th style="text-align: left; padding: 1rem; font-size: 0.75rem; color: var(--color-text-muted); text-transform: uppercase; letter-spacing: 0.5px;">Rôle</th>
+                            <th style="text-align: left; padding: 1rem; font-size: 0.75rem; color: var(--color-text-muted); text-transform: uppercase; letter-spacing: 0.5px;">Balance</th>
+                            <th style="text-align: left; padding: 1rem; font-size: 0.75rem; color: var(--color-text-muted); text-transform: uppercase; letter-spacing: 0.5px;">Statut</th>
+                            <th style="text-align: left; padding: 1rem; font-size: 0.75rem; color: var(--color-text-muted); text-transform: uppercase; letter-spacing: 0.5px;">Inscrit</th>
+                            <th style="text-align: left; padding: 1rem; font-size: 0.75rem; color: var(--color-text-muted); text-transform: uppercase; letter-spacing: 0.5px;">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for user in users %}
+                        <tr style="border-bottom: 1px solid var(--color-border);">
+                            <td style="padding: 1rem; color: var(--color-text-muted);">#{{ user.id }}</td>
+                            <td style="padding: 1rem;">
+                                <div style="font-weight: 600;">{{ user.name }}</div>
+                            </td>
+                            <td style="padding: 1rem; color: var(--color-text-secondary);">{{ user.email }}</td>
+                            <td style="padding: 1rem;">
+                                <span class="badge badge-{% if user.role == 'JOUEUR PRO' %}legendary{% else %}premium{% endif %}">
+                                    {{ user.role }}
+                                </span>
+                            </td>
+                            <td style="padding: 1rem;">
+                                <div style="display: flex; align-items: center; gap: 0.25rem;">
+                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="var(--color-warning)">
+                                        <circle cx="12" cy="12" r="10"></circle>
+                                    </svg>
+                                    <span style="font-weight: 600; color: var(--color-warning);">{{ user.balance }}</span>
+                                </div>
+                            </td>
+                            <td style="padding: 1rem;">
+                                <span class="badge {% if user.status == 'active' %}badge-legendary{% else %}badge-epic{% endif %}">
+                                    {{ user.status }}
+                                </span>
+                            </td>
+                            <td style="padding: 1rem; color: var(--color-text-secondary); font-size: 0.875rem;">{{ user.joined }}</td>
+                            <td style="padding: 1rem;">
+                                <div style="display: flex; gap: 0.5rem;">
+                                    <button class="btn btn-secondary" style="padding: 0.5rem 0.75rem; font-size: 0.875rem;">
+                                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                                            <circle cx="12" cy="12" r="3"></circle>
+                                        </svg>
+                                    </button>
+                                    <button class="btn btn-secondary" style="padding: 0.5rem 0.75rem; font-size: 0.875rem;">
+                                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                            <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                                            <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+                                        </svg>
+                                    </button>
+                                    <button class="btn" style="padding: 0.5rem 0.75rem; font-size: 0.875rem; background-color: var(--color-error); color: white;">
+                                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                            <polyline points="3 6 5 6 21 6"></polyline>
+                                            <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                                        </svg>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+            <div style="display: flex; justify-content: between; align-items: center; padding: 1.5rem; border-top: 1px solid var(--color-border);">
+                <div style="color: var(--color-text-secondary); font-size: 0.875rem;">
+                    Affichage de 1 à {{ users|length }} sur {{ users|length }} utilisateurs
+                </div>
+                <div style="display: flex; gap: 0.5rem;">
+                    <button class="btn btn-secondary" disabled>Précédent</button>
+                    <button class="btn btn-secondary">1</button>
+                    <button class="btn btn-secondary">2</button>
+                    <button class="btn btn-secondary">3</button>
+                    <button class="btn btn-secondary">Suivant</button>
+                </div>
+            </div>
+        </div>
+    </main>
+</div>
+{% endblock %}

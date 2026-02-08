@@ -1,0 +1,81 @@
+<aside class="sidebar">
+    <div class="sidebar-logo">
+        <img src="{{ asset('images/logo.png') }}" alt="Carthage Arena">
+        <div class="sidebar-logo-text">
+            CARTHAGE <span class="highlight">ARENA</span>
+        </div>
+    </div>
+
+    <nav>
+        <ul class="sidebar-nav">
+            <li class="sidebar-nav-item">
+                <a href="{{ path('app_dashboard') }}" class="sidebar-nav-link {% if app.request.get('_route') == 'app_dashboard' %}active{% endif %}">
+                    <svg class="sidebar-nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+                        <polyline points="9 22 9 12 15 12 15 22"></polyline>
+                    </svg>
+                    Accueil
+                </a>
+            </li>
+            <li class="sidebar-nav-item">
+                <a href="{{ path('app_tournaments') }}" class="sidebar-nav-link {% if app.request.get('_route') starts with 'app_tournament' %}active{% endif %}">
+                    <svg class="sidebar-nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"></path>
+                        <path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"></path>
+                        <path d="M4 22h16"></path>
+                        <path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"></path>
+                        <path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"></path>
+                        <path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"></path>
+                    </svg>
+                    Mes Tournois
+                </a>
+            </li>
+            <li class="sidebar-nav-item">
+                <a href="{{ path('app_team') }}" class="sidebar-nav-link {% if app.request.get('_route') starts with 'app_team' %}active{% endif %}">
+                    <svg class="sidebar-nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                        <circle cx="9" cy="7" r="4"></circle>
+                        <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                        <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                    </svg>
+                    Ma Équipe
+                </a>
+            </li>
+            <li class="sidebar-nav-item">
+                <a href="{{ path('app_shop') }}" class="sidebar-nav-link {% if app.request.get('_route') == 'app_shop' %}active{% endif %}">
+                    <svg class="sidebar-nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="9" cy="21" r="1"></circle>
+                        <circle cx="20" cy="21" r="1"></circle>
+                        <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
+                    </svg>
+                    Boutique
+                </a>
+            </li>
+            <li class="sidebar-nav-item">
+                <a href="{{ path('app_profile') }}" class="sidebar-nav-link {% if app.request.get('_route') == 'app_profile' %}active{% endif %}">
+                    <svg class="sidebar-nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                        <circle cx="12" cy="7" r="4"></circle>
+                    </svg>
+                    Profil
+                </a>
+            </li>
+            <li class="sidebar-nav-item">
+                <a href="{{ path('app_settings') }}" class="sidebar-nav-link {% if app.request.get('_route') == 'app_settings' %}active{% endif %}">
+                    <svg class="sidebar-nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="3"></circle>
+                        <path d="M12 1v6m0 6v6m-6-6H0m6 0h6m6 0h6"></path>
+                        <path d="M19.4 15c-.3.6-.6 1.2-1 1.8m-3.4 2.2c-.6.3-1.2.6-1.8 1M9 19.4c-.6-.3-1.2-.6-1.8-1M4.6 15c.3-.6.6-1.2 1-1.8M4.6 9c.3.6.6 1.2 1 1.8M9 4.6c.6.3 1.2.6 1.8 1m3.4-2.2c.6.3 1.2.6 1.8 1M19.4 9c-.3.6-.6 1.2-1 1.8"></path>
+                    </svg>
+                    Paramètres
+                </a>
+            </li>
+        </ul>
+    </nav>
+
+    <div class="sidebar-featured">
+        <div class="sidebar-featured-badge">MATCH EN DIRECT</div>
+        <div class="sidebar-featured-title">Cloud9 vs Team Liquid</div>
+        <img src="https://via.placeholder.com/200x120/1A1A1A/FF0022?text=LIVE" alt="Live Match">
+    </div>
+</aside>
