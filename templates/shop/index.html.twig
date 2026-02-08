@@ -1,0 +1,74 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Boutique de Skins - Carthage Arena{% endblock %}
+
+{% block body %}
+<div class="app-container">
+    {% include 'components/_sidebar.html.twig' %}
+
+    <main class="main-content">
+        <div class="page-header">
+            <h1 class="page-title">Boutique de Skins</h1>
+            <p class="page-subtitle">Améliorez votre arsenal avec des skins exclusifs.</p>
+        </div>
+
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
+            <div class="shop-filters">
+                <button class="filter-btn active">Tous les Jeux</button>
+                <button class="filter-btn">Valorant</button>
+                <button class="filter-btn">League of Legends</button>
+                <button class="filter-btn">CS2</button>
+            </div>
+
+            <div style="position: relative; width: 300px;">
+                <svg style="position: absolute; left: 1rem; top: 50%; transform: translateY(-50%); color: var(--color-text-muted);" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="11" cy="11" r="8"></circle>
+                    <path d="m21 21-4.35-4.35"></path>
+                </svg>
+                <input type="text" class="form-input" placeholder="Rechercher des skins..." style="padding-left: 3rem;">
+            </div>
+        </div>
+
+        <div class="shop-grid">
+            {% for item in items %}
+            <div class="shop-item" onclick="window.location.href='{{ path('app_shop_item', {id: item.id}) }}'" style="cursor: pointer;">
+                <div class="shop-item-image" style="background-image: url('{{ item.image }}'); background-size: cover; background-position: center; position: relative;">
+                    <div style="position: absolute; top: 1rem; left: 1rem;">
+                        <span class="badge badge-{{ item.game == 'VALORANT' ? 'legendary' : (item.game == 'LOL' ? 'epic' : 'secret') }}">{{ item.game }}</span>
+                    </div>
+                </div>
+                <div class="shop-item-content">
+                    <div class="shop-item-header">
+                        <div>
+                            <div class="shop-item-title">{{ item.name }}</div>
+                            <span class="badge badge-{% if item.rarity == 'LÉGENDAIRE' %}legendary{% elseif item.rarity == 'ÉPIQUE' %}epic{% elseif item.rarity == 'PREMIUM' %}premium{% elseif item.rarity == 'SECRET' %}secret{% else %}legendary{% endif %}">
+                                {{ item.rarity }}
+                            </span>
+                        </div>
+                    </div>
+
+                    <div class="shop-item-footer">
+                        <div>
+                            <div class="shop-item-price">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                                    <circle cx="12" cy="12" r="10"></circle>
+                                </svg>
+                                {{ item.price }}
+                            </div>
+                            {% if item.insufficient %}
+                            <div class="shop-item-meta" style="color: var(--color-error);">PC INSUFFISANTS</div>
+                            {% else %}
+                            <div class="shop-item-meta">Points suffisants</div>
+                            {% endif %}
+                        </div>
+                        <button class="btn {% if item.insufficient %}btn-secondary{% else %}btn-primary{% endif %}" style="padding: 0.5rem 1.25rem;" {% if item.insufficient %}disabled{% endif %}>
+                            Acheter
+                        </button>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </main>
+</div>
+{% endblock %}
