@@ -265,6 +265,21 @@
                   </select>
                 </div>
               </div>
+
+              <div>
+                <label for="settings_bio" class="block text-sm font-medium text-gray-400 mb-2">
+                  Biographie
+                </label>
+                <textarea
+                  id="settings_bio"
+                  name="bio"
+                  rows="4"
+                  class="w-full bg-[#161616] border border-white/10 rounded-xl py-3.5 px-4 text-sm text-white placeholder-gray-500 focus:border-primary focus:outline-none input-glow transition-all resize-none"
+                  placeholder="Parlez-nous de vous..."
+                >{{ user.bio }}</textarea>
+                <p class="text-xs text-gray-500 mt-1">Max 500 caractères.</p>
+              </div>
+
               <div class="flex justify-end">
                 <button
                   type="submit"
@@ -285,17 +300,9 @@
             </h3>
             <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 rounded-xl bg-white/5 p-5">
               <div>
-                <p class="font-bold text-white text-sm">Mot de passe et authentification</p>
-                <p class="text-xs text-gray-400 mt-0.5">G&eacute;rez votre mot de passe, l'authentification &agrave; deux facteurs et les connexions sociales via Clerk.</p>
+                <p class="font-bold text-white text-sm">Mot de passe</p>
+                <p class="text-xs text-gray-400 mt-0.5">Pour changer votre mot de passe, contactez le support (bientôt disponible).</p>
               </div>
-              <button
-                type="button"
-                id="openClerkProfile"
-                class="flex-shrink-0 rounded-full bg-white/5 border border-white/10 px-6 py-2.5 text-sm font-bold text-gray-300 hover:bg-white/10 hover:text-white transition-all flex items-center gap-2"
-              >
-                <span class="material-symbols-outlined text-[18px]">manage_accounts</span>
-                G&eacute;rer le compte
-              </button>
             </div>
           </section>
 
@@ -439,14 +446,6 @@
             document.getElementById('avatarPreview').style.backgroundImage = 'url(' + ev.target.result + ')';
           };
           reader.readAsDataURL(file);
-        }
-      });
-
-      document.getElementById('openClerkProfile').addEventListener('click', function() {
-        if (window.Clerk && window.Clerk.user) {
-          window.Clerk.openUserProfile();
-        } else {
-          alert('Clerk n\'est pas encore chargé. Veuillez réessayer.');
         }
       });
     </script>

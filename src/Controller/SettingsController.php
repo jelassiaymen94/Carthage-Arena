@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Entity\Profile;
 use App\Entity\User;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -21,20 +22,26 @@ class SettingsController extends AbstractController
     ): Response {
         /** @var User $user */
         $user = $this->getUser();
+        if (!$user) {
+            return $this->redirectToRoute('app_login');
+        }
 
         if ($request->isMethod('POST')) {
             $this->handleProfileUpdate($request, $user, $entityManager, $slugger);
             return $this->redirectToRoute('app_settings');
         }
 
+        $profile = $user->getProfile();
+
         return $this->render('settings/index.html.twig', [
             'user' => [
                 'name' => $user->getUsername(),
                 'email' => $user->getEmail(),
-                'avatar' => $user->getAvatar() ? '/uploads/avatars/' . $user->getAvatar() : 'https://i.pravatar.cc/300?img=12',
+                'avatar' => $profile && $profile->getAvatarUrl() ? '/uploads/avatars/' . $profile->getAvatarUrl() : 'https://i.pravatar.cc/300?img=12',
                 'country' => 'Tunisie',
                 'language' => 'Français',
                 'timezone' => 'Africa/Tunis',
+                'bio' => $profile ? $profile->getBio() : '',
             ],
         ]);
     }
@@ -53,6 +60,7 @@ class SettingsController extends AbstractController
 
         $username = trim($request->request->get('name', ''));
         $email = trim($request->request->get('email', ''));
+        $bio = trim($request->request->get('bio', ''));
 
         if (strlen($username) < 3) {
             $this->addFlash('error', 'Le nom d\'utilisateur doit contenir au moins 3 caractères.');
@@ -82,6 +90,18 @@ class SettingsController extends AbstractController
             $user->setEmail($email);
         }
 
+        // Handle Bio
+        $profile = $user->getProfile();
+        if (!$profile) {
+            $profile = new Profile();
+            $profile->setUser($user);
+            $user->setProfile($profile);
+            $entityManager->persist($profile);
+        }
+        $profile->setBio($bio);
+        $profile->setUpdatedAt(new \DateTime());
+
+        // Handle Avatar
         $avatarFile = $request->files->get('avatar');
         if ($avatarFile) {
             $allowedMimes = ['image/jpeg', 'image/png', 'image/webp'];
@@ -105,7 +125,7 @@ class SettingsController extends AbstractController
                     $newFilename,
                 );
 
-                $oldAvatar = $user->getAvatar();
+                $oldAvatar = $profile->getAvatarUrl();
                 if ($oldAvatar) {
                     $oldPath = $this->getParameter('kernel.project_dir') . '/public/uploads/avatars/' . $oldAvatar;
                     if (file_exists($oldPath)) {
@@ -113,7 +133,7 @@ class SettingsController extends AbstractController
                     }
                 }
 
-                $user->setAvatar($newFilename);
+                $profile->setAvatarUrl($newFilename);
             } catch (FileException $e) {
                 $this->addFlash('error', 'Erreur lors du téléchargement de l\'image.');
                 return;

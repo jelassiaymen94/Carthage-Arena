@@ -170,9 +170,12 @@
                         {{ member.role }}
                       </span>
                       {% if is_leader and member.role != 'Leader' %}
-                      <button class="rounded-full p-1.5 text-gray-500 hover:bg-white/10 hover:text-white transition-all">
-                        <span class="material-symbols-outlined text-[18px]">more_vert</span>
-                      </button>
+                      <form method="post" action="{{ path('app_team_kick', {'id': member.id}) }}" onsubmit="return confirm('Expulser ce membre ?');" class="inline-block">
+                          <input type="hidden" name="_csrf_token" value="{{ csrf_token('kick_member') }}">
+                          <button type="submit" class="rounded-full p-1.5 text-gray-500 hover:bg-red-500/20 hover:text-red-400 transition-all" title="Expulser">
+                            <span class="material-symbols-outlined text-[18px]">person_remove</span>
+                          </button>
+                      </form>
                       {% endif %}
                     </div>
                   </div>
@@ -265,10 +268,16 @@
                 <h3 class="text-lg font-bold text-white mb-4">Code d'invitation</h3>
                 <div class="flex items-center gap-2 rounded-xl bg-white/5 border border-white/10 p-3">
                   <span class="text-lg font-black text-primary tracking-widest flex-1 text-center">{{ team.invites }}</span>
-                  <button class="rounded-full p-2 text-gray-400 hover:bg-white/10 hover:text-white transition-all" title="Copier le code">
+                  <button class="rounded-full p-2 text-gray-400 hover:bg-white/10 hover:text-white transition-all" title="Copier le code" onclick="navigator.clipboard.writeText('{{ team.invites }}');">
                     <span class="material-symbols-outlined text-[18px]">content_copy</span>
                   </button>
                 </div>
+                <form method="post" action="{{ path('app_team_regenerate_invite') }}" class="mt-3 text-center">
+                    <input type="hidden" name="_csrf_token" value="{{ csrf_token('regenerate_invite') }}">
+                    <button type="submit" class="text-xs text-primary hover:text-red-400 underline transition-colors">
+                        Générer un nouveau code
+                    </button>
+                </form>
                 <p class="text-xs text-gray-500 mt-2 text-center">Partagez ce code pour inviter des joueurs.</p>
               </section>
               {% endif %}
@@ -286,18 +295,24 @@
                     <span class="material-symbols-outlined text-[18px]">person_add</span>
                     G&eacute;rer les invitations
                   </button>
-                  <button class="w-full flex items-center gap-3 rounded-xl bg-red-500/10 border border-red-500/20 px-4 py-3 text-sm font-medium text-red-400 hover:bg-red-500/20 transition-all">
-                    <span class="material-symbols-outlined text-[18px]">logout</span>
-                    Dissoudre l'&eacute;quipe
-                  </button>
+                  <form method="post" action="{{ path('app_team_disband') }}" onsubmit="return confirm('Êtes-vous sûr de vouloir dissoudre l\'équipe ? Cette action est irréversible.');">
+                    <input type="hidden" name="_csrf_token" value="{{ csrf_token('disband_team') }}">
+                    <button type="submit" class="w-full flex items-center gap-3 rounded-xl bg-red-500/10 border border-red-500/20 px-4 py-3 text-sm font-medium text-red-400 hover:bg-red-500/20 transition-all">
+                        <span class="material-symbols-outlined text-[18px]">logout</span>
+                        Dissoudre l'&eacute;quipe
+                    </button>
+                  </form>
                 </div>
               </section>
               {% else %}
               <section class="rounded-2xl bg-surface-dark border border-white/5 p-6">
-                <button class="w-full flex items-center justify-center gap-2 rounded-full bg-red-500 px-6 py-3 text-sm font-bold text-white hover:bg-red-600 transition-all">
-                  <span class="material-symbols-outlined text-[18px]">logout</span>
-                  Quitter l'&eacute;quipe
-                </button>
+                <form method="post" action="{{ path('app_team_leave') }}" onsubmit="return confirm('Êtes-vous sûr de vouloir quitter l\'équipe ?');">
+                    <input type="hidden" name="_csrf_token" value="{{ csrf_token('leave_team') }}">
+                    <button type="submit" class="w-full flex items-center justify-center gap-2 rounded-full bg-red-500 px-6 py-3 text-sm font-bold text-white hover:bg-red-600 transition-all">
+                    <span class="material-symbols-outlined text-[18px]">logout</span>
+                    Quitter l'&eacute;quipe
+                    </button>
+                </form>
               </section>
               {% endif %}
             </div>

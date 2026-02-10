@@ -115,7 +115,9 @@
               Entrez le code d'invitation fourni par votre Team Leader.
             </p>
 
-            <form class="flex flex-col gap-6">
+            <form class="flex flex-col gap-6" method="post" action="{{ path('app_team_join') }}">
+              <input type="hidden" name="_csrf_token" value="{{ csrf_token('join_team') }}">
+
               <div>
                 <input
                   type="text"
