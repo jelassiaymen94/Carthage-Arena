@@ -2,10 +2,15 @@
 
 namespace App\Entity;
 
+use App\Enum\AccountStatus;
 use App\Repository\UserRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Bridge\Doctrine\Types\UuidType;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
+use Symfony\Component\Uid\Uuid;
 
 #[ORM\Entity(repositoryClass: UserRepository::class)]
 #[ORM\Table(name: '`user`')]
@@ -14,9 +19,10 @@ use Symfony\Component\Security\Core\User\UserInterface;
 class User implements UserInterface, PasswordAuthenticatedUserInterface
 {
     #[ORM\Id]
-    #[ORM\GeneratedValue]
-    #[ORM\Column]
-    private ?int $id = null;
+    #[ORM\Column(type: UuidType::NAME, unique: true)]
+    #[ORM\GeneratedValue(strategy: 'CUSTOM')]
+    #[ORM\CustomIdGenerator(class: 'doctrine.uuid_generator')]
+    private ?Uuid $id = null;
 
     #[ORM\Column(length: 180, unique: true)]
     private ?string $email = null;
@@ -24,8 +30,14 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(length: 50, unique: true)]
     private ?string $username = null;
 
-    #[ORM\Column(nullable: true)]
+    #[ORM\Column(length: 50, nullable: true)]
+    private ?string $nickname = null;
+
+    #[ORM\Column]
     private ?string $password = null;
+
+    #[ORM\Column(length: 255, enumType: AccountStatus::class)]
+    private AccountStatus $status = AccountStatus::ACTIVE;
 
     /** @var list<string> */
     #[ORM\Column(type: 'json')]
@@ -37,27 +49,20 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(type: 'integer')]
     private int $balance = 0;
 
-    #[ORM\Column(length: 255, nullable: true)]
-    private ?string $avatar = null;
+    #[ORM\OneToOne(mappedBy: 'user', cascade: ['persist', 'remove'])]
+    private ?Profile $profile = null;
 
-    #[ORM\Column(length: 255, nullable: true)]
-    private ?string $clerkId = null;
-
-    #[ORM\Column(length: 255, nullable: true)]
-    private ?string $googleId = null;
-
-    #[ORM\Column(length: 255, nullable: true)]
-    private ?string $facebookId = null;
-
-    #[ORM\Column(length: 255, nullable: true)]
-    private ?string $instagramId = null;
+    #[ORM\OneToMany(mappedBy: 'player', targetEntity: TeamMembership::class, orphanRemoval: true)]
+    private Collection $teamMemberships;
 
     public function __construct()
     {
         $this->createdAt = new \DateTimeImmutable();
+        $this->status = AccountStatus::ACTIVE;
+        $this->teamMemberships = new ArrayCollection();
     }
 
-    public function getId(): ?int
+    public function getId(): ?Uuid
     {
         return $this->id;
     }
@@ -81,6 +86,17 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function setUsername(string $username): static
     {
         $this->username = $username;
+        return $this;
+    }
+
+    public function getNickname(): ?string
+    {
+        return $this->nickname;
+    }
+
+    public function setNickname(?string $nickname): static
+    {
+        $this->nickname = $nickname;
         return $this;
     }
 
@@ -128,6 +144,17 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         // Clear any temporary, sensitive data
     }
 
+    public function getStatus(): AccountStatus
+    {
+        return $this->status;
+    }
+
+    public function setStatus(AccountStatus $status): static
+    {
+        $this->status = $status;
+        return $this;
+    }
+
     public function getCreatedAt(): ?\DateTimeImmutable
     {
         return $this->createdAt;
@@ -150,58 +177,69 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
+    public function getProfile(): ?Profile
+    {
+        return $this->profile;
+    }
+
+    public function setProfile(Profile $profile): static
+    {
+        // set the owning side of the relation if necessary
+        if ($profile->getUser() !== $this) {
+            $profile->setUser($this);
+        }
+
+        $this->profile = $profile;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, TeamMembership>
+     */
+    public function getTeamMemberships(): Collection
+    {
+        return $this->teamMemberships;
+    }
+
+    public function addTeamMembership(TeamMembership $teamMembership): static
+    {
+        if (!$this->teamMemberships->contains($teamMembership)) {
+            $this->teamMemberships->add($teamMembership);
+            $teamMembership->setPlayer($this);
+        }
+
+        return $this;
+    }
+
+    public function removeTeamMembership(TeamMembership $teamMembership): static
+    {
+        if ($this->teamMemberships->removeElement($teamMembership)) {
+            // set the owning side to null (unless already changed)
+            if ($teamMembership->getPlayer() === $this) {
+                $teamMembership->setPlayer(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * Helper to get avatar from profile
+     */
     public function getAvatar(): ?string
     {
-        return $this->avatar;
+        return $this->profile?->getAvatarUrl();
     }
 
+    /**
+     * Helper to set avatar on profile
+     */
     public function setAvatar(?string $avatar): static
     {
-        $this->avatar = $avatar;
-        return $this;
-    }
-
-    public function getClerkId(): ?string
-    {
-        return $this->clerkId;
-    }
-
-    public function setClerkId(?string $clerkId): static
-    {
-        $this->clerkId = $clerkId;
-        return $this;
-    }
-
-    public function getGoogleId(): ?string
-    {
-        return $this->googleId;
-    }
-
-    public function setGoogleId(?string $googleId): static
-    {
-        $this->googleId = $googleId;
-        return $this;
-    }
-
-    public function getFacebookId(): ?string
-    {
-        return $this->facebookId;
-    }
-
-    public function setFacebookId(?string $facebookId): static
-    {
-        $this->facebookId = $facebookId;
-        return $this;
-    }
-
-    public function getInstagramId(): ?string
-    {
-        return $this->instagramId;
-    }
-
-    public function setInstagramId(?string $instagramId): static
-    {
-        $this->instagramId = $instagramId;
+        if ($this->profile) {
+            $this->profile->setAvatarUrl($avatar);
+        }
         return $this;
     }
 
@@ -210,6 +248,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
      */
     public function getName(): string
     {
-        return $this->username ?? '';
+        return $this->nickname ?? $this->username ?? '';
     }
 }

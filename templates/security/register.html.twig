@@ -38,15 +38,74 @@
           </h1>
         </div>
 
-        <!-- Clerk Sign-Up Component -->
-        <div
-          id="clerk-sign-up"
-          class="flex items-center justify-center min-h-[400px]"
-        >
-          <div class="flex flex-col items-center gap-4 text-gray-400">
-            <div class="w-8 h-8 border-2 border-primary border-t-transparent rounded-full animate-spin"></div>
-            <p class="text-sm">Chargement...</p>
-          </div>
+        <!-- Register Form -->
+        <div class="bg-surface-dark border border-white/5 rounded-3xl p-8 shadow-2xl">
+          <h2 class="text-xl font-bold text-white mb-6 text-center">Créer un compte</h2>
+
+          {% for message in app.flashes('error') %}
+            <div class="bg-red-500/10 border border-red-500/20 rounded-xl p-4 mb-6 text-sm text-red-400 flex items-start gap-3">
+              <span class="material-symbols-outlined text-[20px]">error</span>
+              <div>{{ message }}</div>
+            </div>
+          {% endfor %}
+
+          <form method="post" action="{{ path('app_register') }}" class="flex flex-col gap-5">
+            <div>
+              <label for="username" class="block text-sm font-medium text-gray-400 mb-2">Nom d'utilisateur</label>
+              <input
+                type="text"
+                id="username"
+                name="username"
+                required
+                class="w-full bg-[#161616] border border-white/10 rounded-xl py-3.5 px-4 text-sm text-white placeholder-gray-500 focus:border-primary focus:outline-none input-glow transition-all"
+                placeholder="Pseudo"
+              >
+            </div>
+
+            <div>
+              <label for="email" class="block text-sm font-medium text-gray-400 mb-2">Email</label>
+              <input
+                type="email"
+                id="email"
+                name="email"
+                required
+                class="w-full bg-[#161616] border border-white/10 rounded-xl py-3.5 px-4 text-sm text-white placeholder-gray-500 focus:border-primary focus:outline-none input-glow transition-all"
+                placeholder="nom@exemple.com"
+              >
+            </div>
+
+            <div>
+              <label for="password" class="block text-sm font-medium text-gray-400 mb-2">Mot de passe</label>
+              <input
+                type="password"
+                id="password"
+                name="password"
+                required
+                class="w-full bg-[#161616] border border-white/10 rounded-xl py-3.5 px-4 text-sm text-white placeholder-gray-500 focus:border-primary focus:outline-none input-glow transition-all"
+                placeholder="••••••••"
+              >
+            </div>
+
+            <div>
+              <label for="confirm_password" class="block text-sm font-medium text-gray-400 mb-2">Confirmer le mot de passe</label>
+              <input
+                type="password"
+                id="confirm_password"
+                name="confirm_password"
+                required
+                class="w-full bg-[#161616] border border-white/10 rounded-xl py-3.5 px-4 text-sm text-white placeholder-gray-500 focus:border-primary focus:outline-none input-glow transition-all"
+                placeholder="••••••••"
+              >
+            </div>
+
+            <button
+              type="submit"
+              class="w-full rounded-xl bg-primary py-3.5 text-sm font-bold text-white shadow-lg shadow-red-900/30 hover:bg-red-600 hover:shadow-red-600/40 hover:-translate-y-0.5 transition-all flex items-center justify-center gap-2 mt-2"
+            >
+              <span class="material-symbols-outlined text-[20px]">person_add</span>
+              S'inscrire
+            </button>
+          </form>
         </div>
 
         <!-- Footer -->
@@ -58,59 +117,4 @@
         </p>
       </div>
     </div>
-{% endblock %}
-
-{% block clerk_script %}
-    <script>
-      (function() {
-        const clerkKey = '{{ clerk_publishable_key|default("") }}';
-        if (!clerkKey || clerkKey.indexOf('your-clerk') !== -1) {
-          document.getElementById('clerk-sign-up').innerHTML =
-            '<div class="bg-surface-dark border border-white/5 rounded-3xl p-8 text-center">' +
-            '<span class="material-symbols-outlined text-primary text-4xl mb-4">warning</span>' +
-            '<h2 class="text-lg font-bold text-white mb-2">Configuration requise</h2>' +
-            '<p class="text-gray-400 text-sm">Ajoutez vos clés Clerk dans le fichier <code class="text-primary">.env</code> :</p>' +
-            '<div class="bg-[#161616] rounded-xl p-4 mt-4 text-left text-xs text-gray-300 font-mono">' +
-            'CLERK_PUBLISHABLE_KEY=pk_test_...<br>CLERK_SECRET_KEY=sk_test_...' +
-            '</div>' +
-            '<p class="text-gray-500 text-xs mt-4">Obtenez vos clés sur <a href="https://dashboard.clerk.com" target="_blank" class="text-primary hover:text-white">dashboard.clerk.com</a></p>' +
-            '</div>';
-          return;
-        }
-
-        const script = document.createElement('script');
-        script.setAttribute('data-clerk-publishable-key', clerkKey);
-        script.async = true;
-        script.src = 'https://cdn.jsdelivr.net/npm/@clerk/clerk-js@latest/dist/clerk.browser.js';
-        script.addEventListener('load', async function() {
-          await window.Clerk.load({
-            appearance: {
-              variables: {
-                colorPrimary: '#e60013',
-                colorBackground: '#1E1E1E',
-                colorText: '#ffffff',
-                colorTextSecondary: '#9ca3af',
-                colorInputBackground: '#161616',
-                colorInputText: '#ffffff',
-                borderRadius: '0.75rem',
-              },
-              elements: {
-                card: 'bg-transparent shadow-none',
-                rootBox: 'w-full',
-                formButtonPrimary: 'bg-primary hover:bg-red-600 shadow-lg shadow-red-900/30',
-              }
-            }
-          });
-
-          const signUpDiv = document.getElementById('clerk-sign-up');
-          if (signUpDiv) {
-            window.Clerk.mountSignUp(signUpDiv, {
-              afterSignUpUrl: '{{ path("app_dashboard") }}',
-              signInUrl: '{{ path("app_login") }}',
-            });
-          }
-        });
-        document.head.appendChild(script);
-      })();
-    </script>
 {% endblock %}

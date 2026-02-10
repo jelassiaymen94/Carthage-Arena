@@ -108,7 +108,9 @@
               <p class="text-sm text-gray-400">Configurez l'identit&eacute; de votre &eacute;quipe.</p>
             </div>
 
-            <form class="flex flex-col gap-6">
+            <form class="flex flex-col gap-6" method="post" action="{{ path('app_team_create') }}">
+              <input type="hidden" name="_csrf_token" value="{{ csrf_token('create_team') }}">
+
               <!-- Logo Upload -->
               <div>
                 <label class="block text-sm font-medium text-gray-400 mb-3">Logo de l'&eacute;quipe</label>
