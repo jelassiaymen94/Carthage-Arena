@@ -11,17 +11,19 @@ class ProfileController extends AbstractController
     #[Route('/profil', name: 'app_profile')]
     public function index(): Response
     {
+        $user = $this->getUser();
+
         return $this->render('profile/index.html.twig', [
             'user' => [
-                'name' => 'ShadowSlayer99',
-                'email' => 'shadowslayer@carthage.gg',
+                'name' => $user->getUsername(),
+                'email' => $user->getEmail(),
                 'role' => 'JOUEUR PRO',
-                'balance' => '2,450',
-                'avatar' => 'https://i.pravatar.cc/300?img=12',
+                'balance' => number_format($user->getBalance(), 0, ',', ','),
+                'avatar' => $user->getAvatar() ? '/uploads/avatars/' . $user->getAvatar() : 'https://i.pravatar.cc/300?img=12',
                 'rank' => 'Diamond II',
                 'rankProgress' => 75,
                 'level' => 42,
-                'joinDate' => 'Janvier 2024',
+                'joinDate' => $user->getCreatedAt()->format('F Y'),
                 'country' => 'Tunisie',
                 'bio' => 'Joueur professionnel passionné par les jeux compétitifs. Spécialisé en Valorant et League of Legends.',
             ],

@@ -1,25 +1,422 @@
-<!DOCTYPE html>
-<html lang="fr">
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>{% block title %}Carthage Arena - Plateforme eSports{% endblock %}</title>
-        <meta name="description" content="{% block description %}Plateforme de tournois eSports professionnels - Rejoignez l'arène et dominez la compétition{% endblock %}">
-        
-        <!-- Fonts -->
-        <link rel="preconnect" href="https://fonts.googleapis.com">
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-        <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-        
-        {% block stylesheets %}
-            <link rel="stylesheet" href="{{ asset('styles/app.css') }}">
-        {% endblock %}
+<!doctype html>
+<html class="dark" lang="fr">
+  <head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>{% block title %}Carthage Arena{% endblock %}</title>
+    <link href="https://fonts.googleapis.com" rel="preconnect" />
+    <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;700;900&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
+      rel="stylesheet"
+    />
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              primary: "#e60013",
+              secondary: "#FFD700",
+              "background-light": "#f8f5f6",
+              "background-dark": "#121212",
+              "surface-dark": "#1E1E1E",
+              "surface-hover": "#2A2A2A",
+              "rarity-legendary": "#ffb900",
+              "rarity-epic": "#a335ee",
+              "rarity-rare": "#0099e4",
+            },
+            fontFamily: {
+              display: ["Be Vietnam Pro", "sans-serif"],
+            },
+            borderRadius: {
+              DEFAULT: "1rem",
+              lg: "1.5rem",
+              xl: "2rem",
+              "2xl": "3rem",
+              full: "9999px",
+            },
+          },
+        },
+      };
+    </script>
+    <style>
+      /* Custom scrollbar for webkit browsers */
+      ::-webkit-scrollbar {
+        width: 8px;
+      }
+      ::-webkit-scrollbar-track {
+        background: #121212;
+      }
+      ::-webkit-scrollbar-thumb {
+        background: #2a2a2a;
+        border-radius: 4px;
+      }
+      ::-webkit-scrollbar-thumb:hover {
+        background: #e60013;
+      }
 
-        {% block javascripts %}
-            {% block importmap %}{{ importmap('app') }}{% endblock %}
-        {% endblock %}
-    </head>
-    <body>
-        {% block body %}{% endblock %}
-    </body>
+      .glass-effect {
+        background: rgba(30, 30, 30, 0.6);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        border: 1px solid rgba(255, 255, 255, 0.05);
+      }
+
+      /* Focus indicators for accessibility */
+      a:focus-visible,
+      button:focus-visible {
+        outline: 2px solid #e60013;
+        outline-offset: 2px;
+      }
+
+      input:focus-visible {
+        border-color: #e60013;
+        box-shadow: 0 0 0 2px rgba(230, 0, 19, 0.3);
+      }
+
+      .tab-active {
+        background: linear-gradient(135deg, #e60013 0%, #ff4444 100%);
+        box-shadow: 0 0 20px rgba(230, 0, 19, 0.4);
+      }
+      .input-glow:focus {
+        box-shadow: 0 0 0 2px rgba(230, 0, 19, 0.3);
+      }
+
+      /* Loading Screen Styles - MonsterPlay Inspired */
+      .loading-screen {
+        position: fixed;
+        inset: 0;
+        background: #0a0a0a;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        z-index: 9999;
+        transition:
+          opacity 0.6s ease,
+          visibility 0.6s ease;
+        overflow: hidden;
+      }
+
+      .loading-screen.hidden {
+        opacity: 0;
+        visibility: hidden;
+      }
+
+      /* Scan Lines Overlay */
+      .loading-screen::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background: repeating-linear-gradient(
+          0deg,
+          transparent,
+          transparent 2px,
+          rgba(0, 0, 0, 0.3) 2px,
+          rgba(0, 0, 0, 0.3) 4px
+        );
+        pointer-events: none;
+        z-index: 10;
+      }
+
+      /* Animated Background Glow */
+      .loading-screen::after {
+        content: "";
+        position: absolute;
+        width: 600px;
+        height: 600px;
+        background: radial-gradient(
+          circle,
+          rgba(230, 0, 19, 0.15) 0%,
+          transparent 70%
+        );
+        animation: pulse-bg 3s ease-in-out infinite;
+        pointer-events: none;
+      }
+
+      @keyframes pulse-bg {
+        0%,
+        100% {
+          transform: scale(1);
+          opacity: 0.5;
+        }
+        50% {
+          transform: scale(1.2);
+          opacity: 0.8;
+        }
+      }
+
+      .preloader-content {
+        position: relative;
+        z-index: 5;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 2rem;
+      }
+
+      /* Logo with Pulse */
+      .preloader-logo {
+        width: 120px;
+        height: auto;
+        animation: logo-pulse 2s ease-in-out infinite;
+        filter: drop-shadow(0 0 30px rgba(230, 0, 19, 0.6));
+      }
+
+      @keyframes logo-pulse {
+        0%,
+        100% {
+          transform: scale(1);
+          filter: drop-shadow(0 0 20px rgba(230, 0, 19, 0.4));
+        }
+        50% {
+          transform: scale(1.05);
+          filter: drop-shadow(0 0 40px rgba(230, 0, 19, 0.8));
+        }
+      }
+
+      /* Glitch Text Effect */
+      .glitch-wrapper {
+        position: relative;
+        display: inline-block;
+      }
+
+      .glitch-text {
+        font-size: 2rem;
+        font-weight: 900;
+        text-transform: uppercase;
+        font-style: italic;
+        letter-spacing: 0.1em;
+        color: #fff;
+        position: relative;
+        animation: glitch-skew 4s infinite linear alternate-reverse;
+      }
+
+      .glitch-text::before,
+      .glitch-text::after {
+        content: attr(data-text);
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+      }
+
+      .glitch-text::before {
+        color: #00ffff;
+        animation: glitch-effect 3s infinite linear alternate-reverse;
+        clip-path: polygon(0 0, 100% 0, 100% 35%, 0 35%);
+        transform: translateX(-2px);
+      }
+
+      .glitch-text::after {
+        color: #ff00ff;
+        animation: glitch-effect 2s infinite linear alternate-reverse;
+        clip-path: polygon(0 65%, 100% 65%, 100% 100%, 0 100%);
+        transform: translateX(2px);
+      }
+
+      @keyframes glitch-effect {
+        0% {
+          transform: translateX(0);
+        }
+        20% {
+          transform: translateX(-3px);
+        }
+        40% {
+          transform: translateX(3px);
+        }
+        60% {
+          transform: translateX(-2px);
+        }
+        80% {
+          transform: translateX(2px);
+        }
+        100% {
+          transform: translateX(0);
+        }
+      }
+
+      @keyframes glitch-skew {
+        0%,
+        100% {
+          transform: skewX(0deg);
+        }
+        20% {
+          transform: skewX(-0.5deg);
+        }
+        40% {
+          transform: skewX(0.5deg);
+        }
+        60% {
+          transform: skewX(-0.3deg);
+        }
+        80% {
+          transform: skewX(0.3deg);
+        }
+      }
+
+      /* Progress Container */
+      .preloader-progress {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 0.75rem;
+        width: 280px;
+      }
+
+      /* Progress Bar */
+      .progress-bar-container {
+        width: 100%;
+        height: 4px;
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 2px;
+        overflow: hidden;
+        position: relative;
+      }
+
+      .progress-bar {
+        height: 100%;
+        width: 0%;
+        background: linear-gradient(90deg, #e60013, #ff6644);
+        border-radius: 2px;
+        box-shadow:
+          0 0 10px rgba(230, 0, 19, 0.5),
+          0 0 20px rgba(230, 0, 19, 0.3);
+        transition: width 0.1s linear;
+      }
+
+      /* Percentage Counter */
+      .preloader-percentage {
+        font-size: 1.5rem;
+        font-weight: 900;
+        font-family: "Be Vietnam Pro", monospace;
+        color: #e60013;
+        text-shadow: 0 0 10px rgba(230, 0, 19, 0.5);
+        letter-spacing: 0.05em;
+      }
+
+      /* Loading Text */
+      .preloader-status {
+        font-size: 0.75rem;
+        font-weight: 500;
+        text-transform: uppercase;
+        letter-spacing: 0.3em;
+        color: rgba(255, 255, 255, 0.5);
+        animation: blink 1.5s ease-in-out infinite;
+      }
+
+      @keyframes blink {
+        0%,
+        100% {
+          opacity: 0.5;
+        }
+        50% {
+          opacity: 1;
+        }
+      }
+
+      /* Bracket connector styles */
+      .bracket-connector-up {
+        border-right: 2px solid #333;
+        border-top: 2px solid #333;
+        border-top-right-radius: 8px;
+      }
+      .bracket-connector-down {
+        border-right: 2px solid #333;
+        border-bottom: 2px solid #333;
+        border-bottom-right-radius: 8px;
+      }
+      .bracket-line {
+        height: 2px;
+        background-color: #333;
+      }
+
+      {% block extra_styles %}{% endblock %}
+    </style>
+  </head>
+  <body class="{% block body_class %}bg-background-dark text-white font-display overflow-hidden{% endblock %}">
+    <!-- Loading Screen - MonsterPlay Style -->
+    <div id="loadingScreen" class="loading-screen">
+      <div class="preloader-content">
+        <img
+          src="{{ asset('assets/logo.webp') }}"
+          alt="Carthage Arena"
+          class="preloader-logo"
+        />
+        <div class="glitch-wrapper">
+          <span class="glitch-text" data-text="CARTHAGE ARENA"
+            >CARTHAGE ARENA</span
+          >
+        </div>
+        <div class="preloader-progress">
+          <div class="progress-bar-container">
+            <div class="progress-bar" id="progressBar"></div>
+          </div>
+          <span class="preloader-percentage" id="percentageText">0%</span>
+        </div>
+        <span class="preloader-status">Chargement...</span>
+      </div>
+    </div>
+
+    {% block body %}{% endblock %}
+
+    <script>
+      // Loading screen animation with percentage counter
+      window.addEventListener("load", function () {
+        const loadingScreen = document.getElementById("loadingScreen");
+        const mainContent = document.getElementById("mainContent");
+        const progressBar = document.getElementById("progressBar");
+        const percentageText = document.getElementById("percentageText");
+
+        let progress = 0;
+        const duration = 2500; // 2.5 seconds total
+        const interval = 25; // Update every 25ms
+        const increment = 100 / (duration / interval);
+
+        const progressInterval = setInterval(function () {
+          progress += increment;
+          if (progress >= 100) {
+            progress = 100;
+            clearInterval(progressInterval);
+
+            // Hide loading screen after reaching 100%
+            setTimeout(function () {
+              loadingScreen.classList.add("hidden");
+              mainContent.classList.remove("opacity-0");
+              mainContent.classList.add("opacity-100");
+            }, 200);
+          }
+
+          progressBar.style.width = progress + "%";
+          percentageText.textContent = Math.floor(progress) + "%";
+        }, interval);
+      });
+    </script>
+    {% block scripts %}{% endblock %}
+    {% block clerk_script %}
+    <script>
+      // Initialize Clerk on every page for session management
+      (function() {
+        const clerkKey = '{{ clerk_publishable_key|default("") }}';
+        if (!clerkKey || clerkKey.indexOf('your-clerk') !== -1) return;
+
+        const script = document.createElement('script');
+        script.setAttribute('data-clerk-publishable-key', clerkKey);
+        script.async = true;
+        script.src = 'https://cdn.jsdelivr.net/npm/@clerk/clerk-js@latest/dist/clerk.browser.js';
+        script.addEventListener('load', async function() {
+          await window.Clerk.load();
+        });
+        document.head.appendChild(script);
+      })();
+    </script>
+    {% endblock %}
+  </body>
 </html>

@@ -1,74 +1,360 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Boutique de Skins - Carthage Arena{% endblock %}
+{% block title %}Carthage Arena - Boutique de Skins{% endblock %}
 
 {% block body %}
-<div class="app-container">
-    {% include 'components/_sidebar.html.twig' %}
-
-    <main class="main-content">
-        <div class="page-header">
-            <h1 class="page-title">Boutique de Skins</h1>
-            <p class="page-subtitle">Améliorez votre arsenal avec des skins exclusifs.</p>
+    <div
+      id="mainContent"
+      class="flex h-screen w-full opacity-0 transition-opacity duration-500"
+    >
+      <aside
+        class="flex w-72 flex-col border-r border-white/5 bg-[#161616] p-6 hidden lg:flex overflow-y-auto"
+        role="navigation"
+        aria-label="Navigation principale"
+      >
+        <div class="flex flex-col gap-6 flex-1">
+          <div class="flex flex-col items-center gap-2 px-2">
+            <img
+              src="{{ asset('assets/logo.webp') }}"
+              alt="Carthage Arena Logo"
+              class="h-32 w-auto"
+            />
+            <h1
+              class="text-xl font-black tracking-tight text-white uppercase italic"
+            >
+              Carthage <span class="text-primary">Arena</span>
+            </h1>
+          </div>
+          <nav class="flex flex-col gap-2">
+            <a
+              class="group flex items-center gap-4 rounded-full px-4 py-3 text-gray-400 transition-all hover:bg-surface-hover hover:text-white"
+              href="{{ path('app_dashboard') }}"
+            >
+              <span class="material-symbols-outlined text-[24px]">home</span>
+              <span class="text-sm font-medium tracking-wide">Accueil</span>
+            </a>
+            <a
+              class="group flex items-center gap-4 rounded-full px-4 py-3 text-gray-400 transition-all hover:bg-surface-hover hover:text-white"
+              href="{{ path('app_tournaments') }}"
+            >
+              <span class="material-symbols-outlined text-[24px]">trophy</span>
+              <span class="text-sm font-medium tracking-wide"
+                >Mes Tournois</span
+              >
+            </a>
+            <a
+              class="group flex items-center gap-4 rounded-full bg-primary/10 px-4 py-3 text-primary transition-all hover:bg-primary hover:text-white"
+              href="{{ path('app_shop') }}"
+            >
+              <span
+                class="material-symbols-outlined text-[24px]"
+                data-weight="fill"
+                >shopping_bag</span
+              >
+              <span class="text-sm font-bold tracking-wide">Boutique</span>
+            </a>
+            <a
+              class="group flex items-center gap-4 rounded-full px-4 py-3 text-gray-400 transition-all hover:bg-surface-hover hover:text-white"
+              href="{{ path('app_profile') }}"
+            >
+              <span class="material-symbols-outlined text-[24px]">person</span>
+              <span class="text-sm font-medium tracking-wide">Profil</span>
+            </a>
+            <a
+              class="group flex items-center gap-4 rounded-full px-4 py-3 text-gray-400 transition-all hover:bg-surface-hover hover:text-white mt-4"
+              href="{{ path('app_settings') }}"
+            >
+              <span class="material-symbols-outlined text-[24px]"
+                >settings</span
+              >
+              <span class="text-sm font-medium tracking-wide">Paramètres</span>
+            </a>
+            {% if app.user %}
+            <a
+              class="group flex items-center gap-4 rounded-full px-4 py-3 text-gray-400 transition-all hover:bg-red-500/10 hover:text-red-400 mt-2"
+              href="{{ path('app_logout') }}"
+            >
+              <span class="material-symbols-outlined text-[24px]">logout</span>
+              <span class="text-sm font-medium tracking-wide">Déconnexion</span>
+            </a>
+            {% endif %}
+          </nav>
         </div>
-
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
-            <div class="shop-filters">
-                <button class="filter-btn active">Tous les Jeux</button>
-                <button class="filter-btn">Valorant</button>
-                <button class="filter-btn">League of Legends</button>
-                <button class="filter-btn">CS2</button>
+        <div
+          class="relative overflow-hidden rounded-2xl bg-gradient-to-br from-gray-900 to-black p-4 border border-white/10"
+        >
+          <div
+            class="absolute -right-6 -top-6 h-24 w-24 rounded-full bg-primary/20 blur-2xl"
+          ></div>
+          <div class="relative z-10 flex flex-col gap-3">
+            <div class="flex items-center justify-between">
+              <p
+                class="text-[10px] font-bold uppercase tracking-widest text-primary"
+              >
+                Offre du Jour
+              </p>
+              <span class="material-symbols-outlined text-primary text-sm"
+                >local_fire_department</span
+              >
             </div>
-
-            <div style="position: relative; width: 300px;">
-                <svg style="position: absolute; left: 1rem; top: 50%; transform: translateY(-50%); color: var(--color-text-muted);" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <circle cx="11" cy="11" r="8"></circle>
-                    <path d="m21 21-4.35-4.35"></path>
-                </svg>
-                <input type="text" class="form-input" placeholder="Rechercher des skins..." style="padding-left: 3rem;">
+            <div
+              class="h-24 w-full rounded-lg bg-cover bg-center shadow-inner"
+              data-alt="Cyberpunk character skin recommendation"
+              style="
+                background-image: url(&quot;https://lh3.googleusercontent.com/aida-public/AB6AXuBx_v-jr33CB3Wb3IX0h52CjD2Y2QMuwoJynhPLuS89J-zkxRoDKUbjC-qKR4XxI9dyLNEJWTXN-UhCsiw1CSz6aojAjzzGb4hfUpnlvuMzDRwsAJk5nuiYYQPFHv45mYuz1LkxCHgEm0NgYHY1HX7kzXTHcE38evG56e_YfMxuOlkyiM30hthFVyeen-CMqv0bSTmMEF-wFoibOSp1Cp8L8y068H9-I0GlfiLHeYiMmQNu4C_1gh-BHd8vhT5tckpKrdxVaPtUwCI&quot;);
+              "
+            ></div>
+            <div>
+              <h4 class="text-sm font-bold text-white">Cyber-Ninja Genji</h4>
+              <div class="flex items-center gap-2 mt-1">
+                <span class="text-xs text-gray-400 line-through">1500 CP</span>
+                <span class="text-xs font-bold text-secondary">950 CP</span>
+              </div>
             </div>
+            <button
+              class="mt-1 w-full rounded-full bg-white/5 py-2 px-4 text-xs font-bold text-white hover:bg-white/10 transition-colors"
+            >
+              Achat Rapide
+            </button>
+          </div>
         </div>
-
-        <div class="shop-grid">
+      </aside>
+      <main
+        class="flex flex-1 flex-col overflow-y-auto bg-background-dark relative"
+      >
+        <header
+          class="sticky top-0 z-50 flex h-20 items-center justify-between border-b border-white/5 bg-background-dark/80 backdrop-blur-md px-8 py-4"
+        >
+          <div class="flex flex-col">
+            <h2 class="text-2xl font-bold text-white">Boutique de Skins</h2>
+            <p class="text-xs text-gray-400">
+              Améliorez votre arsenal avec des skins exclusifs.
+            </p>
+          </div>
+          <div class="flex items-center gap-6">
+            <button
+              class="relative rounded-full p-2 text-gray-400 hover:bg-white/5 hover:text-white transition-colors"
+              aria-label="Notifications - 1 nouvelle notification"
+            >
+              <span class="material-symbols-outlined">notifications</span>
+              <span
+                class="absolute right-2 top-2 h-2 w-2 rounded-full bg-primary"
+              ></span>
+            </button>
+            <div
+              class="flex items-center gap-4 rounded-full border border-white/5 bg-surface-dark py-1.5 pl-4 pr-1.5 shadow-lg"
+            >
+              <div class="flex flex-col items-end mr-2">
+                <span class="text-sm font-bold text-white leading-none"
+                  >ShadowSlayer99</span
+                >
+                <span class="text-[10px] text-gray-400 uppercase tracking-wider"
+                  >Joueur Pro</span
+                >
+              </div>
+              <div
+                class="flex items-center gap-1 rounded-full bg-gradient-to-r from-yellow-600 to-yellow-400 px-3 py-1 text-black shadow-[0_0_10px_rgba(255,215,0,0.3)]"
+                title="Carthage Points - Monnaie virtuelle pour acheter des skins et objets"
+              >
+                <span class="material-symbols-outlined text-[16px] font-bold"
+                  >payments</span
+                >
+                <span class="text-xs font-black">2,450 CP</span>
+              </div>
+              <div
+                class="h-9 w-9 overflow-hidden rounded-full border-2 border-primary bg-gray-800"
+                data-alt="Player profile avatar"
+                style="
+                  background-image: url(&quot;https://lh3.googleusercontent.com/aida-public/AB6AXuCPOwCt1u59UYH0PU7STTOEdwDPy5axibmnqjNIpgS479Ip9V37Za2WKh3X8kperVFrJ9obCf33C2TZhB6JsPTgbyJzS0FRIMrsTTu0eenIWj5ozp4LPq-onFQkqssDiHjUbkZaevMuEylTBzmJ8e5CcrYTVJDLFCCM0qCjn1D7vDfRr-T3UdKaedgaKLyEFpbVU8uU9gjyDEtd3eFHlG-ErvNqNopvpjrtyYiCfNVG_e5MZhjIYXkhtfi4TkCg2KENMGyeWcgs2wE&quot;);
+                  background-size: cover;
+                "
+              ></div>
+            </div>
+          </div>
+        </header>
+        <div class="flex flex-col gap-6 p-8 max-w-7xl mx-auto w-full">
+          <div
+            class="flex flex-col md:flex-row justify-between items-center gap-4 bg-surface-dark p-4 rounded-2xl border border-white/5"
+          >
+            <div
+              class="flex items-center gap-2 overflow-x-auto w-full md:w-auto no-scrollbar"
+            >
+              <button
+                class="px-5 py-2.5 rounded-full bg-primary text-white text-sm font-bold shadow-lg shadow-primary/20 transition-all hover:bg-red-700 whitespace-nowrap"
+                aria-label="Filtrer par tous les jeux"
+              >
+                Tous les Jeux
+              </button>
+              <button
+                class="px-5 py-2.5 rounded-full bg-white/5 text-gray-400 text-sm font-medium hover:bg-white/10 hover:text-white transition-all whitespace-nowrap"
+              >
+                Valorant
+              </button>
+              <button
+                class="px-5 py-2.5 rounded-full bg-white/5 text-gray-400 text-sm font-medium hover:bg-white/10 hover:text-white transition-all whitespace-nowrap"
+              >
+                League of Legends
+              </button>
+              <button
+                class="px-5 py-2.5 rounded-full bg-white/5 text-gray-400 text-sm font-medium hover:bg-white/10 hover:text-white transition-all whitespace-nowrap"
+              >
+                CS2
+              </button>
+            </div>
+            <div class="relative w-full md:w-80 group">
+              <span
+                class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 group-focus-within:text-primary transition-colors"
+                >search</span
+              >
+              <input
+                class="w-full bg-[#161616] border border-white/10 rounded-full py-2.5 pl-10 pr-4 text-sm text-white placeholder-gray-500 focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all"
+                placeholder="Rechercher des skins..."
+                type="text"
+                aria-label="Rechercher des skins"
+              />
+            </div>
+          </div>
+          <div
+            class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"
+            role="list"
+            aria-label="Liste des skins disponibles"
+          >
+            {% set skinImages = [
+              'https://lh3.googleusercontent.com/aida-public/AB6AXuA4obZy358tBVVcFMP79b-z7bAvQYv4HJ0LRm36nfn3_oRAKCUt6GILwJqBao7Y428Xkg5wm6xHfl8LZZMiq3IrRsSiO7cvZpJSAg4zN1ojnhKbRwUaKLdqdKRYLSipLJGrLCTrQ14In62yTLIO31vGkYX3Zg0UK4BRPqb8CVZEW0YvlhfztGhCwlxjW8qmX8SSBSxvbJrA_INMrr32VBp4A1aHfwFpJtbKnC6hJoSos2AZxwARh_jam2q38VDCc3VUUVDJUwGZGBE',
+              'https://lh3.googleusercontent.com/aida-public/AB6AXuCcZqheJY9ruVOgrkXrHV2Fsmw5qc0CofbM9zdu5UvR2X8sGXxP3M8k_ro9zS78kUowDWD0n9YK43d1osbasPQEb_eXCOO6fJvmmJdmWqMv3q7TkppO8zG2fHUpjbrEEXmrp4Ol2tm_m5wIMEfOr8nLQq66ilSTjii6Lk9OmcsNyUl7TF3K4I-X2xEyJRaRCeshmnxcuTDIzG2bP8aeDBiHbsBBKooED9BFKEyK_kHf5lYixOjCJ77hwzhDS-dWB9AGEm1KPf6MBus',
+              'https://lh3.googleusercontent.com/aida-public/AB6AXuDqID2TShQVqE95b8BWZOlHDAdQdODPoEAK29xnb6wNqf_VTfjBtnbBPikyEb3xfPOTUGR5SHr9B-YkVhCBDTg6hC4kVuIxUIFVbi1IAmDroOhenGkDa15IlZSd8clR8kO97jEgp90Xp3tNgznSZDF4TQlWYzDgIddSH3Y34L51qXXdn_J0Jck-ryNvVVORgtiBKC3oAtzOLWRnPPI-F0RSNL3akkJpKwRyEQVVTouY-qikDDw-ATu2QzlG2imtwhQqAHEfSnQlFME',
+              'https://lh3.googleusercontent.com/aida-public/AB6AXuBx_v-jr33CB3Wb3IX0h52CjD2Y2QMuwoJynhPLuS89J-zkxRoDKUbjC-qKR4XxI9dyLNEJWTXN-UhCsiw1CSz6aojAjzzGb4hfUpnlvuMzDRwsAJk5nuiYYQPFHv45mYuz1LkxCHgEm0NgYHY1HX7kzXTHcE38evG56e_YfMxuOlkyiM30hthFVyeen-CMqv0bSTmMEF-wFoibOSp1Cp8L8y068H9-I0GlfiLHeYiMmQNu4C_1gh-BHd8vhT5tckpKrdxVaPtUwCI',
+              'https://lh3.googleusercontent.com/aida-public/AB6AXuCPOwCt1u59UYH0PU7STTOEdwDPy5axibmnqjNIpgS479Ip9V37Za2WKh3X8kperVFrJ9obCf33C2TZhB6JsPTgbyJzS0FRIMrsTTu0eenIWj5ozp4LPq-onFQkqssDiHjUbkZaevMuEylTBzmJ8e5CcrYTVJDLFCCM0qCjn1D7vDfRr-T3UdKaedgaKLyEFpbVU8uU9gjyDEtd3eFHlG-ErvNqNopvpjrtyYiCfNVG_e5MZhjIYXkhtfi4TkCg2KENMGyeWcgs2wE',
+              'https://lh3.googleusercontent.com/aida-public/AB6AXuA4obZy358tBVVcFMP79b-z7bAvQYv4HJ0LRm36nfn3_oRAKCUt6GILwJqBao7Y428Xkg5wm6xHfl8LZZMiq3IrRsSiO7cvZpJSAg4zN1ojnhKbRwUaKLdqdKRYLSipLJGrLCTrQ14In62yTLIO31vGkYX3Zg0UK4BRPqb8CVZEW0YvlhfztGhCwlxjW8qmX8SSBSxvbJrA_INMrr32VBp4A1aHfwFpJtbKnC6hJoSos2AZxwARh_jam2q38VDCc3VUUVDJUwGZGBE',
+              'https://lh3.googleusercontent.com/aida-public/AB6AXuCcZqheJY9ruVOgrkXrHV2Fsmw5qc0CofbM9zdu5UvR2X8sGXxP3M8k_ro9zS78kUowDWD0n9YK43d1osbasPQEb_eXCOO6fJvmmJdmWqMv3q7TkppO8zG2fHUpjbrEEXmrp4Ol2tm_m5wIMEfOr8nLQq66ilSTjii6Lk9OmcsNyUl7TF3K4I-X2xEyJRaRCeshmnxcuTDIzG2bP8aeDBiHbsBBKooED9BFKEyK_kHf5lYixOjCJ77hwzhDS-dWB9AGEm1KPf6MBus',
+              'https://lh3.googleusercontent.com/aida-public/AB6AXuBx_v-jr33CB3Wb3IX0h52CjD2Y2QMuwoJynhPLuS89J-zkxRoDKUbjC-qKR4XxI9dyLNEJWTXN-UhCsiw1CSz6aojAjzzGb4hfUpnlvuMzDRwsAJk5nuiYYQPFHv45mYuz1LkxCHgEm0NgYHY1HX7kzXTHcE38evG56e_YfMxuOlkyiM30hthFVyeen-CMqv0bSTmMEF-wFoibOSp1Cp8L8y068H9-I0GlfiLHeYiMmQNu4C_1gh-BHd8vhT5tckpKrdxVaPtUwCI'
+            ] %}
             {% for item in items %}
-            <div class="shop-item" onclick="window.location.href='{{ path('app_shop_item', {id: item.id}) }}'" style="cursor: pointer;">
-                <div class="shop-item-image" style="background-image: url('{{ item.image }}'); background-size: cover; background-position: center; position: relative;">
-                    <div style="position: absolute; top: 1rem; left: 1rem;">
-                        <span class="badge badge-{{ item.game == 'VALORANT' ? 'legendary' : (item.game == 'LOL' ? 'epic' : 'secret') }}">{{ item.game }}</span>
-                    </div>
+            {% set gameColorClass = item.game == 'VALORANT' ? 'text-gray-300' : (item.game == 'LOL' ? 'text-purple-400' : 'text-blue-400') %}
+            {% set gameLabel = item.game == 'VALORANT' ? 'Valorant' : (item.game == 'LOL' ? 'LoL' : 'CS2') %}
+            {% set rarityClasses = {
+              'LÉGENDAIRE': 'bg-rarity-legendary/20 text-rarity-legendary border-rarity-legendary/20',
+              'ÉPIQUE': 'bg-rarity-epic/20 text-rarity-epic border-rarity-epic/20',
+              'ULTIME': 'bg-orange-500/20 text-orange-400 border-orange-500/20',
+              'PREMIUM': 'bg-rarity-epic/20 text-rarity-epic border-rarity-epic/20',
+              'SECRET': 'bg-pink-500/20 text-pink-500 border-pink-500/20'
+            } %}
+            <div
+              class="group relative flex flex-col overflow-hidden rounded-2xl bg-surface-dark border border-white/5 transition-all {{ item.insufficient ? 'opacity-80 hover:opacity-100' : 'hover:border-primary/30 hover:shadow-xl hover:-translate-y-1' }}"
+            >
+              <div
+                class="aspect-[4/3] w-full bg-gray-900 bg-center bg-cover relative {{ item.insufficient ? 'grayscale group-hover:grayscale-0 transition-all duration-500' : '' }}"
+                style="
+                  background-image: url(&quot;{{ skinImages[loop.index0] }}&quot;);
+                "
+              >
+                <div
+                  class="absolute inset-0 bg-gradient-to-t from-surface-dark via-transparent to-transparent opacity-90"
+                ></div>
+                <div
+                  class="absolute top-3 left-3 bg-black/60 backdrop-blur-md px-2 py-1 rounded-md border border-white/10"
+                >
+                  <p
+                    class="text-[10px] font-bold uppercase tracking-wider {{ gameColorClass }}"
+                  >
+                    {{ gameLabel }}
+                  </p>
                 </div>
-                <div class="shop-item-content">
-                    <div class="shop-item-header">
-                        <div>
-                            <div class="shop-item-title">{{ item.name }}</div>
-                            <span class="badge badge-{% if item.rarity == 'LÉGENDAIRE' %}legendary{% elseif item.rarity == 'ÉPIQUE' %}epic{% elseif item.rarity == 'PREMIUM' %}premium{% elseif item.rarity == 'SECRET' %}secret{% else %}legendary{% endif %}">
-                                {{ item.rarity }}
-                            </span>
-                        </div>
-                    </div>
-
-                    <div class="shop-item-footer">
-                        <div>
-                            <div class="shop-item-price">
-                                <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
-                                    <circle cx="12" cy="12" r="10"></circle>
-                                </svg>
-                                {{ item.price }}
-                            </div>
-                            {% if item.insufficient %}
-                            <div class="shop-item-meta" style="color: var(--color-error);">PC INSUFFISANTS</div>
-                            {% else %}
-                            <div class="shop-item-meta">Points suffisants</div>
-                            {% endif %}
-                        </div>
-                        <button class="btn {% if item.insufficient %}btn-secondary{% else %}btn-primary{% endif %}" style="padding: 0.5rem 1.25rem;" {% if item.insufficient %}disabled{% endif %}>
-                            Acheter
-                        </button>
-                    </div>
+              </div>
+              <div class="p-5 flex flex-col gap-4 flex-1">
+                <div>
+                  <div class="flex justify-between items-start mb-1">
+                    <h3
+                      class="text-lg font-bold {{ item.insufficient ? 'text-gray-300 group-hover:text-white' : 'text-white group-hover:text-primary' }} transition-colors"
+                    >
+                      {{ item.name }}
+                    </h3>
+                  </div>
+                  <span
+                    class="inline-block px-2 py-0.5 rounded text-[10px] font-bold uppercase {{ rarityClasses[item.rarity] ?? 'bg-white/10 text-gray-400 border-white/10' }} border"
+                  >
+                    {{ item.rarity }}
+                  </span>
                 </div>
+                {% if item.insufficient %}
+                <div
+                  class="mt-auto flex flex-col gap-3 pt-4 border-t border-white/5"
+                >
+                  <div class="flex items-center justify-between">
+                    <div
+                      class="flex items-center gap-1.5 text-gray-400 group-hover:text-secondary transition-colors"
+                    >
+                      <span class="material-symbols-outlined text-[18px]"
+                        >payments</span
+                      >
+                      <span class="text-lg font-black">{{ item.price|number_format(0, ',', ',') }}</span>
+                    </div>
+                    <span
+                      class="text-[10px] text-red-500 font-bold uppercase tracking-wider"
+                      >PC Insuffisants</span
+                    >
+                  </div>
+                  <button
+                    class="w-full py-2 rounded-full bg-white/5 text-gray-500 text-xs font-bold border border-white/5 cursor-not-allowed"
+                    disabled=""
+                  >
+                    Points insuffisants
+                  </button>
+                </div>
+                {% else %}
+                <div
+                  class="mt-auto flex items-center justify-between pt-4 border-t border-white/5"
+                >
+                  <div class="flex items-center gap-1.5 text-secondary">
+                    <span class="material-symbols-outlined text-[18px]"
+                      >payments</span
+                    >
+                    <span class="text-lg font-black">{{ item.price|number_format(0, ',', ',') }}</span>
+                  </div>
+                  <button
+                    class="py-2 px-4 rounded-full bg-primary text-white text-sm font-bold shadow-lg shadow-red-900/20 hover:bg-red-700 hover:shadow-red-700/40 transition-all"
+                    aria-label="Acheter {{ item.name }}"
+                  >
+                    Acheter
+                  </button>
+                </div>
+                {% endif %}
+              </div>
             </div>
             {% endfor %}
+          </div>
         </div>
-    </main>
-</div>
+        <div
+          class="lg:hidden fixed bottom-0 w-full bg-[#161616] border-t border-white/10 px-6 py-3 flex justify-between items-center z-50"
+          role="navigation"
+          aria-label="Navigation mobile"
+        >
+          <a
+            class="flex flex-col items-center gap-1 text-gray-500"
+            href="{{ path('app_dashboard') }}"
+          >
+            <span class="material-symbols-outlined">home</span>
+            <span class="text-[10px]">Accueil</span>
+          </a>
+          <a
+            class="flex flex-col items-center gap-1 text-gray-500"
+            href="{{ path('app_tournaments') }}"
+          >
+            <span class="material-symbols-outlined">trophy</span>
+            <span class="text-[10px]">Tournois</span>
+          </a>
+          <a
+            class="flex flex-col items-center gap-1 text-primary"
+            href="{{ path('app_shop') }}"
+          >
+            <span class="material-symbols-outlined">shopping_bag</span>
+            <span class="text-[10px]">Boutique</span>
+          </a>
+          <a class="flex flex-col items-center gap-1 text-gray-500" href="{{ path('app_profile') }}">
+            <span class="material-symbols-outlined">person</span>
+            <span class="text-[10px]">Profil</span>
+          </a>
+        </div>
+      </main>
+    </div>
 {% endblock %}

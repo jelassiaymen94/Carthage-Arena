@@ -11,12 +11,14 @@ class DashboardController extends AbstractController
     #[Route('/', name: 'app_dashboard')]
     public function index(): Response
     {
+        $user = $this->getUser();
+
         return $this->render('dashboard/index.html.twig', [
             'user' => [
-                'name' => 'ShadowSlayer99',
+                'name' => $user ? $user->getUsername() : 'Invité',
                 'role' => 'JOUEUR PRO',
-                'balance' => '2,450',
-                'avatar' => 'https://i.pravatar.cc/150?img=12',
+                'balance' => $user ? number_format($user->getBalance(), 0, ',', ',') : '0',
+                'avatar' => $user && $user->getAvatar() ? '/uploads/avatars/' . $user->getAvatar() : 'https://i.pravatar.cc/150?img=12',
                 'rank' => 'Diamond II',
                 'rankProgress' => 75,
                 'matchesPlayed' => 124,

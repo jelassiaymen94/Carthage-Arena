@@ -3,189 +3,229 @@
 {% block title %}Admin Dashboard - Carthage Arena{% endblock %}
 
 {% block body %}
-<div class="app-container">
-    {% include 'admin/_sidebar.html.twig' %}
+<div id="mainContent" class="opacity-0 transition-opacity duration-500">
+    <div class="flex min-h-screen bg-background-dark">
+        {# Sidebar #}
+        {% include 'admin/_sidebar.html.twig' %}
 
-    <main class="main-content">
-        <div class="page-header">
-            <h1 class="page-title">Tableau de Bord Admin</h1>
-            <p class="page-subtitle">Vue d'ensemble de la plateforme Carthage Arena</p>
-        </div>
-
-        <div class="stats-grid" style="grid-template-columns: repeat(4, 1fr); margin-bottom: 2rem;">
-            <div class="stat-card">
-                <div class="stat-icon" style="background: linear-gradient(135deg, #0099FF 0%, #0066CC 100%);">
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
-                        <circle cx="9" cy="7" r="4"></circle>
-                        <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
-                        <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
-                    </svg>
-                </div>
-                <div class="stat-label">Total Utilisateurs</div>
-                <div class="stat-value">{{ stats.totalUsers }}</div>
-                <div class="stat-meta" style="color: var(--color-success);">
-                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display: inline;">
-                        <polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline>
-                    </svg>
-                    {{ stats.activeUsers }} actifs
-                </div>
-            </div>
-
-            <div class="stat-card">
-                <div class="stat-icon" style="background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);">
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"></path>
-                        <path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"></path>
-                        <path d="M4 22h16"></path>
-                        <path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"></path>
-                        <path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"></path>
-                        <path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"></path>
-                    </svg>
-                </div>
-                <div class="stat-label">Tournois</div>
-                <div class="stat-value">{{ stats.totalTournaments }}</div>
-                <div class="stat-meta" style="color: var(--color-success);">
-                    {{ stats.activeTournaments }} en cours
-                </div>
-            </div>
-
-            <div class="stat-card">
-                <div class="stat-icon" style="background: linear-gradient(135deg, #00FF88 0%, #00CC6E 100%);">
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <line x1="12" y1="1" x2="12" y2="23"></line>
-                        <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
-                    </svg>
-                </div>
-                <div class="stat-label">Revenus Totaux</div>
-                <div class="stat-value" style="font-size: 1.75rem;">{{ stats.totalRevenue }}</div>
-                <div class="stat-meta" style="color: var(--color-success);">
-                    +{{ stats.monthlyRevenue }} ce mois
-                </div>
-            </div>
-
-            <div class="stat-card">
-                <div class="stat-icon" style="background: linear-gradient(135deg, #FF0022 0%, #CC001C 100%);">
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M12 2L2 7l10 5 10-5-10-5z"></path>
-                        <path d="M2 17l10 5 10-5"></path>
-                        <path d="M2 12l10 5 10-5"></path>
-                    </svg>
-                </div>
-                <div class="stat-label">Matchs Joués</div>
-                <div class="stat-value">{{ stats.totalMatches }}</div>
-                <div class="stat-meta">
-                    {{ stats.todayMatches }} aujourd'hui
-                </div>
-            </div>
-        </div>
-
-        <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 2rem; margin-bottom: 2rem;">
-            <div class="card">
-                <div class="card-header">
-                    <h2 class="card-title">Nouveaux Utilisateurs</h2>
-                    <a href="{{ path('admin_users') }}" class="text-primary" style="font-size: 0.875rem; font-weight: 600;">Voir tout</a>
-                </div>
-
-                <div style="overflow-x: auto;">
-                    <table style="width: 100%; border-collapse: collapse;">
-                        <thead>
-                            <tr style="border-bottom: 1px solid var(--color-border);">
-                                <th style="text-align: left; padding: 1rem; font-size: 0.75rem; color: var(--color-text-muted); text-transform: uppercase; letter-spacing: 0.5px;">Utilisateur</th>
-                                <th style="text-align: left; padding: 1rem; font-size: 0.75rem; color: var(--color-text-muted); text-transform: uppercase; letter-spacing: 0.5px;">Email</th>
-                                <th style="text-align: left; padding: 1rem; font-size: 0.75rem; color: var(--color-text-muted); text-transform: uppercase; letter-spacing: 0.5px;">Inscrit</th>
-                                <th style="text-align: left; padding: 1rem; font-size: 0.75rem; color: var(--color-text-muted); text-transform: uppercase; letter-spacing: 0.5px;">Statut</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {% for user in recentUsers %}
-                            <tr style="border-bottom: 1px solid var(--color-border);">
-                                <td style="padding: 1rem;">
-                                    <div style="font-weight: 600;">{{ user.name }}</div>
-                                </td>
-                                <td style="padding: 1rem; color: var(--color-text-secondary);">{{ user.email }}</td>
-                                <td style="padding: 1rem; color: var(--color-text-secondary);">{{ user.joined }}</td>
-                                <td style="padding: 1rem;">
-                                    <span class="badge {% if user.status == 'active' %}badge-legendary{% else %}badge-season{% endif %}">
-                                        {{ user.status }}
-                                    </span>
-                                </td>
-                            </tr>
-                            {% endfor %}
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-
-            <div class="card" style="background: var(--gradient-card);">
-                <h2 class="card-title" style="margin-bottom: 1.5rem;">Santé du Système</h2>
-
-                <div style="display: flex; flex-direction: column; gap: 1.5rem;">
+        {# Main Content Area #}
+        <main class="flex-1 ml-64 overflow-y-auto h-screen">
+            {# Sticky Header #}
+            <header class="sticky top-0 z-30 bg-background-dark/80 backdrop-blur-xl border-b border-white/5">
+                <div class="flex items-center justify-between px-8 py-4">
                     <div>
-                        <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
-                            <span style="font-size: 0.875rem; color: var(--color-text-secondary);">CPU</span>
-                            <span style="font-weight: 700;">{{ systemHealth.cpuUsage }}%</span>
+                        <h1 class="text-2xl font-bold text-white">Tableau de Bord Admin</h1>
+                        <p class="text-sm text-white/40 mt-0.5">Vue d'ensemble de la plateforme Carthage Arena</p>
+                    </div>
+                    <div class="flex items-center gap-3">
+                        <button class="relative p-2 rounded-xl text-white/50 hover:text-white hover:bg-white/5 transition-all">
+                            <span class="material-symbols-outlined">notifications</span>
+                            <span class="absolute top-1.5 right-1.5 w-2 h-2 bg-primary rounded-full"></span>
+                        </button>
+                        <div class="w-9 h-9 rounded-full bg-primary/20 flex items-center justify-center">
+                            <span class="material-symbols-outlined text-primary text-[20px]">admin_panel_settings</span>
                         </div>
-                        <div style="background: var(--color-bg-tertiary); height: 8px; border-radius: 4px; overflow: hidden;">
-                            <div style="background: {% if systemHealth.cpuUsage < 60 %}var(--color-success){% elseif systemHealth.cpuUsage < 80 %}var(--color-warning){% else %}var(--color-error){% endif %}; height: 100%; width: {{ systemHealth.cpuUsage }}%;"></div>
+                    </div>
+                </div>
+            </header>
+
+            {# Page Content #}
+            <div class="p-8 space-y-8">
+                {# Stats Grid #}
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                    {# Total Users #}
+                    <div class="bg-surface-dark border border-white/5 rounded-2xl p-6 hover:border-white/10 transition-all">
+                        <div class="flex items-center justify-between mb-4">
+                            <div class="w-12 h-12 rounded-xl bg-blue-500/10 flex items-center justify-center">
+                                <span class="material-symbols-outlined text-blue-400">group</span>
+                            </div>
+                            <span class="material-symbols-outlined text-green-400 text-[18px]">trending_up</span>
+                        </div>
+                        <p class="text-sm text-white/40 mb-1">Total Utilisateurs</p>
+                        <p class="text-3xl font-bold text-white">{{ stats.totalUsers }}</p>
+                    </div>
+
+                    {# Active Users #}
+                    <div class="bg-surface-dark border border-white/5 rounded-2xl p-6 hover:border-white/10 transition-all">
+                        <div class="flex items-center justify-between mb-4">
+                            <div class="w-12 h-12 rounded-xl bg-green-500/10 flex items-center justify-center">
+                                <span class="material-symbols-outlined text-green-400">person_check</span>
+                            </div>
+                            <span class="material-symbols-outlined text-green-400 text-[18px]">trending_up</span>
+                        </div>
+                        <p class="text-sm text-white/40 mb-1">Utilisateurs Actifs</p>
+                        <p class="text-3xl font-bold text-white">{{ stats.activeUsers }}</p>
+                    </div>
+
+                    {# Active Tournaments #}
+                    <div class="bg-surface-dark border border-white/5 rounded-2xl p-6 hover:border-white/10 transition-all">
+                        <div class="flex items-center justify-between mb-4">
+                            <div class="w-12 h-12 rounded-xl bg-secondary/10 flex items-center justify-center">
+                                <span class="material-symbols-outlined text-secondary">trophy</span>
+                            </div>
+                            <span class="material-symbols-outlined text-secondary text-[18px]">emoji_events</span>
+                        </div>
+                        <p class="text-sm text-white/40 mb-1">Tournois Actifs</p>
+                        <p class="text-3xl font-bold text-white">{{ stats.activeTournaments }}</p>
+                    </div>
+
+                    {# Today Matches #}
+                    <div class="bg-surface-dark border border-white/5 rounded-2xl p-6 hover:border-white/10 transition-all">
+                        <div class="flex items-center justify-between mb-4">
+                            <div class="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center">
+                                <span class="material-symbols-outlined text-primary">sports_esports</span>
+                            </div>
+                            <span class="material-symbols-outlined text-white/30 text-[18px]">today</span>
+                        </div>
+                        <p class="text-sm text-white/40 mb-1">Matchs Aujourd'hui</p>
+                        <p class="text-3xl font-bold text-white">{{ stats.todayMatches }}</p>
+                    </div>
+                </div>
+
+                {# Main Grid: Recent Users + System Health #}
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                    {# Recent Users Table #}
+                    <div class="lg:col-span-2 bg-surface-dark border border-white/5 rounded-2xl overflow-hidden">
+                        <div class="flex items-center justify-between px-6 py-4 border-b border-white/5">
+                            <h2 class="text-lg font-bold text-white">Nouveaux Utilisateurs</h2>
+                            <a href="{{ path('admin_users') }}" class="text-sm font-semibold text-primary hover:text-primary/80 transition-colors">Voir tout</a>
+                        </div>
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-sm">
+                                <thead>
+                                    <tr class="border-b border-white/5">
+                                        <th class="text-left px-6 py-3 text-xs font-semibold text-white/30 uppercase tracking-wider">Nom</th>
+                                        <th class="text-left px-6 py-3 text-xs font-semibold text-white/30 uppercase tracking-wider">Email</th>
+                                        <th class="text-left px-6 py-3 text-xs font-semibold text-white/30 uppercase tracking-wider">Inscrit</th>
+                                        <th class="text-left px-6 py-3 text-xs font-semibold text-white/30 uppercase tracking-wider">Statut</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="divide-y divide-white/5">
+                                    {% for user in recentUsers %}
+                                    <tr class="hover:bg-surface-hover transition-colors">
+                                        <td class="px-6 py-4 font-semibold text-white">{{ user.name }}</td>
+                                        <td class="px-6 py-4 text-white/50">{{ user.email }}</td>
+                                        <td class="px-6 py-4 text-white/50">{{ user.joined }}</td>
+                                        <td class="px-6 py-4">
+                                            {% if user.status == 'active' %}
+                                                <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold bg-green-500/20 text-green-400">
+                                                    <span class="w-1.5 h-1.5 rounded-full bg-green-400"></span>
+                                                    Actif
+                                                </span>
+                                            {% else %}
+                                                <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold bg-red-500/20 text-red-400">
+                                                    <span class="w-1.5 h-1.5 rounded-full bg-red-400"></span>
+                                                    {{ user.status }}
+                                                </span>
+                                            {% endif %}
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
                         </div>
                     </div>
 
-                    <div>
-                        <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
-                            <span style="font-size: 0.875rem; color: var(--color-text-secondary);">Mémoire</span>
-                            <span style="font-weight: 700;">{{ systemHealth.memoryUsage }}%</span>
-                        </div>
-                        <div style="background: var(--color-bg-tertiary); height: 8px; border-radius: 4px; overflow: hidden;">
-                            <div style="background: {% if systemHealth.memoryUsage < 60 %}var(--color-success){% elseif systemHealth.memoryUsage < 80 %}var(--color-warning){% else %}var(--color-error){% endif %}; height: 100%; width: {{ systemHealth.memoryUsage }}%;"></div>
+                    {# System Health #}
+                    <div class="bg-surface-dark border border-white/5 rounded-2xl p-6">
+                        <h2 class="text-lg font-bold text-white mb-6">Santé du Système</h2>
+
+                        <div class="space-y-5">
+                            {# CPU #}
+                            <div>
+                                <div class="flex items-center justify-between mb-2">
+                                    <span class="text-sm text-white/50">CPU</span>
+                                    <span class="text-sm font-bold text-white">{{ systemHealth.cpuUsage }}%</span>
+                                </div>
+                                <div class="w-full h-2 bg-white/5 rounded-full overflow-hidden">
+                                    <div class="h-full rounded-full transition-all duration-500
+                                                {% if systemHealth.cpuUsage < 60 %}bg-green-500{% elseif systemHealth.cpuUsage < 80 %}bg-yellow-500{% else %}bg-red-500{% endif %}"
+                                         style="width: {{ systemHealth.cpuUsage }}%"></div>
+                                </div>
+                            </div>
+
+                            {# Memory #}
+                            <div>
+                                <div class="flex items-center justify-between mb-2">
+                                    <span class="text-sm text-white/50">Mémoire</span>
+                                    <span class="text-sm font-bold text-white">{{ systemHealth.memoryUsage }}%</span>
+                                </div>
+                                <div class="w-full h-2 bg-white/5 rounded-full overflow-hidden">
+                                    <div class="h-full rounded-full transition-all duration-500
+                                                {% if systemHealth.memoryUsage < 60 %}bg-green-500{% elseif systemHealth.memoryUsage < 80 %}bg-yellow-500{% else %}bg-red-500{% endif %}"
+                                         style="width: {{ systemHealth.memoryUsage }}%"></div>
+                                </div>
+                            </div>
+
+                            {# Disk #}
+                            <div>
+                                <div class="flex items-center justify-between mb-2">
+                                    <span class="text-sm text-white/50">Disque</span>
+                                    <span class="text-sm font-bold text-white">{{ systemHealth.diskUsage }}%</span>
+                                </div>
+                                <div class="w-full h-2 bg-white/5 rounded-full overflow-hidden">
+                                    <div class="h-full rounded-full bg-green-500 transition-all duration-500"
+                                         style="width: {{ systemHealth.diskUsage }}%"></div>
+                                </div>
+                            </div>
+
+                            {# Uptime #}
+                            <div class="mt-4 p-4 bg-white/5 rounded-xl text-center">
+                                <p class="text-xs text-white/30 uppercase tracking-wider mb-1">Uptime</p>
+                                <p class="text-2xl font-black text-green-400">{{ systemHealth.uptime }}</p>
+                            </div>
                         </div>
                     </div>
+                </div>
 
-                    <div>
-                        <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
-                            <span style="font-size: 0.875rem; color: var(--color-text-secondary);">Disque</span>
-                            <span style="font-weight: 700;">{{ systemHealth.diskUsage }}%</span>
-                        </div>
-                        <div style="background: var(--color-bg-tertiary); height: 8px; border-radius: 4px; overflow: hidden;">
-                            <div style="background: var(--color-success); height: 100%; width: {{ systemHealth.diskUsage }}%;"></div>
-                        </div>
+                {# Recent Tournaments #}
+                <div class="bg-surface-dark border border-white/5 rounded-2xl overflow-hidden">
+                    <div class="flex items-center justify-between px-6 py-4 border-b border-white/5">
+                        <h2 class="text-lg font-bold text-white">Tournois Récents</h2>
+                        <a href="{{ path('admin_tournaments') }}" class="text-sm font-semibold text-primary hover:text-primary/80 transition-colors">Voir tout</a>
                     </div>
-
-                    <div style="padding: 1rem; background: var(--color-bg-tertiary); border-radius: var(--radius-lg); text-align: center;">
-                        <div style="font-size: 0.75rem; color: var(--color-text-muted); margin-bottom: 0.25rem;">Uptime</div>
-                        <div style="font-size: 1.5rem; font-weight: 800; color: var(--color-success);">{{ systemHealth.uptime }}</div>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-sm">
+                            <thead>
+                                <tr class="border-b border-white/5">
+                                    <th class="text-left px-6 py-3 text-xs font-semibold text-white/30 uppercase tracking-wider">Nom</th>
+                                    <th class="text-left px-6 py-3 text-xs font-semibold text-white/30 uppercase tracking-wider">Jeu</th>
+                                    <th class="text-left px-6 py-3 text-xs font-semibold text-white/30 uppercase tracking-wider">Équipes</th>
+                                    <th class="text-left px-6 py-3 text-xs font-semibold text-white/30 uppercase tracking-wider">Statut</th>
+                                    <th class="text-left px-6 py-3 text-xs font-semibold text-white/30 uppercase tracking-wider">Cagnotte</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-white/5">
+                                {% for tournament in recentTournaments %}
+                                <tr class="hover:bg-surface-hover transition-colors">
+                                    <td class="px-6 py-4 font-semibold text-white">{{ tournament.name }}</td>
+                                    <td class="px-6 py-4">
+                                        <span class="inline-flex px-2.5 py-1 rounded-full text-xs font-semibold bg-blue-500/20 text-blue-400">{{ tournament.game }}</span>
+                                    </td>
+                                    <td class="px-6 py-4 text-white/60">{{ tournament.teams }} équipes</td>
+                                    <td class="px-6 py-4">
+                                        {% if tournament.status == 'active' %}
+                                            <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold bg-green-500/20 text-green-400">
+                                                <span class="w-1.5 h-1.5 rounded-full bg-green-400"></span>
+                                                Actif
+                                            </span>
+                                        {% else %}
+                                            <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold bg-yellow-500/20 text-yellow-400">
+                                                {{ tournament.status }}
+                                            </span>
+                                        {% endif %}
+                                    </td>
+                                    <td class="px-6 py-4">
+                                        <span class="text-secondary font-bold">{{ tournament.prize }}</span>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
                     </div>
                 </div>
             </div>
-        </div>
-
-        <div class="card">
-            <div class="card-header">
-                <h2 class="card-title">Tournois Récents</h2>
-                <a href="{{ path('admin_tournaments') }}" class="text-primary" style="font-size: 0.875rem; font-weight: 600;">Voir tout</a>
-            </div>
-
-            <div style="display: grid; gap: 1rem;">
-                {% for tournament in recentTournaments %}
-                <div style="display: flex; align-items: center; justify-content: space-between; padding: 1.5rem; background: var(--color-bg-tertiary); border-radius: var(--radius-lg); border-left: 3px solid var(--color-primary);">
-                    <div style="flex: 1;">
-                        <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 0.5rem;">
-                            <h3 style="font-size: 1.125rem; font-weight: 700;">{{ tournament.name }}</h3>
-                            <span class="badge badge-{{ tournament.game == 'LoL' ? 'epic' : (tournament.game == 'Valorant' ? 'legendary' : 'secret') }}">{{ tournament.game }}</span>
-                            <span class="badge {% if tournament.status == 'active' %}badge-legendary{% else %}badge-season{% endif %}">{{ tournament.status }}</span>
-                        </div>
-                        <div style="font-size: 0.875rem; color: var(--color-text-secondary);">
-                            {{ tournament.teams }} équipes inscrites
-                        </div>
-                    </div>
-                    <div style="text-align: right;">
-                        <div style="font-size: 0.75rem; color: var(--color-text-muted); margin-bottom: 0.25rem;">Prize Pool</div>
-                        <div style="font-size: 1.5rem; font-weight: 800; color: var(--color-warning);">{{ tournament.prize }}</div>
-                    </div>
-                </div>
-                {% endfor %}
-            </div>
-        </div>
-    </main>
+        </main>
+    </div>
 </div>
 {% endblock %}
