@@ -1,152 +1,433 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Tableau de Bord - Carthage Arena{% endblock %}
+{% block title %}Carthage Arena - Tableau de Bord Joueur{% endblock %}
 
 {% block body %}
-<div class="app-container">
-    {% include 'components/_sidebar.html.twig' %}
-
-    <main class="main-content">
-        <div class="top-bar">
-            <div class="page-header">
-                <h1 class="page-title">Tableau de Bord</h1>
-                <p class="page-subtitle">Bon retour, Champion.</p>
-            </div>
-
-            <div class="user-profile-bar">
-                <div class="notification-icon">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
-                        <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
-                    </svg>
-                    <span class="notification-badge">3</span>
-                </div>
-
-                <div class="user-info">
-                    <div>
-                        <div class="user-name">{{ user.name }}</div>
-                        <div class="user-role">{{ user.role }}</div>
-                    </div>
-                    <div class="user-balance">
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
-                            <circle cx="12" cy="12" r="10"></circle>
-                        </svg>
-                        {{ user.balance }} CP
-                    </div>
-                    <img src="{{ user.avatar }}" alt="{{ user.name }}" class="user-avatar">
-                </div>
-            </div>
+    <div
+      id="mainContent"
+      class="flex h-screen w-full opacity-0 transition-opacity duration-500"
+    >
+      <!-- Sidebar -->
+      <aside
+        class="flex w-72 flex-col border-r border-white/5 bg-[#161616] p-6 hidden lg:flex overflow-y-auto"
+        role="navigation"
+        aria-label="Navigation principale"
+      >
+        <div class="flex flex-col gap-6 flex-1">
+          <!-- Logo Area -->
+          <div class="flex flex-col items-center gap-2 px-2">
+            <img
+              src="{{ asset('assets/logo.webp') }}"
+              alt="Carthage Arena Logo"
+              class="h-32 w-auto"
+            />
+            <h1
+              class="text-xl font-black tracking-tight text-white uppercase italic"
+            >
+              Carthage <span class="text-primary">Arena</span>
+            </h1>
+          </div>
+          <!-- Navigation -->
+          <nav class="flex flex-col gap-2">
+            <a
+              class="group flex items-center gap-4 rounded-full bg-primary/10 px-4 py-3 text-primary transition-all hover:bg-primary hover:text-white"
+              href="{{ path('app_dashboard') }}"
+            >
+              <span
+                class="material-symbols-outlined text-[24px]"
+                data-weight="fill"
+                >home</span
+              >
+              <span class="text-sm font-bold tracking-wide">Accueil</span>
+            </a>
+            <a
+              class="group flex items-center gap-4 rounded-full px-4 py-3 text-gray-400 transition-all hover:bg-surface-hover hover:text-white"
+              href="{{ path('app_tournaments') }}"
+            >
+              <span class="material-symbols-outlined text-[24px]">trophy</span>
+              <span class="text-sm font-medium tracking-wide"
+                >Mes Tournois</span
+              >
+            </a>
+            <a
+              class="group flex items-center gap-4 rounded-full px-4 py-3 text-gray-400 transition-all hover:bg-surface-hover hover:text-white"
+              href="{{ path('app_shop') }}"
+            >
+              <span class="material-symbols-outlined text-[24px]"
+                >shopping_bag</span
+              >
+              <span class="text-sm font-medium tracking-wide">Boutique</span>
+            </a>
+            <a
+              class="group flex items-center gap-4 rounded-full px-4 py-3 text-gray-400 transition-all hover:bg-surface-hover hover:text-white"
+              href="{{ path('app_profile') }}"
+            >
+              <span class="material-symbols-outlined text-[24px]">person</span>
+              <span class="text-sm font-medium tracking-wide">Profil</span>
+            </a>
+            <a
+              class="group flex items-center gap-4 rounded-full px-4 py-3 text-gray-400 transition-all hover:bg-surface-hover hover:text-white mt-4"
+              href="{{ path('app_settings') }}"
+            >
+              <span class="material-symbols-outlined text-[24px]"
+                >settings</span
+              >
+              <span class="text-sm font-medium tracking-wide">Paramètres</span>
+            </a>
+            {% if app.user %}
+            <a
+              class="group flex items-center gap-4 rounded-full px-4 py-3 text-gray-400 transition-all hover:bg-red-500/10 hover:text-red-400 mt-2"
+              href="{{ path('app_logout') }}"
+            >
+              <span class="material-symbols-outlined text-[24px]"
+                >logout</span
+              >
+              <span class="text-sm font-medium tracking-wide">Déconnexion</span>
+            </a>
+            {% endif %}
+          </nav>
         </div>
-
-        <div class="stats-grid">
-            <div class="stat-card">
-                <div class="stat-icon" style="background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);">
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"></path>
-                        <path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"></path>
-                        <path d="M4 22h16"></path>
-                        <path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"></path>
-                        <path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"></path>
-                        <path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"></path>
-                    </svg>
-                </div>
-                <div class="stat-label">Rang Actuel</div>
-                <div class="stat-value">{{ user.rank }}</div>
-                <div class="stat-meta">
-                    <div style="background: var(--color-bg-tertiary); height: 6px; border-radius: 3px; overflow: hidden; margin-top: 8px;">
-                        <div style="background: var(--gradient-primary); height: 100%; width: {{ user.rankProgress }}%;"></div>
-                    </div>
-                    <div style="margin-top: 4px; font-size: 12px;">{{ user.rankProgress }}/100 LP</div>
-                </div>
+        <!-- Bottom Ad/Recommendation (Sidebar Widget) -->
+        <div
+          class="relative overflow-hidden rounded-2xl bg-gradient-to-br from-gray-900 to-black p-4 border border-white/10"
+        >
+          <div
+            class="absolute -right-6 -top-6 h-24 w-24 rounded-full bg-primary/20 blur-2xl"
+          ></div>
+          <div class="relative z-10 flex flex-col gap-3">
+            <div class="flex items-center justify-between">
+              <p
+                class="text-[10px] font-bold uppercase tracking-widest text-primary"
+              >
+                Recommandation IA
+              </p>
+              <span class="material-symbols-outlined text-primary text-sm"
+                >auto_awesome</span
+              >
             </div>
-
-            <div class="stat-card">
-                <div class="stat-icon" style="background: linear-gradient(135deg, #FF0022 0%, #CC001C 100%);">
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M12 2L2 7l10 5 10-5-10-5z"></path>
-                        <path d="M2 17l10 5 10-5"></path>
-                        <path d="M2 12l10 5 10-5"></path>
-                    </svg>
+            <div
+              class="h-24 w-full rounded-lg bg-cover bg-center shadow-inner"
+              data-alt="Cyberpunk character skin recommendation"
+              style="
+                background-image: url(&quot;https://lh3.googleusercontent.com/aida-public/AB6AXuBx_v-jr33CB3Wb3IX0h52CjD2Y2QMuwoJynhPLuS89J-zkxRoDKUbjC-qKR4XxI9dyLNEJWTXN-UhCsiw1CSz6aojAjzzGb4hfUpnlvuMzDRwsAJk5nuiYYQPFHv45mYuz1LkxCHgEm0NgYHY1HX7kzXTHcE38evG56e_YfMxuOlkyiM30hthFVyeen-CMqv0bSTmMEF-wFoibOSp1Cp8L8y068H9-I0GlfiLHeYiMmQNu4C_1gh-BHd8vhT5tckpKrdxVaPtUwCI&quot;);
+              "
+            ></div>
+            <div>
+              <h4 class="text-sm font-bold text-white">Cyber-Ninja Genji</h4>
+              <p class="text-xs text-gray-400 mt-1">
+                Basé sur vos 15 derniers matchs avec Genji.
+              </p>
+            </div>
+            <button
+              class="mt-1 w-full rounded-full bg-white/5 py-2 px-4 text-xs font-bold text-white hover:bg-white/10 transition-colors"
+            >
+              Voir en Boutique
+            </button>
+          </div>
+        </div>
+      </aside>
+      <!-- Main Content -->
+      <main
+        class="flex flex-1 flex-col overflow-y-auto bg-background-dark relative"
+      >
+        <!-- Header -->
+        <header
+          class="sticky top-0 z-50 flex h-20 items-center justify-between border-b border-white/5 bg-background-dark/80 backdrop-blur-md px-8 py-4"
+        >
+          <div class="flex flex-col">
+            <h2 class="text-2xl font-bold text-white">Tableau de Bord</h2>
+            <p class="text-xs text-gray-400">Bon retour, Champion.</p>
+          </div>
+          <div class="flex items-center gap-6">
+            <!-- Notifications -->
+            <button
+              class="relative rounded-full p-2 text-gray-400 hover:bg-white/5 hover:text-white transition-colors"
+              aria-label="Notifications - 1 nouvelle notification"
+            >
+              <span class="material-symbols-outlined">notifications</span>
+              <span
+                class="absolute right-2 top-2 h-2 w-2 rounded-full bg-primary"
+              ></span>
+            </button>
+            <!-- User Pill -->
+            {% if app.user %}
+            <div
+              class="flex items-center gap-4 rounded-full border border-white/5 bg-surface-dark py-1.5 pl-4 pr-1.5 shadow-lg"
+            >
+              <div class="flex flex-col items-end mr-2">
+                <span class="text-sm font-bold text-white leading-none"
+                  >{{ user.name }}</span
+                >
+                <span class="text-[10px] text-gray-400 uppercase tracking-wider"
+                  >{{ user.role }}</span
+                >
+              </div>
+              <!-- Currency Pill -->
+              <div
+                class="flex items-center gap-1 rounded-full bg-gradient-to-r from-yellow-600 to-yellow-400 px-3 py-1 text-black shadow-[0_0_10px_rgba(255,215,0,0.3)]"
+                title="Carthage Points - Monnaie virtuelle pour acheter des skins et objets"
+              >
+                <span class="material-symbols-outlined text-[16px] font-bold"
+                  >payments</span
+                >
+                <span class="text-xs font-black">{{ user.balance }} CP</span>
+              </div>
+              <!-- Avatar -->
+              <div
+                class="h-9 w-9 overflow-hidden rounded-full border-2 border-primary bg-gray-800"
+                data-alt="Player profile avatar"
+                style="
+                  background-image: url(&quot;{{ user.avatar }}&quot;);
+                  background-size: cover;
+                "
+              ></div>
+            </div>
+            {% else %}
+            <a
+              href="{{ path('app_login') }}"
+              class="flex items-center gap-2 rounded-full bg-primary px-5 py-2.5 text-sm font-bold text-white shadow-lg shadow-red-900/30 hover:bg-red-600 transition-all"
+            >
+              <span class="material-symbols-outlined text-[20px]">login</span>
+              Connexion
+            </a>
+            {% endif %}
+          </div>
+        </header>
+        <div class="flex flex-col gap-8 p-8 max-w-7xl mx-auto w-full">
+          <!-- Stats Grid -->
+          <section
+            class="grid grid-cols-1 gap-4 md:grid-cols-3"
+            aria-label="Statistiques du joueur"
+          >
+            <!-- Rank Card -->
+            <div
+              class="group relative overflow-hidden rounded-2xl bg-surface-dark p-6 transition-transform hover:-translate-y-1 hover:shadow-lg border border-white/5"
+            >
+              <div
+                class="absolute -right-4 -top-4 h-24 w-24 rounded-full bg-secondary/10 blur-xl transition-all group-hover:bg-secondary/20"
+              ></div>
+              <div
+                class="relative z-10 flex flex-col justify-between h-full gap-4"
+              >
+                <div class="flex items-start justify-between">
+                  <div class="rounded-full bg-secondary/20 p-2 text-secondary">
+                    <span class="material-symbols-outlined">military_tech</span>
+                  </div>
+                  <span
+                    class="rounded-full bg-white/5 px-2 py-1 text-[10px] font-bold uppercase tracking-wider text-gray-400"
+                    >Saison 5</span
+                  >
                 </div>
-                <div class="stat-label">Matchs Joués</div>
-                <div class="stat-value">{{ user.matchesPlayed }}</div>
-                <div class="stat-meta">
-                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--color-success)" stroke-width="2">
-                        <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline>
-                    </svg>
+                <div>
+                  <p class="text-sm font-medium text-gray-400">Rang Actuel</p>
+                  <div class="flex items-baseline gap-2">
+                    <h3 class="text-3xl font-black text-white">{{ user.rank }}</h3>
+                  </div>
+                  <div class="mt-2 h-1 w-full rounded-full bg-white/10">
+                    <div
+                      class="h-1 w-[{{ user.rankProgress }}%] rounded-full bg-secondary shadow-[0_0_8px_rgba(255,215,0,0.5)]"
+                    ></div>
+                  </div>
+                  <p class="mt-1 text-right text-[10px] text-secondary">
+                    {{ user.rankProgress }}/100 LP
+                  </p>
+                </div>
+              </div>
+            </div>
+            <!-- Matches Card -->
+            <div
+              class="group relative overflow-hidden rounded-2xl bg-surface-dark p-6 transition-transform hover:-translate-y-1 hover:shadow-lg border border-white/5"
+            >
+              <div
+                class="absolute -right-4 -top-4 h-24 w-24 rounded-full bg-primary/10 blur-xl transition-all group-hover:bg-primary/20"
+              ></div>
+              <div
+                class="relative z-10 flex flex-col justify-between h-full gap-4"
+              >
+                <div class="flex items-start justify-between">
+                  <div class="rounded-full bg-primary/20 p-2 text-primary">
+                    <span class="material-symbols-outlined">swords</span>
+                  </div>
+                </div>
+                <div>
+                  <p class="text-sm font-medium text-gray-400">Matchs Joués</p>
+                  <h3 class="text-4xl font-black text-white">{{ user.matchesPlayed }}</h3>
+                  <p
+                    class="mt-1 text-xs text-green-400 flex items-center gap-1"
+                  >
+                    <span class="material-symbols-outlined text-[14px]"
+                      >trending_up</span
+                    >
                     +12 cette semaine
+                  </p>
                 </div>
+              </div>
             </div>
-
-            <div class="stat-card">
-                <div class="stat-icon" style="background: linear-gradient(135deg, #00FF88 0%, #00CC6E 100%);">
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
-                        <polyline points="22 4 12 14.01 9 11.01"></polyline>
-                    </svg>
+            <!-- Winrate Card -->
+            <div
+              class="group relative overflow-hidden rounded-2xl bg-surface-dark p-6 transition-transform hover:-translate-y-1 hover:shadow-lg border border-white/5"
+            >
+              <div
+                class="absolute -right-4 -top-4 h-24 w-24 rounded-full bg-blue-500/10 blur-xl transition-all group-hover:bg-blue-500/20"
+              ></div>
+              <div
+                class="relative z-10 flex flex-col justify-between h-full gap-4"
+              >
+                <div class="flex items-start justify-between">
+                  <div class="rounded-full bg-blue-500/20 p-2 text-blue-500">
+                    <span class="material-symbols-outlined">query_stats</span>
+                  </div>
                 </div>
-                <div class="stat-label">Taux de Victoire</div>
-                <div class="stat-value">{{ user.winRate }}%</div>
-                <div class="stat-meta">Top 5% des joueurs</div>
+                <div>
+                  <p class="text-sm font-medium text-gray-400">
+                    Taux de Victoire
+                  </p>
+                  <h3 class="text-4xl font-black text-white">
+                    {{ user.winRate }}<span class="text-2xl text-gray-500">%</span>
+                  </h3>
+                  <p class="mt-1 text-xs text-gray-400">Top 5% des joueurs</p>
+                </div>
+              </div>
             </div>
-        </div>
-
-        <div class="card">
-            <div class="card-header">
-                <h2 class="card-title">Prochains Matchs</h2>
-                <a href="{{ path('app_tournaments') }}" class="text-primary" style="font-size: 0.875rem; font-weight: 600;">
-                    Voir Tout
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display: inline; vertical-align: middle;">
-                        <path d="M5 12h14M12 5l7 7-7 7"/>
-                    </svg>
-                </a>
+          </section>
+          <!-- Upcoming Matches Section -->
+          <section class="flex flex-col gap-6" aria-label="Prochains matchs">
+            <div class="flex items-center justify-between">
+              <h2
+                class="text-xl font-bold tracking-tight text-white flex items-center gap-2"
+              >
+                <span class="h-6 w-1 rounded-full bg-primary"></span>
+                Prochains Matchs
+              </h2>
+              <button
+                class="text-sm font-medium text-primary hover:text-white transition-colors"
+                aria-label="Voir tous les matchs à venir"
+              >
+                Voir Tout
+              </button>
             </div>
-
-            <div style="display: flex; flex-direction: column; gap: 1rem;">
-                {% for match in upcomingMatches %}
-                <div style="background: var(--color-bg-tertiary); border: 1px solid var(--color-border); border-radius: var(--radius-lg); padding: 1.5rem; display: flex; align-items: center; justify-content: space-between; transition: all 0.25s ease;">
-                    <div style="display: flex; align-items: center; gap: 1.5rem;">
-                        <img src="{{ match.logo }}" alt="{{ match.opponent }}" style="width: 48px; height: 48px; border-radius: 8px;">
-                        <div>
-                            <div style="font-size: 0.75rem; color: var(--color-text-muted); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px;">
-                                {{ match.tournament }}
-                            </div>
-                            <div style="font-size: 1.125rem; font-weight: 700; margin-bottom: 4px;">
-                                vs. {{ match.opponent }}
-                            </div>
-                            <div style="font-size: 0.875rem; color: var(--color-text-secondary);">
-                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display: inline; vertical-align: middle; margin-right: 4px;">
-                                    <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
-                                    <line x1="16" y1="2" x2="16" y2="6"></line>
-                                    <line x1="8" y1="2" x2="8" y2="6"></line>
-                                    <line x1="3" y1="10" x2="21" y2="10"></line>
-                                </svg>
-                                {{ match.date }}
-                            </div>
-                        </div>
+            <div class="flex flex-col gap-4">
+              {% for match in upcomingMatches %}
+              <div
+                class="group flex flex-col items-center justify-between gap-4 rounded-2xl border border-white/5 bg-surface-dark p-4 transition-all hover:border-primary/50 hover:shadow-[0_0_20px_rgba(230,0,19,0.1)] md:flex-row md:gap-8 {{ loop.last ? 'opacity-60 hover:opacity-100' : '' }}"
+              >
+                <div class="flex items-center gap-6 w-full md:w-auto">
+                  <div
+                    class="flex h-16 w-16 flex-shrink-0 items-center justify-center rounded-xl bg-black/40 border border-white/10"
+                    data-alt="{{ match.opponent }} logo placeholder"
+                    style="
+                      background-image: url(&quot;{{ match.logo }}&quot;);
+                      background-size: cover;
+                      background-position: center;
+                    "
+                  ></div>
+                  <div class="flex flex-col">
+                    <p class="text-xs font-bold uppercase {% if match.tournament == 'VALORANT TOURNAMENT' %}text-primary{% elseif match.tournament == 'LEAGUE OF LEGENDS' %}text-purple-400{% else %}text-blue-400{% endif %}">
+                      {{ match.tournament }}
+                    </p>
+                    <h4
+                      class="text-lg font-bold text-white group-hover:text-primary transition-colors"
+                    >
+                      vs. {{ match.opponent }}
+                    </h4>
+                    <div class="flex items-center gap-2 mt-1">
+                      <span
+                        class="material-symbols-outlined text-[14px] text-gray-400"
+                        >calendar_today</span
+                      >
+                      <p class="text-xs text-gray-400">{{ match.date }}</p>
                     </div>
-
-                    <div style="text-align: right;">
-                        <div style="margin-bottom: 8px;">
-                            <span class="badge badge-season">{{ match.format }}</span>
-                        </div>
-                        <div style="font-size: 0.875rem; color: var(--color-text-secondary);">
-                            {% if match.maps is defined %}
-                                Cartes: {{ match.maps }}
-                            {% elseif match.prize is defined %}
-                                Cagnotte: {{ match.prize }}
-                            {% elseif match.region is defined %}
-                                Région: {{ match.region }}
-                            {% endif %}
-                        </div>
-                        <button class="btn btn-primary" style="margin-top: 12px; padding: 0.5rem 1.5rem;">
-                            Détails
-                        </button>
-                    </div>
+                  </div>
                 </div>
-                {% endfor %}
+                <!-- Divider (Desktop) -->
+                <div class="hidden h-12 w-px bg-white/10 md:block"></div>
+                <!-- Opponent/Details Stats -->
+                <div class="grid grid-cols-2 gap-8 md:flex md:gap-12 flex-1">
+                  <div class="flex flex-col">
+                    <span class="text-[10px] uppercase text-gray-500 font-bold"
+                      >Format</span
+                    >
+                    <span class="text-sm font-medium text-white"
+                      >{{ match.format }}</span
+                    >
+                  </div>
+                  <div class="flex flex-col">
+                    {% if match.maps is defined %}
+                    <span class="text-[10px] uppercase text-gray-500 font-bold"
+                      >Cartes</span
+                    >
+                    <span class="text-sm font-medium text-white"
+                      >{{ match.maps }}</span
+                    >
+                    {% elseif match.prize is defined %}
+                    <span class="text-[10px] uppercase text-gray-500 font-bold"
+                      >Cagnotte</span
+                    >
+                    <span class="text-sm font-medium text-secondary"
+                      >{{ match.prize }}</span
+                    >
+                    {% elseif match.region is defined %}
+                    <span class="text-[10px] uppercase text-gray-500 font-bold"
+                      >Région</span
+                    >
+                    <span class="text-sm font-medium text-white"
+                      >{{ match.region }}</span
+                    >
+                    {% endif %}
+                  </div>
+                </div>
+                {% if loop.last %}
+                <button
+                  class="w-full flex-shrink-0 cursor-not-allowed rounded-full border border-white/5 bg-transparent py-2 px-4 text-sm font-bold text-gray-600 md:w-auto"
+                  disabled=""
+                >
+                  Verrouillé
+                </button>
+                {% else %}
+                <button
+                  class="w-full flex-shrink-0 rounded-full border border-white/10 bg-surface-hover py-2 px-4 text-sm font-bold text-gray-300 transition-all hover:bg-white/10 hover:text-white md:w-auto"
+                  aria-label="Voir les détails du match contre {{ match.opponent }}"
+                >
+                  Détails
+                </button>
+                {% endif %}
+              </div>
+              {% endfor %}
             </div>
+          </section>
         </div>
-    </main>
-</div>
+        <!-- Mobile Bottom Nav (Visible only on small screens) -->
+        <div
+          class="lg:hidden fixed bottom-0 w-full bg-[#161616] border-t border-white/10 px-6 py-3 flex justify-between items-center z-50"
+          role="navigation"
+          aria-label="Navigation mobile"
+        >
+          <a
+            class="flex flex-col items-center gap-1 text-primary"
+            href="{{ path('app_dashboard') }}"
+          >
+            <span class="material-symbols-outlined">home</span>
+            <span class="text-[10px]">Accueil</span>
+          </a>
+          <a
+            class="flex flex-col items-center gap-1 text-gray-500"
+            href="{{ path('app_tournaments') }}"
+          >
+            <span class="material-symbols-outlined">trophy</span>
+            <span class="text-[10px]">Tournois</span>
+          </a>
+          <a
+            class="flex flex-col items-center gap-1 text-gray-500"
+            href="{{ path('app_shop') }}"
+          >
+            <span class="material-symbols-outlined">shopping_bag</span>
+            <span class="text-[10px]">Boutique</span>
+          </a>
+          <a class="flex flex-col items-center gap-1 text-gray-500" href="{{ path('app_profile') }}">
+            <span class="material-symbols-outlined">person</span>
+            <span class="text-[10px]">Profil</span>
+          </a>
+        </div>
+      </main>
+    </div>
 {% endblock %}

@@ -3,125 +3,144 @@
 {% block title %}Gestion Utilisateurs - Admin - Carthage Arena{% endblock %}
 
 {% block body %}
-<div class="app-container">
-    {% include 'admin/_sidebar.html.twig' %}
+<div id="mainContent" class="opacity-0 transition-opacity duration-500">
+    <div class="flex min-h-screen bg-background-dark">
+        {# Sidebar #}
+        {% include 'admin/_sidebar.html.twig' %}
 
-    <main class="main-content">
-        <div class="page-header">
-            <h1 class="page-title">Gestion des Utilisateurs</h1>
-            <button class="btn btn-primary">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <circle cx="12" cy="12" r="10"></circle>
-                    <line x1="12" y1="8" x2="12" y2="16"></line>
-                    <line x1="8" y1="12" x2="16" y2="12"></line>
-                </svg>
-                Ajouter un Utilisateur
-            </button>
-        </div>
-
-        <div class="card" style="margin-bottom: 2rem;">
-            <div style="display: flex; gap: 1rem; align-items: center;">
-                <div class="form-group" style="flex: 1; margin: 0;">
-                    <input type="text" class="form-input" placeholder="Rechercher par nom ou email...">
+        {# Main Content Area #}
+        <main class="flex-1 ml-64 overflow-y-auto h-screen">
+            {# Sticky Header #}
+            <header class="sticky top-0 z-30 bg-background-dark/80 backdrop-blur-xl border-b border-white/5">
+                <div class="flex items-center justify-between px-8 py-4">
+                    <div>
+                        <h1 class="text-2xl font-bold text-white">Gestion des Utilisateurs</h1>
+                        <p class="text-sm text-white/40 mt-0.5">Gérer tous les comptes utilisateurs de la plateforme</p>
+                    </div>
+                    <button class="inline-flex items-center gap-2 px-5 py-2.5 bg-primary hover:bg-primary/90 text-white text-sm font-semibold rounded-xl transition-all">
+                        <span class="material-symbols-outlined text-[18px]">person_add</span>
+                        + Ajouter
+                    </button>
                 </div>
-                <select class="form-input" style="width: 200px;">
-                    <option>Tous les statuts</option>
-                    <option>Actif</option>
-                    <option>Suspendu</option>
-                    <option>En attente</option>
-                </select>
-                <select class="form-input" style="width: 200px;">
-                    <option>Tous les rôles</option>
-                    <option>Joueur</option>
-                    <option>Joueur Pro</option>
-                    <option>Admin</option>
-                </select>
-            </div>
-        </div>
+            </header>
 
-        <div class="card">
-            <div style="overflow-x: auto;">
-                <table style="width: 100%; border-collapse: collapse;">
-                    <thead>
-                        <tr style="border-bottom: 2px solid var(--color-border);">
-                            <th style="text-align: left; padding: 1rem; font-size: 0.75rem; color: var(--color-text-muted); text-transform: uppercase; letter-spacing: 0.5px;">ID</th>
-                            <th style="text-align: left; padding: 1rem; font-size: 0.75rem; color: var(--color-text-muted); text-transform: uppercase; letter-spacing: 0.5px;">Utilisateur</th>
-                            <th style="text-align: left; padding: 1rem; font-size: 0.75rem; color: var(--color-text-muted); text-transform: uppercase; letter-spacing: 0.5px;">Email</th>
-                            <th style="text-align: left; padding: 1rem; font-size: 0.75rem; color: var(--color-text-muted); text-transform: uppercase; letter-spacing: 0.5px;">Rôle</th>
-                            <th style="text-align: left; padding: 1rem; font-size: 0.75rem; color: var(--color-text-muted); text-transform: uppercase; letter-spacing: 0.5px;">Balance</th>
-                            <th style="text-align: left; padding: 1rem; font-size: 0.75rem; color: var(--color-text-muted); text-transform: uppercase; letter-spacing: 0.5px;">Statut</th>
-                            <th style="text-align: left; padding: 1rem; font-size: 0.75rem; color: var(--color-text-muted); text-transform: uppercase; letter-spacing: 0.5px;">Inscrit</th>
-                            <th style="text-align: left; padding: 1rem; font-size: 0.75rem; color: var(--color-text-muted); text-transform: uppercase; letter-spacing: 0.5px;">Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for user in users %}
-                        <tr style="border-bottom: 1px solid var(--color-border);">
-                            <td style="padding: 1rem; color: var(--color-text-muted);">#{{ user.id }}</td>
-                            <td style="padding: 1rem;">
-                                <div style="font-weight: 600;">{{ user.name }}</div>
-                            </td>
-                            <td style="padding: 1rem; color: var(--color-text-secondary);">{{ user.email }}</td>
-                            <td style="padding: 1rem;">
-                                <span class="badge badge-{% if user.role == 'JOUEUR PRO' %}legendary{% else %}premium{% endif %}">
-                                    {{ user.role }}
-                                </span>
-                            </td>
-                            <td style="padding: 1rem;">
-                                <div style="display: flex; align-items: center; gap: 0.25rem;">
-                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="var(--color-warning)">
-                                        <circle cx="12" cy="12" r="10"></circle>
-                                    </svg>
-                                    <span style="font-weight: 600; color: var(--color-warning);">{{ user.balance }}</span>
-                                </div>
-                            </td>
-                            <td style="padding: 1rem;">
-                                <span class="badge {% if user.status == 'active' %}badge-legendary{% else %}badge-epic{% endif %}">
-                                    {{ user.status }}
-                                </span>
-                            </td>
-                            <td style="padding: 1rem; color: var(--color-text-secondary); font-size: 0.875rem;">{{ user.joined }}</td>
-                            <td style="padding: 1rem;">
-                                <div style="display: flex; gap: 0.5rem;">
-                                    <button class="btn btn-secondary" style="padding: 0.5rem 0.75rem; font-size: 0.875rem;">
-                                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
-                                            <circle cx="12" cy="12" r="3"></circle>
-                                        </svg>
-                                    </button>
-                                    <button class="btn btn-secondary" style="padding: 0.5rem 0.75rem; font-size: 0.875rem;">
-                                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                            <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
-                                            <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
-                                        </svg>
-                                    </button>
-                                    <button class="btn" style="padding: 0.5rem 0.75rem; font-size: 0.875rem; background-color: var(--color-error); color: white;">
-                                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                            <polyline points="3 6 5 6 21 6"></polyline>
-                                            <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
-                                        </svg>
-                                    </button>
-                                </div>
-                            </td>
-                        </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
-            </div>
+            {# Page Content #}
+            <div class="p-8 space-y-6">
+                {# Search & Filters #}
+                <div class="bg-surface-dark border border-white/5 rounded-2xl p-4">
+                    <div class="flex items-center gap-4">
+                        <div class="flex-1 relative">
+                            <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-white/30 text-[20px]">search</span>
+                            <input type="text" placeholder="Rechercher par nom ou email..."
+                                   class="w-full bg-white/5 border border-white/10 rounded-xl pl-10 pr-4 py-2.5 text-sm text-white placeholder-white/30 focus:border-primary/50 focus:ring-1 focus:ring-primary/30 outline-none transition-all" />
+                        </div>
+                        <select class="bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white/70 outline-none focus:border-primary/50 w-48">
+                            <option>Tous les statuts</option>
+                            <option>Actif</option>
+                            <option>Suspendu</option>
+                            <option>En attente</option>
+                        </select>
+                        <select class="bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white/70 outline-none focus:border-primary/50 w-48">
+                            <option>Tous les rôles</option>
+                            <option>Joueur</option>
+                            <option>Joueur Pro</option>
+                            <option>Admin</option>
+                        </select>
+                    </div>
+                </div>
 
-            <div style="display: flex; justify-content: between; align-items: center; padding: 1.5rem; border-top: 1px solid var(--color-border);">
-                <div style="color: var(--color-text-secondary); font-size: 0.875rem;">
-                    Affichage de 1 à {{ users|length }} sur {{ users|length }} utilisateurs
-                </div>
-                <div style="display: flex; gap: 0.5rem;">
-                    <button class="btn btn-secondary" disabled>Précédent</button>
-                    <button class="btn btn-secondary">1</button>
-                    <button class="btn btn-secondary">2</button>
-                    <button class="btn btn-secondary">3</button>
-                    <button class="btn btn-secondary">Suivant</button>
+                {# Users Table #}
+                <div class="bg-surface-dark border border-white/5 rounded-2xl overflow-hidden">
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-sm">
+                            <thead>
+                                <tr class="border-b border-white/10">
+                                    <th class="text-left px-6 py-4 text-xs font-semibold text-white/30 uppercase tracking-wider">ID</th>
+                                    <th class="text-left px-6 py-4 text-xs font-semibold text-white/30 uppercase tracking-wider">Nom</th>
+                                    <th class="text-left px-6 py-4 text-xs font-semibold text-white/30 uppercase tracking-wider">Email</th>
+                                    <th class="text-left px-6 py-4 text-xs font-semibold text-white/30 uppercase tracking-wider">Rôle</th>
+                                    <th class="text-left px-6 py-4 text-xs font-semibold text-white/30 uppercase tracking-wider">Statut</th>
+                                    <th class="text-left px-6 py-4 text-xs font-semibold text-white/30 uppercase tracking-wider">Solde</th>
+                                    <th class="text-left px-6 py-4 text-xs font-semibold text-white/30 uppercase tracking-wider">Inscrit</th>
+                                    <th class="text-left px-6 py-4 text-xs font-semibold text-white/30 uppercase tracking-wider">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-white/5">
+                                {% for user in users %}
+                                <tr class="hover:bg-surface-hover transition-colors">
+                                    <td class="px-6 py-4 text-white/40 font-mono text-xs">#{{ user.id }}</td>
+                                    <td class="px-6 py-4">
+                                        <div class="flex items-center gap-3">
+                                            <div class="w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center">
+                                                <span class="text-xs font-bold text-primary">{{ user.name|first|upper }}</span>
+                                            </div>
+                                            <span class="font-semibold text-white">{{ user.name }}</span>
+                                        </div>
+                                    </td>
+                                    <td class="px-6 py-4 text-white/50">{{ user.email }}</td>
+                                    <td class="px-6 py-4">
+                                        <span class="inline-flex px-2.5 py-1 rounded-full text-xs font-semibold
+                                                      {% if user.role == 'ADMIN' %}bg-primary/20 text-primary
+                                                      {% elseif user.role == 'JOUEUR PRO' %}bg-secondary/20 text-secondary
+                                                      {% else %}bg-blue-500/20 text-blue-400{% endif %}">
+                                            {{ user.role }}
+                                        </span>
+                                    </td>
+                                    <td class="px-6 py-4">
+                                        {% if user.status == 'active' %}
+                                            <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-green-500/20 text-green-400">
+                                                <span class="w-1.5 h-1.5 rounded-full bg-green-400"></span>
+                                                Actif
+                                            </span>
+                                        {% else %}
+                                            <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-red-500/20 text-red-400">
+                                                <span class="w-1.5 h-1.5 rounded-full bg-red-400"></span>
+                                                Suspendu
+                                            </span>
+                                        {% endif %}
+                                    </td>
+                                    <td class="px-6 py-4">
+                                        <span class="font-semibold text-secondary">{{ user.balance }}</span>
+                                    </td>
+                                    <td class="px-6 py-4 text-white/40 text-xs">{{ user.joined }}</td>
+                                    <td class="px-6 py-4">
+                                        <div class="flex items-center gap-2">
+                                            <button class="p-2 rounded-lg bg-white/5 hover:bg-white/10 text-white/50 hover:text-white transition-all" title="Modifier">
+                                                <span class="material-symbols-outlined text-[18px]">edit</span>
+                                            </button>
+                                            {% if user.status == 'active' %}
+                                                <button class="p-2 rounded-lg bg-red-500/10 hover:bg-red-500/20 text-red-400 transition-all" title="Bannir">
+                                                    <span class="material-symbols-outlined text-[18px]">block</span>
+                                                </button>
+                                            {% else %}
+                                                <button class="p-2 rounded-lg bg-green-500/10 hover:bg-green-500/20 text-green-400 transition-all" title="Débannir">
+                                                    <span class="material-symbols-outlined text-[18px]">check_circle</span>
+                                                </button>
+                                            {% endif %}
+                                        </div>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+
+                    {# Pagination #}
+                    <div class="flex items-center justify-between px-6 py-4 border-t border-white/5">
+                        <p class="text-sm text-white/40">
+                            Affichage de 1 à {{ users|length }} sur {{ users|length }} utilisateurs
+                        </p>
+                        <div class="flex items-center gap-2">
+                            <button class="px-3 py-1.5 rounded-lg text-sm text-white/30 bg-white/5 cursor-not-allowed" disabled>Précédent</button>
+                            <button class="px-3 py-1.5 rounded-lg text-sm font-semibold bg-primary text-white">1</button>
+                            <button class="px-3 py-1.5 rounded-lg text-sm text-white/60 bg-white/5 hover:bg-white/10 transition-all">2</button>
+                            <button class="px-3 py-1.5 rounded-lg text-sm text-white/60 bg-white/5 hover:bg-white/10 transition-all">3</button>
+                            <button class="px-3 py-1.5 rounded-lg text-sm text-white/60 bg-white/5 hover:bg-white/10 transition-all">Suivant</button>
+                        </div>
+                    </div>
                 </div>
             </div>
-        </div>
-    </main>
+        </main>
+    </div>
 </div>
 {% endblock %}

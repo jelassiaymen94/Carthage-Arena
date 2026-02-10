@@ -3,171 +3,351 @@
 {% block title %}Profil - {{ user.name }} - Carthage Arena{% endblock %}
 
 {% block body %}
-<div class="app-container">
-    {% include 'components/_sidebar.html.twig' %}
-
-    <main class="main-content">
-        <div class="card" style="margin-bottom: 2rem; background: var(--gradient-card);">
-            <div style="display: flex; gap: 2rem; align-items: flex-start;">
-                <div style="position: relative;">
-                    <img src="{{ user.avatar }}" alt="{{ user.name }}" style="width: 150px; height: 150px; border-radius: 1rem; border: 4px solid var(--color-primary); object-fit: cover;">
-                    <div style="position: absolute; bottom: -10px; right: -10px; width: 50px; height: 50px; background: var(--gradient-primary); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 1.25rem; border: 3px solid var(--color-bg-card);">
-                        {{ user.level }}
-                    </div>
-                </div>
-
-                <div style="flex: 1;">
-                    <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1rem;">
-                        <div>
-                            <h1 style="font-size: 2rem; font-weight: 800; margin-bottom: 0.5rem;">{{ user.name }}</h1>
-                            <div style="display: flex; gap: 1rem; align-items: center; margin-bottom: 0.5rem;">
-                                <span class="badge badge-premium">{{ user.role }}</span>
-                                <span style="color: var(--color-text-secondary); font-size: 0.875rem;">
-                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display: inline; vertical-align: middle;">
-                                        <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
-                                        <circle cx="12" cy="10" r="3"></circle>
-                                    </svg>
-                                    {{ user.country }}
-                                </span>
-                                <span style="color: var(--color-text-secondary); font-size: 0.875rem;">
-                                    Membre depuis {{ user.joinDate }}
-                                </span>
-                            </div>
-                            <p style="color: var(--color-text-secondary); max-width: 600px;">{{ user.bio }}</p>
-                        </div>
-
-                        <button class="btn btn-secondary">
-                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
-                                <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
-                            </svg>
-                            Modifier le Profil
-                        </button>
-                    </div>
-
-                    <div style="display: flex; gap: 1rem;">
-                        <div style="flex: 1; background: var(--color-bg-tertiary); padding: 1rem; border-radius: var(--radius-lg); text-align: center;">
-                            <div style="font-size: 0.75rem; color: var(--color-text-muted); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 0.25rem;">Rang</div>
-                            <div style="font-size: 1.25rem; font-weight: 700; color: var(--color-warning);">{{ user.rank }}</div>
-                        </div>
-                        <div style="flex: 1; background: var(--color-bg-tertiary); padding: 1rem; border-radius: var(--radius-lg); text-align: center;">
-                            <div style="font-size: 0.75rem; color: var(--color-text-muted); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 0.25rem;">Balance</div>
-                            <div style="font-size: 1.25rem; font-weight: 700; color: var(--color-warning);">{{ user.balance }} CP</div>
-                        </div>
-                        <div style="flex: 1; background: var(--color-bg-tertiary); padding: 1rem; border-radius: var(--radius-lg); text-align: center;">
-                            <div style="font-size: 0.75rem; color: var(--color-text-muted); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 0.25rem;">Email</div>
-                            <div style="font-size: 0.875rem; font-weight: 600;">{{ user.email }}</div>
-                        </div>
-                    </div>
-                </div>
-            </div>
+    <div
+      id="mainContent"
+      class="flex h-screen w-full opacity-0 transition-opacity duration-500"
+    >
+      <!-- Sidebar -->
+      <aside
+        class="flex w-72 flex-col border-r border-white/5 bg-[#161616] p-6 hidden lg:flex overflow-y-auto"
+        role="navigation"
+        aria-label="Navigation principale"
+      >
+        <div class="flex flex-col gap-6 flex-1">
+          <!-- Logo Area -->
+          <div class="flex flex-col items-center gap-2 px-2">
+            <img
+              src="{{ asset('assets/logo.webp') }}"
+              alt="Carthage Arena Logo"
+              class="h-32 w-auto"
+            />
+            <h1
+              class="text-xl font-black tracking-tight text-white uppercase italic"
+            >
+              Carthage <span class="text-primary">Arena</span>
+            </h1>
+          </div>
+          <!-- Navigation -->
+          <nav class="flex flex-col gap-2">
+            <a
+              class="group flex items-center gap-4 rounded-full px-4 py-3 text-gray-400 transition-all hover:bg-surface-hover hover:text-white"
+              href="{{ path('app_dashboard') }}"
+            >
+              <span class="material-symbols-outlined text-[24px]">home</span>
+              <span class="text-sm font-medium tracking-wide">Accueil</span>
+            </a>
+            <a
+              class="group flex items-center gap-4 rounded-full px-4 py-3 text-gray-400 transition-all hover:bg-surface-hover hover:text-white"
+              href="{{ path('app_tournaments') }}"
+            >
+              <span class="material-symbols-outlined text-[24px]">trophy</span>
+              <span class="text-sm font-medium tracking-wide">Mes Tournois</span>
+            </a>
+            <a
+              class="group flex items-center gap-4 rounded-full px-4 py-3 text-gray-400 transition-all hover:bg-surface-hover hover:text-white"
+              href="{{ path('app_shop') }}"
+            >
+              <span class="material-symbols-outlined text-[24px]">shopping_bag</span>
+              <span class="text-sm font-medium tracking-wide">Boutique</span>
+            </a>
+            <a
+              class="group flex items-center gap-4 rounded-full bg-primary/10 px-4 py-3 text-primary transition-all hover:bg-primary hover:text-white"
+              href="{{ path('app_profile') }}"
+            >
+              <span class="material-symbols-outlined text-[24px]" data-weight="fill">person</span>
+              <span class="text-sm font-bold tracking-wide">Profil</span>
+            </a>
+            <a
+              class="group flex items-center gap-4 rounded-full px-4 py-3 text-gray-400 transition-all hover:bg-surface-hover hover:text-white mt-4"
+              href="{{ path('app_settings') }}"
+            >
+              <span class="material-symbols-outlined text-[24px]">settings</span>
+              <span class="text-sm font-medium tracking-wide">Param&egrave;tres</span>
+            </a>
+            {% if app.user %}
+            <a
+              class="group flex items-center gap-4 rounded-full px-4 py-3 text-gray-400 transition-all hover:bg-red-500/10 hover:text-red-400 mt-2"
+              href="{{ path('app_logout') }}"
+            >
+              <span class="material-symbols-outlined text-[24px]">logout</span>
+              <span class="text-sm font-medium tracking-wide">Déconnexion</span>
+            </a>
+            {% endif %}
+          </nav>
         </div>
-
-        <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 2rem; margin-bottom: 2rem;">
-            <div class="card">
-                <h2 style="font-size: 1.5rem; font-weight: 700; margin-bottom: 1.5rem;">Statistiques</h2>
-                
-                <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem; margin-bottom: 2rem;">
-                    <div style="text-align: center; padding: 1.5rem; background: var(--color-bg-tertiary); border-radius: var(--radius-lg);">
-                        <div style="font-size: 2.5rem; font-weight: 800; margin-bottom: 0.5rem;">{{ stats.matchesPlayed }}</div>
-                        <div style="font-size: 0.875rem; color: var(--color-text-secondary);">Matchs Joués</div>
-                    </div>
-                    <div style="text-align: center; padding: 1.5rem; background: var(--color-bg-tertiary); border-radius: var(--radius-lg);">
-                        <div style="font-size: 2.5rem; font-weight: 800; margin-bottom: 0.5rem; color: var(--color-success);">{{ stats.wins }}</div>
-                        <div style="font-size: 0.875rem; color: var(--color-text-secondary);">Victoires</div>
-                    </div>
-                    <div style="text-align: center; padding: 1.5rem; background: var(--color-bg-tertiary); border-radius: var(--radius-lg);">
-                        <div style="font-size: 2.5rem; font-weight: 800; margin-bottom: 0.5rem; color: var(--color-error);">{{ stats.losses }}</div>
-                        <div style="font-size: 0.875rem; color: var(--color-text-secondary);">Défaites</div>
-                    </div>
-                </div>
-
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem;">
-                    <div style="background: var(--gradient-card); padding: 1.5rem; border-radius: var(--radius-lg); border: 1px solid var(--color-border);">
-                        <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 1rem;">
-                            <div style="width: 48px; height: 48px; background: linear-gradient(135deg, #00FF88 0%, #00CC6E 100%); border-radius: var(--radius-md); display: flex; align-items: center; justify-content: center;">
-                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                    <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline>
-                                </svg>
-                            </div>
-                            <div>
-                                <div style="font-size: 0.875rem; color: var(--color-text-secondary);">Taux de Victoire</div>
-                                <div style="font-size: 1.75rem; font-weight: 800;">{{ stats.winRate }}%</div>
-                            </div>
-                        </div>
-                        <div style="background: var(--color-bg-tertiary); height: 8px; border-radius: 4px; overflow: hidden;">
-                            <div style="background: var(--color-success); height: 100%; width: {{ stats.winRate }}%;"></div>
-                        </div>
-                    </div>
-
-                    <div style="background: var(--gradient-card); padding: 1.5rem; border-radius: var(--radius-lg); border: 1px solid var(--color-border);">
-                        <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 1rem;">
-                            <div style="width: 48px; height: 48px; background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%); border-radius: var(--radius-md); display: flex; align-items: center; justify-content: center;">
-                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                    <path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"></path>
-                                    <path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"></path>
-                                    <path d="M4 22h16"></path>
-                                    <path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"></path>
-                                    <path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"></path>
-                                    <path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"></path>
-                                </svg>
-                            </div>
-                            <div>
-                                <div style="font-size: 0.875rem; color: var(--color-text-secondary);">Tournois Gagnés</div>
-                                <div style="font-size: 1.75rem; font-weight: 800;">{{ stats.tournamentsWon }}</div>
-                            </div>
-                        </div>
-                        <div style="font-size: 0.875rem; color: var(--color-text-secondary);">
-                            Gains totaux: <span style="color: var(--color-warning); font-weight: 700;">{{ stats.totalEarnings }}</span>
-                        </div>
-                    </div>
-                </div>
+        <!-- Bottom Widget -->
+        <div
+          class="relative overflow-hidden rounded-2xl bg-gradient-to-br from-gray-900 to-black p-4 border border-white/10"
+        >
+          <div
+            class="absolute -right-6 -top-6 h-24 w-24 rounded-full bg-primary/20 blur-2xl"
+          ></div>
+          <div class="relative z-10 flex flex-col gap-3">
+            <div class="flex items-center justify-between">
+              <p class="text-[10px] font-bold uppercase tracking-widest text-primary">
+                Rang Actuel
+              </p>
+              <span class="material-symbols-outlined text-primary text-sm">military_tech</span>
             </div>
-
-            <div class="card">
-                <h2 style="font-size: 1.5rem; font-weight: 700; margin-bottom: 1.5rem;">Succès</h2>
-                <div style="display: flex; flex-direction: column; gap: 1rem;">
-                    {% for achievement in achievements %}
-                    <div style="display: flex; align-items: center; gap: 1rem; padding: 1rem; background: var(--color-bg-tertiary); border-radius: var(--radius-lg); border-left: 3px solid var(--color-primary);">
-                        <div style="font-size: 2rem;">{{ achievement.icon }}</div>
-                        <div style="flex: 1;">
-                            <div style="font-weight: 600; margin-bottom: 0.25rem;">{{ achievement.name }}</div>
-                            <div style="font-size: 0.75rem; color: var(--color-text-muted);">{{ achievement.date }}</div>
-                        </div>
-                    </div>
-                    {% endfor %}
-                </div>
+            <div>
+              <h4 class="text-sm font-bold text-white">{{ user.rank }}</h4>
+              <p class="text-xs text-gray-400 mt-1">
+                Niveau {{ user.level }}
+              </p>
             </div>
+          </div>
         </div>
+      </aside>
 
-        <div class="card">
-            <h2 style="font-size: 1.5rem; font-weight: 700; margin-bottom: 1.5rem;">Matchs Récents</h2>
-            <div style="display: flex; flex-direction: column; gap: 0.75rem;">
+      <!-- Main Content -->
+      <main
+        class="flex flex-1 flex-col overflow-y-auto bg-background-dark relative"
+      >
+        <!-- Header -->
+        <header
+          class="sticky top-0 z-50 flex h-20 items-center justify-between border-b border-white/5 bg-background-dark/80 backdrop-blur-md px-8 py-4"
+        >
+          <div class="flex flex-col">
+            <h2 class="text-2xl font-bold text-white">Profil</h2>
+            <p class="text-xs text-gray-400">G&eacute;rez votre profil de joueur.</p>
+          </div>
+          <div class="flex items-center gap-6">
+            <!-- Notifications -->
+            <button
+              class="relative rounded-full p-2 text-gray-400 hover:bg-white/5 hover:text-white transition-colors"
+              aria-label="Notifications"
+            >
+              <span class="material-symbols-outlined">notifications</span>
+              <span class="absolute right-2 top-2 h-2 w-2 rounded-full bg-primary"></span>
+            </button>
+            <!-- User Pill -->
+            {% if app.user %}
+            <div
+              class="flex items-center gap-4 rounded-full border border-white/5 bg-surface-dark py-1.5 pl-4 pr-1.5 shadow-lg"
+            >
+              <div class="flex flex-col items-end mr-2">
+                <span class="text-sm font-bold text-white leading-none">{{ user.name }}</span>
+                <span class="text-[10px] text-gray-400 uppercase tracking-wider">{{ user.role }}</span>
+              </div>
+              <!-- Currency Pill -->
+              <div
+                class="flex items-center gap-1 rounded-full bg-gradient-to-r from-yellow-600 to-yellow-400 px-3 py-1 text-black shadow-[0_0_10px_rgba(255,215,0,0.3)]"
+                title="Carthage Points"
+              >
+                <span class="material-symbols-outlined text-[16px] font-bold">payments</span>
+                <span class="text-xs font-black">{{ user.balance }} CP</span>
+              </div>
+              <!-- Avatar -->
+              <div
+                class="h-9 w-9 overflow-hidden rounded-full border-2 border-primary bg-gray-800"
+                style="background-image: url('{{ user.avatar }}'); background-size: cover;"
+              ></div>
+            </div>
+            {% else %}
+            <a
+              href="{{ path('app_login') }}"
+              class="flex items-center gap-2 rounded-full bg-primary px-5 py-2.5 text-sm font-bold text-white shadow-lg shadow-red-900/30 hover:bg-red-600 transition-all"
+            >
+              <span class="material-symbols-outlined text-[20px]">login</span>
+              Connexion
+            </a>
+            {% endif %}
+          </div>
+        </header>
+
+        <div class="flex flex-col gap-8 p-8 max-w-7xl mx-auto w-full">
+          <!-- Profile Header Card -->
+          <section class="relative overflow-hidden rounded-2xl bg-surface-dark border border-white/5 p-8">
+            <div class="absolute -right-10 -top-10 h-40 w-40 rounded-full bg-primary/10 blur-3xl"></div>
+            <div class="relative z-10 flex flex-col md:flex-row gap-8 items-start">
+              <!-- Avatar -->
+              <div class="relative flex-shrink-0">
+                <div
+                  class="h-36 w-36 rounded-2xl border-4 border-primary bg-gray-800 overflow-hidden"
+                  style="background-image: url('{{ user.avatar }}'); background-size: cover; background-position: center;"
+                ></div>
+                <div class="absolute -bottom-2 -right-2 w-12 h-12 rounded-full bg-primary flex items-center justify-center text-white font-black text-lg border-4 border-surface-dark">
+                  {{ user.level }}
+                </div>
+              </div>
+              <!-- User Info -->
+              <div class="flex-1">
+                <div class="flex flex-col md:flex-row md:items-start md:justify-between gap-4 mb-4">
+                  <div>
+                    <h1 class="text-3xl font-black text-white mb-2">{{ user.name }}</h1>
+                    <div class="flex flex-wrap items-center gap-3 mb-3">
+                      <span class="rounded-full bg-primary/20 px-3 py-1 text-xs font-bold text-primary uppercase">{{ user.role }}</span>
+                      <span class="flex items-center gap-1 text-sm text-gray-400">
+                        <span class="material-symbols-outlined text-[16px]">location_on</span>
+                        {{ user.country }}
+                      </span>
+                      <span class="flex items-center gap-1 text-sm text-gray-400">
+                        <span class="material-symbols-outlined text-[16px]">calendar_today</span>
+                        Membre depuis {{ user.joinDate }}
+                      </span>
+                    </div>
+                    <p class="text-gray-400 max-w-xl">{{ user.bio }}</p>
+                  </div>
+                  <a
+                    href="{{ path('app_settings') }}"
+                    class="flex items-center gap-2 rounded-full border border-white/10 bg-surface-hover px-5 py-2.5 text-sm font-bold text-gray-300 hover:bg-white/10 hover:text-white transition-all"
+                  >
+                    <span class="material-symbols-outlined text-[18px]">edit</span>
+                    Modifier le Profil
+                  </a>
+                </div>
+                <!-- Quick Info Row -->
+                <div class="flex flex-wrap gap-3">
+                  <div class="rounded-xl bg-white/5 px-4 py-2 text-center">
+                    <p class="text-[10px] uppercase text-gray-500 font-bold tracking-wider">Rang</p>
+                    <p class="text-lg font-bold text-secondary">{{ user.rank }}</p>
+                  </div>
+                  <div class="rounded-xl bg-white/5 px-4 py-2 text-center">
+                    <p class="text-[10px] uppercase text-gray-500 font-bold tracking-wider">Balance</p>
+                    <p class="text-lg font-bold text-secondary">{{ user.balance }} CP</p>
+                  </div>
+                  <div class="rounded-xl bg-white/5 px-4 py-2 text-center">
+                    <p class="text-[10px] uppercase text-gray-500 font-bold tracking-wider">Email</p>
+                    <p class="text-sm font-medium text-white">{{ user.email }}</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <!-- Stats & Achievements Grid -->
+          <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <!-- Stats Section (2/3) -->
+            <div class="lg:col-span-2 flex flex-col gap-6">
+              <h2 class="text-xl font-bold tracking-tight text-white flex items-center gap-2">
+                <span class="h-6 w-1 rounded-full bg-primary"></span>
+                Statistiques
+              </h2>
+              <!-- Stats Grid -->
+              <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                <div class="group relative overflow-hidden rounded-2xl bg-surface-dark p-6 border border-white/5 text-center transition-transform hover:-translate-y-1">
+                  <div class="absolute -right-4 -top-4 h-20 w-20 rounded-full bg-blue-500/10 blur-xl"></div>
+                  <div class="relative z-10">
+                    <p class="text-4xl font-black text-white mb-1">{{ stats.matchesPlayed }}</p>
+                    <p class="text-sm text-gray-400">Matchs Jou&eacute;s</p>
+                  </div>
+                </div>
+                <div class="group relative overflow-hidden rounded-2xl bg-surface-dark p-6 border border-white/5 text-center transition-transform hover:-translate-y-1">
+                  <div class="absolute -right-4 -top-4 h-20 w-20 rounded-full bg-green-500/10 blur-xl"></div>
+                  <div class="relative z-10">
+                    <p class="text-4xl font-black text-green-400 mb-1">{{ stats.wins }}</p>
+                    <p class="text-sm text-gray-400">Victoires</p>
+                  </div>
+                </div>
+                <div class="group relative overflow-hidden rounded-2xl bg-surface-dark p-6 border border-white/5 text-center transition-transform hover:-translate-y-1">
+                  <div class="absolute -right-4 -top-4 h-20 w-20 rounded-full bg-red-500/10 blur-xl"></div>
+                  <div class="relative z-10">
+                    <p class="text-4xl font-black text-red-400 mb-1">{{ stats.losses }}</p>
+                    <p class="text-sm text-gray-400">D&eacute;faites</p>
+                  </div>
+                </div>
+              </div>
+              <!-- Winrate & Tournaments -->
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div class="rounded-2xl bg-surface-dark p-6 border border-white/5">
+                  <div class="flex items-center gap-4 mb-4">
+                    <div class="rounded-full bg-green-500/20 p-3">
+                      <span class="material-symbols-outlined text-green-400">query_stats</span>
+                    </div>
+                    <div>
+                      <p class="text-sm text-gray-400">Taux de Victoire</p>
+                      <p class="text-3xl font-black text-white">{{ stats.winRate }}<span class="text-xl text-gray-500">%</span></p>
+                    </div>
+                  </div>
+                  <div class="h-2 w-full rounded-full bg-white/10">
+                    <div class="h-2 rounded-full bg-green-400 shadow-[0_0_8px_rgba(74,222,128,0.5)]" style="width: {{ stats.winRate }}%"></div>
+                  </div>
+                </div>
+                <div class="rounded-2xl bg-surface-dark p-6 border border-white/5">
+                  <div class="flex items-center gap-4 mb-4">
+                    <div class="rounded-full bg-secondary/20 p-3">
+                      <span class="material-symbols-outlined text-secondary">trophy</span>
+                    </div>
+                    <div>
+                      <p class="text-sm text-gray-400">Tournois Gagn&eacute;s</p>
+                      <p class="text-3xl font-black text-white">{{ stats.tournamentsWon }}</p>
+                    </div>
+                  </div>
+                  <p class="text-sm text-gray-400">
+                    Gains totaux: <span class="text-secondary font-bold">{{ stats.totalEarnings }}</span>
+                  </p>
+                </div>
+              </div>
+
+              <!-- Recent Matches -->
+              <h2 class="text-xl font-bold tracking-tight text-white flex items-center gap-2 mt-4">
+                <span class="h-6 w-1 rounded-full bg-primary"></span>
+                Matchs R&eacute;cents
+              </h2>
+              <div class="flex flex-col gap-3">
                 {% for match in recentMatches %}
-                <div style="display: flex; align-items: center; justify-content: space-between; padding: 1rem; background: var(--color-bg-tertiary); border-radius: var(--radius-lg); border-left: 3px solid {% if match.result == 'Victoire' %}var(--color-success){% else %}var(--color-error){% endif %};">
-                    <div style="display: flex; align-items: center; gap: 1.5rem;">
-                        <div style="width: 40px; height: 40px; background: {% if match.result == 'Victoire' %}linear-gradient(135deg, #00FF88 0%, #00CC6E 100%){% else %}linear-gradient(135deg, #FF0022 0%, #CC001C 100%){% endif %}; border-radius: 50%; display: flex; align-items: center; justify-content: center;">
-                            {% if match.result == 'Victoire' %}
-                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
-                                <polyline points="20 6 9 17 4 12"></polyline>
-                            </svg>
-                            {% else %}
-                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
-                                <line x1="18" y1="6" x2="6" y2="18"></line>
-                                <line x1="6" y1="6" x2="18" y2="18"></line>
-                            </svg>
-                            {% endif %}
-                        </div>
-                        <div>
-                            <div style="font-weight: 600; margin-bottom: 0.25rem;">{{ match.game }}</div>
-                            <div style="font-size: 0.875rem; color: var(--color-text-secondary);">{{ match.result }} - {{ match.score }}</div>
-                        </div>
+                <div class="flex items-center justify-between rounded-2xl bg-surface-dark border border-white/5 p-4 transition-all hover:border-{{ match.result == 'Victoire' ? 'green' : 'red' }}-500/30">
+                  <div class="flex items-center gap-4">
+                    <div class="h-10 w-10 rounded-full flex items-center justify-center {{ match.result == 'Victoire' ? 'bg-green-500/20 text-green-400' : 'bg-red-500/20 text-red-400' }}">
+                      <span class="material-symbols-outlined text-[20px]">{{ match.result == 'Victoire' ? 'check_circle' : 'cancel' }}</span>
                     </div>
-                    <div style="font-size: 0.875rem; color: var(--color-text-muted);">{{ match.date }}</div>
+                    <div>
+                      <p class="font-bold text-white">{{ match.game }}</p>
+                      <p class="text-sm text-gray-400">{{ match.result }} - {{ match.score }}</p>
+                    </div>
+                  </div>
+                  <span class="text-sm text-gray-500">{{ match.date }}</span>
                 </div>
                 {% endfor %}
+              </div>
             </div>
+
+            <!-- Achievements (1/3) -->
+            <div class="flex flex-col gap-6">
+              <h2 class="text-xl font-bold tracking-tight text-white flex items-center gap-2">
+                <span class="h-6 w-1 rounded-full bg-secondary"></span>
+                Succ&egrave;s
+              </h2>
+              <div class="flex flex-col gap-3">
+                {% for achievement in achievements %}
+                <div class="rounded-2xl bg-surface-dark border border-white/5 p-4 border-l-4 border-l-primary transition-transform hover:-translate-y-0.5">
+                  <div class="flex items-center gap-3">
+                    <span class="text-2xl">{{ achievement.icon }}</span>
+                    <div class="flex-1">
+                      <p class="font-bold text-white text-sm">{{ achievement.name }}</p>
+                      <p class="text-xs text-gray-500">{{ achievement.date }}</p>
+                    </div>
+                  </div>
+                </div>
+                {% endfor %}
+              </div>
+            </div>
+          </div>
         </div>
-    </main>
-</div>
+
+        <!-- Mobile Bottom Nav -->
+        <div
+          class="lg:hidden fixed bottom-0 w-full bg-[#161616] border-t border-white/10 px-6 py-3 flex justify-between items-center z-50"
+          role="navigation"
+          aria-label="Navigation mobile"
+        >
+          <a class="flex flex-col items-center gap-1 text-gray-500" href="{{ path('app_dashboard') }}">
+            <span class="material-symbols-outlined">home</span>
+            <span class="text-[10px]">Accueil</span>
+          </a>
+          <a class="flex flex-col items-center gap-1 text-gray-500" href="{{ path('app_tournaments') }}">
+            <span class="material-symbols-outlined">trophy</span>
+            <span class="text-[10px]">Tournois</span>
+          </a>
+          <a class="flex flex-col items-center gap-1 text-gray-500" href="{{ path('app_shop') }}">
+            <span class="material-symbols-outlined">shopping_bag</span>
+            <span class="text-[10px]">Boutique</span>
+          </a>
+          <a class="flex flex-col items-center gap-1 text-primary" href="{{ path('app_profile') }}">
+            <span class="material-symbols-outlined">person</span>
+            <span class="text-[10px]">Profil</span>
+          </a>
+        </div>
+      </main>
+    </div>
 {% endblock %}

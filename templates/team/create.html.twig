@@ -1,94 +1,224 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Créer une Équipe - Carthage Arena{% endblock %}
+{% block title %}Cr&eacute;er une &Eacute;quipe - Carthage Arena{% endblock %}
 
 {% block body %}
-<div class="app-container">
-    {% include 'components/_sidebar.html.twig' %}
-
-    <main class="main-content">
-         <div style="margin-bottom: 2rem;">
-            <a href="{{ path('app_team') }}" style="display: inline-flex; align-items: center; gap: 0.5rem; color: var(--color-text-secondary); font-size: 0.875rem; font-weight: 600;">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <path d="M19 12H5M12 19l-7-7 7-7"/>
-                </svg>
-                Retour
+    <div
+      id="mainContent"
+      class="flex h-screen w-full opacity-0 transition-opacity duration-500"
+    >
+      <!-- Sidebar -->
+      <aside
+        class="flex w-72 flex-col border-r border-white/5 bg-[#161616] p-6 hidden lg:flex overflow-y-auto"
+        role="navigation"
+        aria-label="Navigation principale"
+      >
+        <div class="flex flex-col gap-6 flex-1">
+          <div class="flex flex-col items-center gap-2 px-2">
+            <img src="{{ asset('assets/logo.webp') }}" alt="Carthage Arena Logo" class="h-32 w-auto" />
+            <h1 class="text-xl font-black tracking-tight text-white uppercase italic">
+              Carthage <span class="text-primary">Arena</span>
+            </h1>
+          </div>
+          <nav class="flex flex-col gap-2">
+            <a class="group flex items-center gap-4 rounded-full px-4 py-3 text-gray-400 transition-all hover:bg-surface-hover hover:text-white" href="{{ path('app_dashboard') }}">
+              <span class="material-symbols-outlined text-[24px]">home</span>
+              <span class="text-sm font-medium tracking-wide">Accueil</span>
             </a>
+            <a class="group flex items-center gap-4 rounded-full px-4 py-3 text-gray-400 transition-all hover:bg-surface-hover hover:text-white" href="{{ path('app_tournaments') }}">
+              <span class="material-symbols-outlined text-[24px]">trophy</span>
+              <span class="text-sm font-medium tracking-wide">Mes Tournois</span>
+            </a>
+            <a class="group flex items-center gap-4 rounded-full px-4 py-3 text-gray-400 transition-all hover:bg-surface-hover hover:text-white" href="{{ path('app_shop') }}">
+              <span class="material-symbols-outlined text-[24px]">shopping_bag</span>
+              <span class="text-sm font-medium tracking-wide">Boutique</span>
+            </a>
+            <a class="group flex items-center gap-4 rounded-full px-4 py-3 text-gray-400 transition-all hover:bg-surface-hover hover:text-white" href="{{ path('app_profile') }}">
+              <span class="material-symbols-outlined text-[24px]">person</span>
+              <span class="text-sm font-medium tracking-wide">Profil</span>
+            </a>
+            <a class="group flex items-center gap-4 rounded-full px-4 py-3 text-gray-400 transition-all hover:bg-surface-hover hover:text-white mt-4" href="{{ path('app_settings') }}">
+              <span class="material-symbols-outlined text-[24px]">settings</span>
+              <span class="text-sm font-medium tracking-wide">Param&egrave;tres</span>
+            </a>
+            {% if app.user %}
+            <a
+              class="group flex items-center gap-4 rounded-full px-4 py-3 text-gray-400 transition-all hover:bg-red-500/10 hover:text-red-400 mt-2"
+              href="{{ path('app_logout') }}"
+            >
+              <span class="material-symbols-outlined text-[24px]">logout</span>
+              <span class="text-sm font-medium tracking-wide">Déconnexion</span>
+            </a>
+            {% endif %}
+          </nav>
         </div>
+        <!-- Bottom Widget -->
+        <div class="relative overflow-hidden rounded-2xl bg-gradient-to-br from-gray-900 to-black p-4 border border-white/10">
+          <div class="absolute -right-6 -top-6 h-24 w-24 rounded-full bg-primary/20 blur-2xl"></div>
+          <div class="relative z-10 flex flex-col gap-3">
+            <div class="flex items-center justify-between">
+              <p class="text-[10px] font-bold uppercase tracking-widest text-primary">Nouvelle &Eacute;quipe</p>
+              <span class="material-symbols-outlined text-primary text-sm">group_add</span>
+            </div>
+            <div>
+              <h4 class="text-sm font-bold text-white">Fondez votre &eacute;quipe</h4>
+              <p class="text-xs text-gray-400 mt-1">Devenez leader et recrutez.</p>
+            </div>
+          </div>
+        </div>
+      </aside>
 
-        <div class="card" style="max-width: 800px; margin: 0 auto;">
-            <div class="page-header" style="margin-bottom: 2rem; border-bottom: 1px solid var(--color-border); padding-bottom: 1.5rem;">
-                <h1 class="page-title">Créer votre Équipe</h1>
-                <p class="page-subtitle">Configurez l'identité de votre équipe.</p>
+      <!-- Main Content -->
+      <main class="flex flex-1 flex-col overflow-y-auto bg-background-dark relative">
+        <!-- Header -->
+        <header class="sticky top-0 z-50 flex h-20 items-center justify-between border-b border-white/5 bg-background-dark/80 backdrop-blur-md px-8 py-4">
+          <div class="flex flex-col">
+            <h2 class="text-2xl font-bold text-white">Cr&eacute;er une &Eacute;quipe</h2>
+            <p class="text-xs text-gray-400">Configurez l'identit&eacute; de votre &eacute;quipe.</p>
+          </div>
+          <div class="flex items-center gap-6">
+            <button class="relative rounded-full p-2 text-gray-400 hover:bg-white/5 hover:text-white transition-colors" aria-label="Notifications">
+              <span class="material-symbols-outlined">notifications</span>
+              <span class="absolute right-2 top-2 h-2 w-2 rounded-full bg-primary"></span>
+            </button>
+            <div class="flex items-center gap-4 rounded-full border border-white/5 bg-surface-dark py-1.5 pl-4 pr-1.5 shadow-lg">
+              <div class="flex items-center gap-1 rounded-full bg-gradient-to-r from-yellow-600 to-yellow-400 px-3 py-1 text-black shadow-[0_0_10px_rgba(255,215,0,0.3)]" title="Carthage Points">
+                <span class="material-symbols-outlined text-[16px] font-bold">payments</span>
+                <span class="text-xs font-black">CP</span>
+              </div>
+              <div class="h-9 w-9 overflow-hidden rounded-full border-2 border-primary bg-gray-800"></div>
+            </div>
+          </div>
+        </header>
+
+        <div class="flex flex-col gap-6 p-8 max-w-3xl mx-auto w-full">
+          <!-- Back Link -->
+          <a
+            href="{{ path('app_team') }}"
+            class="flex items-center gap-2 text-gray-400 hover:text-white transition-colors text-sm font-medium w-fit"
+          >
+            <span class="material-symbols-outlined text-[18px]">arrow_back</span>
+            Retour
+          </a>
+
+          <!-- Form Card -->
+          <section class="rounded-2xl bg-surface-dark border border-white/5 p-8">
+            <div class="border-b border-white/5 pb-6 mb-6">
+              <h3 class="text-xl font-black text-white mb-1">Cr&eacute;er votre &Eacute;quipe</h3>
+              <p class="text-sm text-gray-400">Configurez l'identit&eacute; de votre &eacute;quipe.</p>
             </div>
 
-            <form>
-                <div class="form-group" style="margin-bottom: 2rem;">
-                    <label style="display: block; margin-bottom: 1rem; font-weight: 600;">Logo de l'équipe</label>
-                    <div style="display: flex; align-items: center; gap: 2rem;">
-                         <div style="width: 100px; height: 100px; border-radius: 50%; background: var(--color-bg-tertiary); border: 2px dashed var(--color-text-secondary); display: flex; align-items: center; justify-content: center;">
-                            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="var(--color-text-secondary)" stroke-width="2">
-                                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
-                                <polyline points="17 8 12 3 7 8"></polyline>
-                                <line x1="12" y1="3" x2="12" y2="15"></line>
-                            </svg>
-                         </div>
-                         <div>
-                            <button type="button" class="btn btn-secondary">Télécharger une image</button>
-                            <div style="font-size: 0.75rem; color: var(--color-text-muted); margin-top: 0.5rem;">JPG ou PNG, max 2MB.</div>
-                         </div>
-                    </div>
+            <form class="flex flex-col gap-6">
+              <!-- Logo Upload -->
+              <div>
+                <label class="block text-sm font-medium text-gray-400 mb-3">Logo de l'&eacute;quipe</label>
+                <div class="flex items-center gap-6">
+                  <div class="h-24 w-24 rounded-full bg-white/5 border-2 border-dashed border-white/20 flex items-center justify-center flex-shrink-0 hover:border-primary/50 transition-colors cursor-pointer">
+                    <span class="material-symbols-outlined text-gray-500 text-[32px]">upload</span>
+                  </div>
+                  <div>
+                    <button type="button" class="rounded-full border border-white/10 bg-surface-hover px-5 py-2 text-sm font-bold text-gray-300 hover:bg-white/10 hover:text-white transition-all">
+                      T&eacute;l&eacute;charger une image
+                    </button>
+                    <p class="text-xs text-gray-500 mt-1">JPG ou PNG, max 2MB.</p>
+                  </div>
                 </div>
+              </div>
 
-                <div class="form-group">
-                    <label class="form-label">Nom de l'équipe</label>
-                    <input type="text" class="form-input" placeholder="Ex: Carthage Eagles">
-                </div>
+              <!-- Team Name -->
+              <div>
+                <label for="team_name" class="block text-sm font-medium text-gray-400 mb-2">
+                  Nom de l'&eacute;quipe <span class="text-primary">*</span>
+                </label>
+                <input
+                  type="text"
+                  id="team_name"
+                  name="name"
+                  placeholder="Ex: Carthage Eagles"
+                  class="w-full bg-[#161616] border border-white/10 rounded-xl py-3.5 px-4 text-sm text-white placeholder-gray-500 focus:border-primary focus:outline-none input-glow transition-all"
+                />
+              </div>
 
-                <div class="form-group">
-                    <label class="form-label">Tag (Abbréviation)</label>
-                    <input type="text" class="form-input" placeholder="Ex: EGLS" maxlength="5" style="text-transform: uppercase;">
-                    <div style="font-size: 0.75rem; color: var(--color-text-muted); margin-top: 0.25rem;">3 à 5 caractères qui apparaîtront à côté de vos pseudos.</div>
-                </div>
+              <!-- Team Tag -->
+              <div>
+                <label for="team_tag" class="block text-sm font-medium text-gray-400 mb-2">
+                  Tag (Abbr&eacute;viation) <span class="text-primary">*</span>
+                </label>
+                <input
+                  type="text"
+                  id="team_tag"
+                  name="tag"
+                  placeholder="Ex: EGLS"
+                  maxlength="5"
+                  class="w-full bg-[#161616] border border-white/10 rounded-xl py-3.5 px-4 text-sm text-white placeholder-gray-500 focus:border-primary focus:outline-none input-glow transition-all uppercase"
+                />
+                <p class="text-xs text-gray-500 mt-1">3 &agrave; 5 caract&egrave;res qui appara&icirc;tront &agrave; c&ocirc;t&eacute; de vos pseudos.</p>
+              </div>
 
-                <div class="form-group">
-                    <label class="form-label">Jeu Principal</label>
-                    <select class="form-input">
-                        <option>Valorant</option>
-                        <option>League of Legends</option>
-                        <option>CS:GO 2</option>
-                        <option>Autre / Multi-gaming</option>
-                    </select>
-                </div>
+              <!-- Description -->
+              <div>
+                <label for="team_description" class="block text-sm font-medium text-gray-400 mb-2">
+                  Description
+                </label>
+                <textarea
+                  id="team_description"
+                  name="description"
+                  rows="4"
+                  placeholder="D&eacute;crivez votre &eacute;quipe, vos objectifs..."
+                  class="w-full bg-[#161616] border border-white/10 rounded-xl py-3.5 px-4 text-sm text-white placeholder-gray-500 focus:border-primary focus:outline-none input-glow transition-all resize-none"
+                ></textarea>
+              </div>
 
-                <div class="form-group">
-                    <label class="form-label">Description</label>
-                    <textarea class="form-input" rows="4" placeholder="Décrivez votre équipe, vos objectifs..."></textarea>
-                </div>
+              <!-- Info Box -->
+              <div class="rounded-xl bg-white/5 border border-white/10 p-5">
+                <h4 class="font-bold text-white text-sm mb-3">Conditions de Cr&eacute;ation</h4>
+                <ul class="flex flex-col gap-2.5">
+                  <li class="flex items-center gap-2 text-sm text-gray-400">
+                    <span class="material-symbols-outlined text-green-400 text-[18px]">check_circle</span>
+                    Vous deviendrez automatiquement le Leader.
+                  </li>
+                  <li class="flex items-center gap-2 text-sm text-gray-400">
+                    <span class="material-symbols-outlined text-green-400 text-[18px]">check_circle</span>
+                    Vous pourrez inviter jusqu'&agrave; 7 autres joueurs.
+                  </li>
+                  <li class="flex items-center gap-2 text-sm text-gray-400">
+                    <span class="material-symbols-outlined text-green-400 text-[18px]">check_circle</span>
+                    Seul le Leader peut inscrire l'&eacute;quipe aux tournois.
+                  </li>
+                </ul>
+              </div>
 
-                <div style="margin-top: 2rem; padding: 1.5rem; background: var(--color-bg-tertiary); border-radius: var(--radius-lg); margin-bottom: 2rem;">
-                    <h4 style="font-weight: 700; margin-bottom: 0.5rem;">Conditions de Création</h4>
-                    <ul style="list-style: none; padding: 0; margin: 0; font-size: 0.875rem; color: var(--color-text-secondary);">
-                        <li style="margin-bottom: 0.5rem; display: flex; gap: 0.5rem;">
-                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--color-success)" stroke-width="2"><polyline points="20 6 9 17 4 12"></polyline></svg>
-                            Vous deviendrez automatiquement le Leader.
-                        </li>
-                        <li style="margin-bottom: 0.5rem; display: flex; gap: 0.5rem;">
-                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--color-success)" stroke-width="2"><polyline points="20 6 9 17 4 12"></polyline></svg>
-                            Vous pourrez inviter jusqu'à 7 autres joueurs.
-                        </li>
-                        <li style="display: flex; gap: 0.5rem;">
-                             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--color-success)" stroke-width="2"><polyline points="20 6 9 17 4 12"></polyline></svg>
-                            Seul le Leader peut inscrire l'équipe aux tournois.
-                        </li>
-                    </ul>
-                </div>
-
-                <button type="submit" class="btn btn-primary" style="width: 100%; justify-content: center; font-size: 1.125rem; padding: 1rem;">
-                    Créer l'Équipe
-                </button>
+              <!-- Submit -->
+              <button
+                type="submit"
+                class="w-full rounded-full bg-primary py-3.5 text-sm font-bold text-white shadow-lg shadow-red-900/30 hover:bg-red-600 hover:shadow-red-600/40 hover:-translate-y-0.5 transition-all flex items-center justify-center gap-2"
+              >
+                <span class="material-symbols-outlined text-[20px]">add_circle</span>
+                Cr&eacute;er l'&Eacute;quipe
+              </button>
             </form>
+          </section>
         </div>
-    </main>
-</div>
+
+        <!-- Mobile Bottom Nav -->
+        <div class="lg:hidden fixed bottom-0 w-full bg-[#161616] border-t border-white/10 px-6 py-3 flex justify-between items-center z-50" role="navigation" aria-label="Navigation mobile">
+          <a class="flex flex-col items-center gap-1 text-gray-500" href="{{ path('app_dashboard') }}">
+            <span class="material-symbols-outlined">home</span>
+            <span class="text-[10px]">Accueil</span>
+          </a>
+          <a class="flex flex-col items-center gap-1 text-gray-500" href="{{ path('app_tournaments') }}">
+            <span class="material-symbols-outlined">trophy</span>
+            <span class="text-[10px]">Tournois</span>
+          </a>
+          <a class="flex flex-col items-center gap-1 text-gray-500" href="{{ path('app_shop') }}">
+            <span class="material-symbols-outlined">shopping_bag</span>
+            <span class="text-[10px]">Boutique</span>
+          </a>
+          <a class="flex flex-col items-center gap-1 text-gray-500" href="{{ path('app_profile') }}">
+            <span class="material-symbols-outlined">person</span>
+            <span class="text-[10px]">Profil</span>
+          </a>
+        </div>
+      </main>
+    </div>
 {% endblock %}

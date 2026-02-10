@@ -1,205 +1,453 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Paramètres - Carthage Arena{% endblock %}
+{% block title %}Param&egrave;tres - Carthage Arena{% endblock %}
 
 {% block body %}
-<div class="app-container">
-    {% include 'components/_sidebar.html.twig' %}
+    <div
+      id="mainContent"
+      class="flex h-screen w-full opacity-0 transition-opacity duration-500"
+    >
+      <!-- Sidebar -->
+      <aside
+        class="flex w-72 flex-col border-r border-white/5 bg-[#161616] p-6 hidden lg:flex overflow-y-auto"
+        role="navigation"
+        aria-label="Navigation principale"
+      >
+        <div class="flex flex-col gap-6 flex-1">
+          <!-- Logo Area -->
+          <div class="flex flex-col items-center gap-2 px-2">
+            <img
+              src="{{ asset('assets/logo.webp') }}"
+              alt="Carthage Arena Logo"
+              class="h-32 w-auto"
+            />
+            <h1
+              class="text-xl font-black tracking-tight text-white uppercase italic"
+            >
+              Carthage <span class="text-primary">Arena</span>
+            </h1>
+          </div>
+          <!-- Navigation -->
+          <nav class="flex flex-col gap-2">
+            <a
+              class="group flex items-center gap-4 rounded-full px-4 py-3 text-gray-400 transition-all hover:bg-surface-hover hover:text-white"
+              href="{{ path('app_dashboard') }}"
+            >
+              <span class="material-symbols-outlined text-[24px]">home</span>
+              <span class="text-sm font-medium tracking-wide">Accueil</span>
+            </a>
+            <a
+              class="group flex items-center gap-4 rounded-full px-4 py-3 text-gray-400 transition-all hover:bg-surface-hover hover:text-white"
+              href="{{ path('app_tournaments') }}"
+            >
+              <span class="material-symbols-outlined text-[24px]">trophy</span>
+              <span class="text-sm font-medium tracking-wide">Mes Tournois</span>
+            </a>
+            <a
+              class="group flex items-center gap-4 rounded-full px-4 py-3 text-gray-400 transition-all hover:bg-surface-hover hover:text-white"
+              href="{{ path('app_shop') }}"
+            >
+              <span class="material-symbols-outlined text-[24px]">shopping_bag</span>
+              <span class="text-sm font-medium tracking-wide">Boutique</span>
+            </a>
+            <a
+              class="group flex items-center gap-4 rounded-full px-4 py-3 text-gray-400 transition-all hover:bg-surface-hover hover:text-white"
+              href="{{ path('app_profile') }}"
+            >
+              <span class="material-symbols-outlined text-[24px]">person</span>
+              <span class="text-sm font-medium tracking-wide">Profil</span>
+            </a>
+            <a
+              class="group flex items-center gap-4 rounded-full bg-primary/10 px-4 py-3 text-primary transition-all hover:bg-primary hover:text-white mt-4"
+              href="{{ path('app_settings') }}"
+            >
+              <span class="material-symbols-outlined text-[24px]" data-weight="fill">settings</span>
+              <span class="text-sm font-bold tracking-wide">Param&egrave;tres</span>
+            </a>
+            {% if app.user %}
+            <a
+              class="group flex items-center gap-4 rounded-full px-4 py-3 text-gray-400 transition-all hover:bg-red-500/10 hover:text-red-400 mt-2"
+              href="{{ path('app_logout') }}"
+            >
+              <span class="material-symbols-outlined text-[24px]">logout</span>
+              <span class="text-sm font-medium tracking-wide">Déconnexion</span>
+            </a>
+            {% endif %}
+          </nav>
+        </div>
+        <!-- Bottom Widget -->
+        <div
+          class="relative overflow-hidden rounded-2xl bg-gradient-to-br from-gray-900 to-black p-4 border border-white/10"
+        >
+          <div
+            class="absolute -right-6 -top-6 h-24 w-24 rounded-full bg-primary/20 blur-2xl"
+          ></div>
+          <div class="relative z-10 flex flex-col gap-3">
+            <div class="flex items-center justify-between">
+              <p class="text-[10px] font-bold uppercase tracking-widest text-primary">
+                Aide & Support
+              </p>
+              <span class="material-symbols-outlined text-primary text-sm">help</span>
+            </div>
+            <div>
+              <h4 class="text-sm font-bold text-white">Besoin d'aide?</h4>
+              <p class="text-xs text-gray-400 mt-1">
+                Consultez notre centre d'aide.
+              </p>
+            </div>
+          </div>
+        </div>
+      </aside>
 
-    <main class="main-content">
-        <div class="page-header">
-            <h1 class="page-title">Paramètres</h1>
-            <p class="page-subtitle">Gérez vos préférences et paramètres de compte.</p>
+      <!-- Main Content -->
+      <main
+        class="flex flex-1 flex-col overflow-y-auto bg-background-dark relative"
+      >
+        <!-- Header -->
+        <header
+          class="sticky top-0 z-50 flex h-20 items-center justify-between border-b border-white/5 bg-background-dark/80 backdrop-blur-md px-8 py-4"
+        >
+          <div class="flex flex-col">
+            <h2 class="text-2xl font-bold text-white">Param&egrave;tres</h2>
+            <p class="text-xs text-gray-400">G&eacute;rez vos pr&eacute;f&eacute;rences et param&egrave;tres de compte.</p>
+          </div>
+          <div class="flex items-center gap-6">
+            <!-- Notifications -->
+            <button
+              class="relative rounded-full p-2 text-gray-400 hover:bg-white/5 hover:text-white transition-colors"
+              aria-label="Notifications"
+            >
+              <span class="material-symbols-outlined">notifications</span>
+              <span class="absolute right-2 top-2 h-2 w-2 rounded-full bg-primary"></span>
+            </button>
+            <!-- User Pill -->
+            {% if app.user %}
+            <div
+              class="flex items-center gap-4 rounded-full border border-white/5 bg-surface-dark py-1.5 pl-4 pr-1.5 shadow-lg"
+            >
+              <div class="flex flex-col items-end mr-2">
+                <span class="text-sm font-bold text-white leading-none">{{ user.name }}</span>
+              </div>
+              <!-- Currency Pill -->
+              <div
+                class="flex items-center gap-1 rounded-full bg-gradient-to-r from-yellow-600 to-yellow-400 px-3 py-1 text-black shadow-[0_0_10px_rgba(255,215,0,0.3)]"
+                title="Carthage Points"
+              >
+                <span class="material-symbols-outlined text-[16px] font-bold">payments</span>
+                <span class="text-xs font-black">CP</span>
+              </div>
+              <!-- Avatar -->
+              <div
+                class="h-9 w-9 overflow-hidden rounded-full border-2 border-primary bg-gray-800"
+                style="background-image: url('{{ user.avatar }}'); background-size: cover;"
+              ></div>
+            </div>
+            {% else %}
+            <a
+              href="{{ path('app_login') }}"
+              class="flex items-center gap-2 rounded-full bg-primary px-5 py-2.5 text-sm font-bold text-white shadow-lg shadow-red-900/30 hover:bg-red-600 transition-all"
+            >
+              <span class="material-symbols-outlined text-[20px]">login</span>
+              Connexion
+            </a>
+            {% endif %}
+          </div>
+        </header>
+
+        <div class="flex flex-col gap-8 p-8 max-w-4xl mx-auto w-full">
+          <!-- Flash Messages -->
+          {% for message in app.flashes('success') %}
+            <div class="rounded-xl bg-green-500/10 border border-green-500/30 p-4 text-sm text-green-400 flex items-center gap-2">
+              <span class="material-symbols-outlined text-[20px]">check_circle</span>
+              {{ message }}
+            </div>
+          {% endfor %}
+          {% for message in app.flashes('error') %}
+            <div class="rounded-xl bg-red-500/10 border border-red-500/30 p-4 text-sm text-red-400 flex items-center gap-2">
+              <span class="material-symbols-outlined text-[20px]">error</span>
+              {{ message }}
+            </div>
+          {% endfor %}
+
+          <!-- Profile Information -->
+          <section class="rounded-2xl bg-surface-dark border border-white/5 p-8">
+            <h3 class="text-lg font-bold text-white flex items-center gap-3 mb-6">
+              <span class="material-symbols-outlined text-primary">person</span>
+              Informations du Profil
+            </h3>
+            <form class="flex flex-col gap-6" action="{{ path('app_settings') }}" method="post" enctype="multipart/form-data">
+              <input type="hidden" name="_form_type" value="profile">
+              <input type="hidden" name="_csrf_token" value="{{ csrf_token('profile_update') }}">
+              <!-- Avatar Row -->
+              <div class="flex items-center gap-6 mb-2">
+                <div
+                  id="avatarPreview"
+                  class="h-20 w-20 rounded-full border-4 border-primary bg-gray-800 flex-shrink-0"
+                  style="background-image: url('{{ user.avatar }}'); background-size: cover; background-position: center;"
+                ></div>
+                <div>
+                  <input type="file" id="avatarInput" name="avatar" accept="image/jpeg,image/png,image/webp" class="hidden" />
+                  <button type="button" onclick="document.getElementById('avatarInput').click()" class="rounded-full border border-white/10 bg-surface-hover px-5 py-2 text-sm font-bold text-gray-300 hover:bg-white/10 hover:text-white transition-all">
+                    Changer l'avatar
+                  </button>
+                  <p class="text-xs text-gray-500 mt-1">JPG, PNG ou WebP, max 2MB.</p>
+                </div>
+              </div>
+              <!-- Fields Grid -->
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                <div>
+                  <label for="settings_name" class="block text-sm font-medium text-gray-400 mb-2">
+                    Nom d'utilisateur <span class="text-primary">*</span>
+                  </label>
+                  <input
+                    type="text"
+                    id="settings_name"
+                    name="name"
+                    value="{{ user.name }}"
+                    class="w-full bg-[#161616] border border-white/10 rounded-xl py-3.5 px-4 text-sm text-white placeholder-gray-500 focus:border-primary focus:outline-none input-glow transition-all"
+                  />
+                </div>
+                <div>
+                  <label for="settings_email" class="block text-sm font-medium text-gray-400 mb-2">
+                    Adresse e-mail <span class="text-primary">*</span>
+                  </label>
+                  <input
+                    type="email"
+                    id="settings_email"
+                    name="email"
+                    value="{{ user.email }}"
+                    class="w-full bg-[#161616] border border-white/10 rounded-xl py-3.5 px-4 text-sm text-white placeholder-gray-500 focus:border-primary focus:outline-none input-glow transition-all"
+                  />
+                </div>
+                <div>
+                  <label for="settings_language" class="block text-sm font-medium text-gray-400 mb-2">
+                    Langue
+                  </label>
+                  <select
+                    id="settings_language"
+                    name="language"
+                    class="w-full bg-[#161616] border border-white/10 rounded-xl py-3.5 px-4 text-sm text-white focus:border-primary focus:outline-none input-glow transition-all"
+                  >
+                    <option {{ user.language == 'Fran&ccedil;ais' ? 'selected' : '' }}>Fran&ccedil;ais</option>
+                    <option {{ user.language == 'English' ? 'selected' : '' }}>English</option>
+                    <option {{ user.language == 'العربية' ? 'selected' : '' }}>العربية</option>
+                  </select>
+                </div>
+                <div>
+                  <label for="settings_timezone" class="block text-sm font-medium text-gray-400 mb-2">
+                    Fuseau horaire
+                  </label>
+                  <select
+                    id="settings_timezone"
+                    name="timezone"
+                    class="w-full bg-[#161616] border border-white/10 rounded-xl py-3.5 px-4 text-sm text-white focus:border-primary focus:outline-none input-glow transition-all"
+                  >
+                    <option {{ user.timezone == 'Africa/Tunis' ? 'selected' : '' }}>Africa/Tunis (GMT+1)</option>
+                    <option {{ user.timezone == 'Europe/Paris' ? 'selected' : '' }}>Europe/Paris (GMT+1)</option>
+                    <option {{ user.timezone == 'Europe/London' ? 'selected' : '' }}>Europe/London (GMT+0)</option>
+                    <option {{ user.timezone == 'America/New_York' ? 'selected' : '' }}>America/New_York (GMT-5)</option>
+                  </select>
+                </div>
+                <div>
+                  <label for="settings_country" class="block text-sm font-medium text-gray-400 mb-2">
+                    Pays
+                  </label>
+                  <select
+                    id="settings_country"
+                    name="country"
+                    class="w-full bg-[#161616] border border-white/10 rounded-xl py-3.5 px-4 text-sm text-white focus:border-primary focus:outline-none input-glow transition-all"
+                  >
+                    <option {{ user.country == 'Tunisie' ? 'selected' : '' }}>Tunisie</option>
+                    <option {{ user.country == 'France' ? 'selected' : '' }}>France</option>
+                    <option {{ user.country == 'Alg&eacute;rie' ? 'selected' : '' }}>Alg&eacute;rie</option>
+                    <option {{ user.country == 'Maroc' ? 'selected' : '' }}>Maroc</option>
+                    <option {{ user.country == 'Belgique' ? 'selected' : '' }}>Belgique</option>
+                  </select>
+                </div>
+              </div>
+              <div class="flex justify-end">
+                <button
+                  type="submit"
+                  class="rounded-full bg-primary px-8 py-3 text-sm font-bold text-white shadow-lg shadow-red-900/30 hover:bg-red-600 hover:shadow-red-600/40 hover:-translate-y-0.5 transition-all flex items-center gap-2"
+                >
+                  <span class="material-symbols-outlined text-[18px]">save</span>
+                  Enregistrer les modifications
+                </button>
+              </div>
+            </form>
+          </section>
+
+          <!-- Security -->
+          <section class="rounded-2xl bg-surface-dark border border-white/5 p-8">
+            <h3 class="text-lg font-bold text-white flex items-center gap-3 mb-6">
+              <span class="material-symbols-outlined text-primary">lock</span>
+              S&eacute;curit&eacute;
+            </h3>
+            <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 rounded-xl bg-white/5 p-5">
+              <div>
+                <p class="font-bold text-white text-sm">Mot de passe et authentification</p>
+                <p class="text-xs text-gray-400 mt-0.5">G&eacute;rez votre mot de passe, l'authentification &agrave; deux facteurs et les connexions sociales via Clerk.</p>
+              </div>
+              <button
+                type="button"
+                id="openClerkProfile"
+                class="flex-shrink-0 rounded-full bg-white/5 border border-white/10 px-6 py-2.5 text-sm font-bold text-gray-300 hover:bg-white/10 hover:text-white transition-all flex items-center gap-2"
+              >
+                <span class="material-symbols-outlined text-[18px]">manage_accounts</span>
+                G&eacute;rer le compte
+              </button>
+            </div>
+          </section>
+
+          <!-- Notifications -->
+          <section class="rounded-2xl bg-surface-dark border border-white/5 p-8">
+            <h3 class="text-lg font-bold text-white flex items-center gap-3 mb-6">
+              <span class="material-symbols-outlined text-primary">notifications</span>
+              Notifications
+            </h3>
+            <div class="flex flex-col gap-4">
+              <!-- Email Notifications -->
+              <div class="flex items-center justify-between rounded-xl bg-white/5 p-4">
+                <div>
+                  <p class="font-bold text-white text-sm">Notifications par e-mail</p>
+                  <p class="text-xs text-gray-400 mt-0.5">Recevoir des e-mails pour les tournois et matchs</p>
+                </div>
+                <label class="relative inline-flex items-center cursor-pointer">
+                  <input type="checkbox" checked class="sr-only peer" />
+                  <div class="w-11 h-6 bg-white/10 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
+                </label>
+              </div>
+              <!-- Push Notifications -->
+              <div class="flex items-center justify-between rounded-xl bg-white/5 p-4">
+                <div>
+                  <p class="font-bold text-white text-sm">Notifications push</p>
+                  <p class="text-xs text-gray-400 mt-0.5">Notifications en temps r&eacute;el sur votre appareil</p>
+                </div>
+                <label class="relative inline-flex items-center cursor-pointer">
+                  <input type="checkbox" checked class="sr-only peer" />
+                  <div class="w-11 h-6 bg-white/10 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
+                </label>
+              </div>
+              <!-- Shop Updates -->
+              <div class="flex items-center justify-between rounded-xl bg-white/5 p-4">
+                <div>
+                  <p class="font-bold text-white text-sm">Mises &agrave; jour de la boutique</p>
+                  <p class="text-xs text-gray-400 mt-0.5">Nouveaux skins et offres sp&eacute;ciales</p>
+                </div>
+                <label class="relative inline-flex items-center cursor-pointer">
+                  <input type="checkbox" class="sr-only peer" />
+                  <div class="w-11 h-6 bg-white/10 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
+                </label>
+              </div>
+              <!-- Tournament Reminders -->
+              <div class="flex items-center justify-between rounded-xl bg-white/5 p-4">
+                <div>
+                  <p class="font-bold text-white text-sm">Rappels de tournois</p>
+                  <p class="text-xs text-gray-400 mt-0.5">Rappels avant le d&eacute;but de vos tournois</p>
+                </div>
+                <label class="relative inline-flex items-center cursor-pointer">
+                  <input type="checkbox" checked class="sr-only peer" />
+                  <div class="w-11 h-6 bg-white/10 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
+                </label>
+              </div>
+            </div>
+          </section>
+
+          <!-- Privacy -->
+          <section class="rounded-2xl bg-surface-dark border border-white/5 p-8">
+            <h3 class="text-lg font-bold text-white flex items-center gap-3 mb-6">
+              <span class="material-symbols-outlined text-primary">shield</span>
+              Confidentialit&eacute;
+            </h3>
+            <div class="flex flex-col gap-4">
+              <div class="flex items-center justify-between rounded-xl bg-white/5 p-4">
+                <div>
+                  <p class="font-bold text-white text-sm">Profil public</p>
+                  <p class="text-xs text-gray-400 mt-0.5">Permettre aux autres de voir votre profil</p>
+                </div>
+                <label class="relative inline-flex items-center cursor-pointer">
+                  <input type="checkbox" checked class="sr-only peer" />
+                  <div class="w-11 h-6 bg-white/10 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
+                </label>
+              </div>
+              <div class="flex items-center justify-between rounded-xl bg-white/5 p-4">
+                <div>
+                  <p class="font-bold text-white text-sm">Afficher les statistiques</p>
+                  <p class="text-xs text-gray-400 mt-0.5">Rendre vos stats visibles publiquement</p>
+                </div>
+                <label class="relative inline-flex items-center cursor-pointer">
+                  <input type="checkbox" checked class="sr-only peer" />
+                  <div class="w-11 h-6 bg-white/10 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
+                </label>
+              </div>
+            </div>
+          </section>
+
+          <!-- Danger Zone -->
+          <section class="rounded-2xl bg-surface-dark border border-red-500/30 p-8">
+            <h3 class="text-lg font-bold text-red-400 flex items-center gap-3 mb-6">
+              <span class="material-symbols-outlined">warning</span>
+              Zone de Danger
+            </h3>
+            <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 rounded-xl bg-red-500/5 border border-red-500/20 p-5">
+              <div>
+                <p class="font-bold text-red-400 text-sm">Supprimer le compte</p>
+                <p class="text-xs text-gray-400 mt-0.5">Cette action est irr&eacute;versible. Toutes vos donn&eacute;es seront d&eacute;finitivement supprim&eacute;es.</p>
+              </div>
+              <button class="flex-shrink-0 rounded-full bg-red-500 px-6 py-2.5 text-sm font-bold text-white hover:bg-red-600 transition-all flex items-center gap-2">
+                <span class="material-symbols-outlined text-[18px]">delete_forever</span>
+                Supprimer le compte
+              </button>
+            </div>
+          </section>
         </div>
 
-        <div style="display: grid; gap: 2rem;">
-            <div class="card">
-                <h2 style="font-size: 1.5rem; font-weight: 700; margin-bottom: 1.5rem; display: flex; align-items: center; gap: 0.75rem;">
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--color-primary)" stroke-width="2">
-                        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
-                        <circle cx="12" cy="7" r="4"></circle>
-                    </svg>
-                    Informations du Profil
-                </h2>
-
-                <form>
-                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem;">
-                        <div class="form-group">
-                            <label class="form-label" for="username">Nom d'utilisateur</label>
-                            <input type="text" id="username" class="form-input" value="{{ user.name }}">
-                        </div>
-
-                        <div class="form-group">
-                            <label class="form-label" for="email">Adresse e-mail</label>
-                            <input type="email" id="email" class="form-input" value="{{ user.email }}">
-                        </div>
-
-                        <div class="form-group">
-                            <label class="form-label" for="country">Pays</label>
-                            <select id="country" class="form-input">
-                                <option selected>{{ user.country }}</option>
-                                <option>France</option>
-                                <option>Algérie</option>
-                                <option>Maroc</option>
-                                <option>Belgique</option>
-                            </select>
-                        </div>
-
-                        <div class="form-group">
-                            <label class="form-label" for="language">Langue</label>
-                            <select id="language" class="form-input">
-                                <option selected>{{ user.language }}</option>
-                                <option>English</option>
-                                <option>العربية</option>
-                            </select>
-                        </div>
-                    </div>
-
-                    <div class="form-group">
-                        <label class="form-label" for="bio">Biographie</label>
-                        <textarea id="bio" class="form-input" rows="4" placeholder="Parlez-nous de vous...">Joueur professionnel passionné par les jeux compétitifs. Spécialisé en Valorant et League of Legends.</textarea>
-                    </div>
-
-                    <button type="submit" class="btn btn-primary">
-                        Enregistrer les modifications
-                    </button>
-                </form>
-            </div>
-
-            <div class="card">
-                <h2 style="font-size: 1.5rem; font-weight: 700; margin-bottom: 1.5rem; display: flex; align-items: center; gap: 0.75rem;">
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--color-primary)" stroke-width="2">
-                        <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
-                        <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
-                    </svg>
-                    Sécurité
-                </h2>
-
-                <form>
-                    <div class="form-group">
-                        <label class="form-label" for="current_password">Mot de passe actuel</label>
-                        <input type="password" id="current_password" class="form-input" placeholder="••••••••">
-                    </div>
-
-                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem;">
-                        <div class="form-group">
-                            <label class="form-label" for="new_password">Nouveau mot de passe</label>
-                            <input type="password" id="new_password" class="form-input" placeholder="••••••••">
-                        </div>
-
-                        <div class="form-group">
-                            <label class="form-label" for="confirm_password">Confirmer le mot de passe</label>
-                            <input type="password" id="confirm_password" class="form-input" placeholder="••••••••">
-                        </div>
-                    </div>
-
-                    <button type="submit" class="btn btn-primary">
-                        Changer le mot de passe
-                    </button>
-                </form>
-            </div>
-
-            <div class="card">
-                <h2 style="font-size: 1.5rem; font-weight: 700; margin-bottom: 1.5rem; display: flex; align-items: center; gap: 0.75rem;">
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--color-primary)" stroke-width="2">
-                        <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
-                        <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
-                    </svg>
-                    Notifications
-                </h2>
-
-                <div style="display: flex; flex-direction: column; gap: 1.5rem;">
-                    <div style="display: flex; justify-content: space-between; align-items: center; padding: 1rem; background: var(--color-bg-tertiary); border-radius: var(--radius-lg);">
-                        <div>
-                            <div style="font-weight: 600; margin-bottom: 0.25rem;">Notifications par e-mail</div>
-                            <div style="font-size: 0.875rem; color: var(--color-text-secondary);">Recevoir des e-mails pour les tournois et matchs</div>
-                        </div>
-                        <label style="position: relative; display: inline-block; width: 60px; height: 34px;">
-                            <input type="checkbox" checked style="opacity: 0; width: 0; height: 0;">
-                            <span style="position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: var(--color-primary); transition: .4s; border-radius: 34px;"></span>
-                        </label>
-                    </div>
-
-                    <div style="display: flex; justify-content: space-between; align-items: center; padding: 1rem; background: var(--color-bg-tertiary); border-radius: var(--radius-lg);">
-                        <div>
-                            <div style="font-weight: 600; margin-bottom: 0.25rem;">Notifications push</div>
-                            <div style="font-size: 0.875rem; color: var(--color-text-secondary);">Notifications en temps réel sur votre appareil</div>
-                        </div>
-                        <label style="position: relative; display: inline-block; width: 60px; height: 34px;">
-                            <input type="checkbox" checked style="opacity: 0; width: 0; height: 0;">
-                            <span style="position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: var(--color-primary); transition: .4s; border-radius: 34px;"></span>
-                        </label>
-                    </div>
-
-                    <div style="display: flex; justify-content: space-between; align-items: center; padding: 1rem; background: var(--color-bg-tertiary); border-radius: var(--radius-lg);">
-                        <div>
-                            <div style="font-weight: 600; margin-bottom: 0.25rem;">Mises à jour de la boutique</div>
-                            <div style="font-size: 0.875rem; color: var(--color-text-secondary);">Nouveaux skins et offres spéciales</div>
-                        </div>
-                        <label style="position: relative; display: inline-block; width: 60px; height: 34px;">
-                            <input type="checkbox" style="opacity: 0; width: 0; height: 0;">
-                            <span style="position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: var(--color-bg-input); transition: .4s; border-radius: 34px;"></span>
-                        </label>
-                    </div>
-                </div>
-            </div>
-
-            <div class="card">
-                <h2 style="font-size: 1.5rem; font-weight: 700; margin-bottom: 1.5rem; display: flex; align-items: center; gap: 0.75rem;">
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--color-primary)" stroke-width="2">
-                        <circle cx="12" cy="12" r="10"></circle>
-                        <line x1="12" y1="16" x2="12" y2="12"></line>
-                        <line x1="12" y1="8" x2="12.01" y2="8"></line>
-                    </svg>
-                    Confidentialité
-                </h2>
-
-                <div style="display: flex; flex-direction: column; gap: 1.5rem;">
-                    <div style="display: flex; justify-content: space-between; align-items: center; padding: 1rem; background: var(--color-bg-tertiary); border-radius: var(--radius-lg);">
-                        <div>
-                            <div style="font-weight: 600; margin-bottom: 0.25rem;">Profil public</div>
-                            <div style="font-size: 0.875rem; color: var(--color-text-secondary);">Permettre aux autres de voir votre profil</div>
-                        </div>
-                        <label style="position: relative; display: inline-block; width: 60px; height: 34px;">
-                            <input type="checkbox" checked style="opacity: 0; width: 0; height: 0;">
-                            <span style="position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: var(--color-primary); transition: .4s; border-radius: 34px;"></span>
-                        </label>
-                    </div>
-
-                    <div style="display: flex; justify-content: space-between; align-items: center; padding: 1rem; background: var(--color-bg-tertiary); border-radius: var(--radius-lg);">
-                        <div>
-                            <div style="font-weight: 600; margin-bottom: 0.25rem;">Afficher les statistiques</div>
-                            <div style="font-size: 0.875rem; color: var(--color-text-secondary);">Rendre vos stats visibles publiquement</div>
-                        </div>
-                        <label style="position: relative; display: inline-block; width: 60px; height: 34px;">
-                            <input type="checkbox" checked style="opacity: 0; width: 0; height: 0;">
-                            <span style="position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: var(--color-primary); transition: .4s; border-radius: 34px;"></span>
-                        </label>
-                    </div>
-                </div>
-            </div>
-
-            <div class="card" style="border: 1px solid var(--color-error);">
-                <h2 style="font-size: 1.5rem; font-weight: 700; margin-bottom: 1.5rem; display: flex; align-items: center; gap: 0.75rem; color: var(--color-error);">
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <circle cx="12" cy="12" r="10"></circle>
-                        <line x1="15" y1="9" x2="9" y2="15"></line>
-                        <line x1="9" y1="9" x2="15" y2="15"></line>
-                    </svg>
-                    Zone de Danger
-                </h2>
-
-                <div style="display: flex; justify-content: space-between; align-items: center; padding: 1.5rem; background: rgba(255, 0, 34, 0.1); border-radius: var(--radius-lg); border: 1px solid var(--color-error);">
-                    <div>
-                        <div style="font-weight: 600; margin-bottom: 0.5rem; color: var(--color-error);">Supprimer le compte</div>
-                        <div style="font-size: 0.875rem; color: var(--color-text-secondary);">Cette action est irréversible. Toutes vos données seront définitivement supprimées.</div>
-                    </div>
-                    <button class="btn" style="background-color: var(--color-error); color: white;">
-                        Supprimer le compte
-                    </button>
-                </div>
-            </div>
+        <!-- Mobile Bottom Nav -->
+        <div
+          class="lg:hidden fixed bottom-0 w-full bg-[#161616] border-t border-white/10 px-6 py-3 flex justify-between items-center z-50"
+          role="navigation"
+          aria-label="Navigation mobile"
+        >
+          <a class="flex flex-col items-center gap-1 text-gray-500" href="{{ path('app_dashboard') }}">
+            <span class="material-symbols-outlined">home</span>
+            <span class="text-[10px]">Accueil</span>
+          </a>
+          <a class="flex flex-col items-center gap-1 text-gray-500" href="{{ path('app_tournaments') }}">
+            <span class="material-symbols-outlined">trophy</span>
+            <span class="text-[10px]">Tournois</span>
+          </a>
+          <a class="flex flex-col items-center gap-1 text-gray-500" href="{{ path('app_shop') }}">
+            <span class="material-symbols-outlined">shopping_bag</span>
+            <span class="text-[10px]">Boutique</span>
+          </a>
+          <a class="flex flex-col items-center gap-1 text-gray-500" href="{{ path('app_profile') }}">
+            <span class="material-symbols-outlined">person</span>
+            <span class="text-[10px]">Profil</span>
+          </a>
         </div>
-    </main>
-</div>
+      </main>
+    </div>
+{% endblock %}
+
+{% block scripts %}
+    <script>
+      document.getElementById('avatarInput').addEventListener('change', function(e) {
+        const file = e.target.files[0];
+        if (file) {
+          const reader = new FileReader();
+          reader.onload = function(ev) {
+            document.getElementById('avatarPreview').style.backgroundImage = 'url(' + ev.target.result + ')';
+          };
+          reader.readAsDataURL(file);
+        }
+      });
+
+      document.getElementById('openClerkProfile').addEventListener('click', function() {
+        if (window.Clerk && window.Clerk.user) {
+          window.Clerk.openUserProfile();
+        } else {
+          alert('Clerk n\'est pas encore chargé. Veuillez réessayer.');
+        }
+      });
+    </script>
 {% endblock %}

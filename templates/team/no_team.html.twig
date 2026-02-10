@@ -1,56 +1,150 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Créer ou Rejoindre une Équipe - Carthage Arena{% endblock %}
+{% block title %}&Eacute;quipe - Carthage Arena{% endblock %}
 
 {% block body %}
-<div class="app-container">
-    {% include 'components/_sidebar.html.twig' %}
+    <div
+      id="mainContent"
+      class="flex h-screen w-full opacity-0 transition-opacity duration-500"
+    >
+      <!-- Sidebar -->
+      <aside
+        class="flex w-72 flex-col border-r border-white/5 bg-[#161616] p-6 hidden lg:flex overflow-y-auto"
+        role="navigation"
+        aria-label="Navigation principale"
+      >
+        <div class="flex flex-col gap-6 flex-1">
+          <div class="flex flex-col items-center gap-2 px-2">
+            <img src="{{ asset('assets/logo.webp') }}" alt="Carthage Arena Logo" class="h-32 w-auto" />
+            <h1 class="text-xl font-black tracking-tight text-white uppercase italic">
+              Carthage <span class="text-primary">Arena</span>
+            </h1>
+          </div>
+          <nav class="flex flex-col gap-2">
+            <a class="group flex items-center gap-4 rounded-full px-4 py-3 text-gray-400 transition-all hover:bg-surface-hover hover:text-white" href="{{ path('app_dashboard') }}">
+              <span class="material-symbols-outlined text-[24px]">home</span>
+              <span class="text-sm font-medium tracking-wide">Accueil</span>
+            </a>
+            <a class="group flex items-center gap-4 rounded-full px-4 py-3 text-gray-400 transition-all hover:bg-surface-hover hover:text-white" href="{{ path('app_tournaments') }}">
+              <span class="material-symbols-outlined text-[24px]">trophy</span>
+              <span class="text-sm font-medium tracking-wide">Mes Tournois</span>
+            </a>
+            <a class="group flex items-center gap-4 rounded-full px-4 py-3 text-gray-400 transition-all hover:bg-surface-hover hover:text-white" href="{{ path('app_shop') }}">
+              <span class="material-symbols-outlined text-[24px]">shopping_bag</span>
+              <span class="text-sm font-medium tracking-wide">Boutique</span>
+            </a>
+            <a class="group flex items-center gap-4 rounded-full px-4 py-3 text-gray-400 transition-all hover:bg-surface-hover hover:text-white" href="{{ path('app_profile') }}">
+              <span class="material-symbols-outlined text-[24px]">person</span>
+              <span class="text-sm font-medium tracking-wide">Profil</span>
+            </a>
+            <a class="group flex items-center gap-4 rounded-full px-4 py-3 text-gray-400 transition-all hover:bg-surface-hover hover:text-white mt-4" href="{{ path('app_settings') }}">
+              <span class="material-symbols-outlined text-[24px]">settings</span>
+              <span class="text-sm font-medium tracking-wide">Param&egrave;tres</span>
+            </a>
+            {% if app.user %}
+            <a
+              class="group flex items-center gap-4 rounded-full px-4 py-3 text-gray-400 transition-all hover:bg-red-500/10 hover:text-red-400 mt-2"
+              href="{{ path('app_logout') }}"
+            >
+              <span class="material-symbols-outlined text-[24px]">logout</span>
+              <span class="text-sm font-medium tracking-wide">Déconnexion</span>
+            </a>
+            {% endif %}
+          </nav>
+        </div>
+        <!-- Bottom Widget -->
+        <div class="relative overflow-hidden rounded-2xl bg-gradient-to-br from-gray-900 to-black p-4 border border-white/10">
+          <div class="absolute -right-6 -top-6 h-24 w-24 rounded-full bg-primary/20 blur-2xl"></div>
+          <div class="relative z-10 flex flex-col gap-3">
+            <div class="flex items-center justify-between">
+              <p class="text-[10px] font-bold uppercase tracking-widest text-primary">Comp&eacute;tition</p>
+              <span class="material-symbols-outlined text-primary text-sm">sports_esports</span>
+            </div>
+            <div>
+              <h4 class="text-sm font-bold text-white">Rejoignez une &eacute;quipe</h4>
+              <p class="text-xs text-gray-400 mt-1">Pour acc&eacute;der aux tournois d'&eacute;quipe.</p>
+            </div>
+          </div>
+        </div>
+      </aside>
 
-    <main class="main-content">
-        <div class="page-header" style="text-align: center; margin-bottom: 3rem;">
-            <h1 class="page-title" style="font-size: 2.5rem;">Rejoignez l'Arène en Équipe</h1>
-            <p class="page-subtitle" style="max-width: 600px; margin: 0 auto;">Pour participer aux tournois majeurs, vous devez faire partie d'une équipe. Créez votre propre légende ou rejoignez une alliance existante.</p>
+      <!-- Main Content -->
+      <main class="flex flex-1 flex-col overflow-y-auto bg-background-dark relative">
+        <!-- Header -->
+        <header class="sticky top-0 z-50 flex h-20 items-center justify-between border-b border-white/5 bg-background-dark/80 backdrop-blur-md px-8 py-4">
+          <div class="flex flex-col">
+            <h2 class="text-2xl font-bold text-white">&Eacute;quipe</h2>
+            <p class="text-xs text-gray-400">Cr&eacute;ez ou rejoignez une &eacute;quipe pour participer aux tournois.</p>
+          </div>
+          <div class="flex items-center gap-6">
+            <button class="relative rounded-full p-2 text-gray-400 hover:bg-white/5 hover:text-white transition-colors" aria-label="Notifications">
+              <span class="material-symbols-outlined">notifications</span>
+              <span class="absolute right-2 top-2 h-2 w-2 rounded-full bg-primary"></span>
+            </button>
+            <div class="flex items-center gap-4 rounded-full border border-white/5 bg-surface-dark py-1.5 pl-4 pr-1.5 shadow-lg">
+              <div class="flex items-center gap-1 rounded-full bg-gradient-to-r from-yellow-600 to-yellow-400 px-3 py-1 text-black shadow-[0_0_10px_rgba(255,215,0,0.3)]" title="Carthage Points">
+                <span class="material-symbols-outlined text-[16px] font-bold">payments</span>
+                <span class="text-xs font-black">CP</span>
+              </div>
+              <div class="h-9 w-9 overflow-hidden rounded-full border-2 border-primary bg-gray-800"></div>
+            </div>
+          </div>
+        </header>
+
+        <div class="flex flex-1 items-center justify-center p-8">
+          <div class="flex flex-col items-center text-center max-w-lg">
+            <!-- Icon -->
+            <div class="relative mb-8">
+              <div class="h-28 w-28 rounded-full bg-surface-dark border border-white/10 flex items-center justify-center">
+                <span class="material-symbols-outlined text-gray-600 text-[56px]">group_off</span>
+              </div>
+              <div class="absolute -right-2 -top-2 h-10 w-10 rounded-full bg-primary/20 blur-xl"></div>
+            </div>
+            <!-- Text -->
+            <h3 class="text-2xl font-black text-white mb-3">Vous n'avez pas encore d'&eacute;quipe</h3>
+            <p class="text-gray-400 mb-8 leading-relaxed">
+              Pour participer aux tournois majeurs, vous devez faire partie d'une &eacute;quipe.
+              Cr&eacute;ez votre propre l&eacute;gende ou rejoignez une alliance existante.
+            </p>
+            <!-- Actions -->
+            <div class="flex flex-col sm:flex-row gap-4 w-full sm:w-auto">
+              <a
+                href="{{ path('app_team_create') }}"
+                class="flex items-center justify-center gap-2 rounded-full bg-primary px-8 py-3.5 text-sm font-bold text-white shadow-lg shadow-red-900/30 hover:bg-red-600 hover:shadow-red-600/40 hover:-translate-y-0.5 transition-all"
+              >
+                <span class="material-symbols-outlined text-[20px]">add_circle</span>
+                Cr&eacute;er une &Eacute;quipe
+              </a>
+              <a
+                href="{{ path('app_team_join') }}"
+                class="flex items-center justify-center gap-2 rounded-full border border-white/10 bg-surface-dark px-8 py-3.5 text-sm font-bold text-gray-300 hover:bg-white/10 hover:text-white hover:-translate-y-0.5 transition-all"
+              >
+                <span class="material-symbols-outlined text-[20px]">group_add</span>
+                Rejoindre une &Eacute;quipe
+              </a>
+            </div>
+          </div>
         </div>
 
-        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 3rem; max-width: 1000px; margin: 0 auto;">
-            <!-- Create Team Option -->
-            <div class="card" style="text-align: center; padding: 3rem; border: 2px solid var(--color-primary); transition: transform 0.3s ease; cursor: pointer;">
-                <div style="width: 80px; height: 80px; background: rgba(255, 0, 34, 0.1); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 1.5rem auto;">
-                    <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="var(--color-primary)" stroke-width="2">
-                        <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
-                        <circle cx="8.5" cy="7" r="4"></circle>
-                        <line x1="20" y1="8" x2="20" y2="14"></line>
-                        <line x1="23" y1="11" x2="17" y2="11"></line>
-                    </svg>
-                </div>
-                <h2 style="font-size: 1.75rem; font-weight: 800; margin-bottom: 1rem;">Créer une Équipe</h2>
-                <p style="color: var(--color-text-secondary); margin-bottom: 2rem;">
-                    Fondez votre propre équipe, invitez vos amis et menez-les vers la victoire. En tant que Leader, vous aurez le contrôle total.
-                </p>
-                <a href="{{ path('app_team_create') }}" class="btn btn-primary" style="width: 100%; justify-content: center; font-size: 1.125rem; padding: 1rem;">
-                    Commencer
-                </a>
-            </div>
-
-            <!-- Join Team Option -->
-            <div class="card" style="text-align: center; padding: 3rem; border: 2px solid var(--color-border); transition: transform 0.3s ease; cursor: pointer;">
-                <div style="width: 80px; height: 80px; background: var(--color-bg-tertiary); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 1.5rem auto;">
-                    <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
-                        <circle cx="9" cy="7" r="4"></circle>
-                        <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
-                        <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
-                    </svg>
-                </div>
-                <h2 style="font-size: 1.75rem; font-weight: 800; margin-bottom: 1rem;">Rejoindre une Équipe</h2>
-                <p style="color: var(--color-text-secondary); margin-bottom: 2rem;">
-                    Vous avez un code d'invitation ? Rejoignez une équipe existante et préparez-vous pour la compétition.
-                </p>
-                <a href="{{ path('app_team_join') }}" class="btn btn-secondary" style="width: 100%; justify-content: center; font-size: 1.125rem; padding: 1rem;">
-                    Entrer un Code
-                </a>
-            </div>
+        <!-- Mobile Bottom Nav -->
+        <div class="lg:hidden fixed bottom-0 w-full bg-[#161616] border-t border-white/10 px-6 py-3 flex justify-between items-center z-50" role="navigation" aria-label="Navigation mobile">
+          <a class="flex flex-col items-center gap-1 text-gray-500" href="{{ path('app_dashboard') }}">
+            <span class="material-symbols-outlined">home</span>
+            <span class="text-[10px]">Accueil</span>
+          </a>
+          <a class="flex flex-col items-center gap-1 text-gray-500" href="{{ path('app_tournaments') }}">
+            <span class="material-symbols-outlined">trophy</span>
+            <span class="text-[10px]">Tournois</span>
+          </a>
+          <a class="flex flex-col items-center gap-1 text-gray-500" href="{{ path('app_shop') }}">
+            <span class="material-symbols-outlined">shopping_bag</span>
+            <span class="text-[10px]">Boutique</span>
+          </a>
+          <a class="flex flex-col items-center gap-1 text-gray-500" href="{{ path('app_profile') }}">
+            <span class="material-symbols-outlined">person</span>
+            <span class="text-[10px]">Profil</span>
+          </a>
         </div>
-    </main>
-</div>
+      </main>
+    </div>
 {% endblock %}
