@@ -5,6 +5,7 @@ namespace App\Controller;
 use App\Entity\Profile;
 use App\Entity\User;
 use App\Enum\AccountStatus;
+use App\Form\RegistrationType;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -43,44 +44,18 @@ class SecurityController extends AbstractController
             return $this->redirectToRoute('app_dashboard');
         }
 
-        if ($request->isMethod('POST')) {
-            $username = trim($request->request->get('username'));
-            $email = trim($request->request->get('email'));
-            $password = $request->request->get('password');
-            $confirmPassword = $request->request->get('confirm_password');
+        $user = new User();
+        $form = $this->createForm(RegistrationType::class, $user);
+        $form->handleRequest($request);
 
-            // Basic validation
-            if (empty($username) || empty($email) || empty($password)) {
-                $this->addFlash('error', 'Tous les champs sont obligatoires.');
-                return $this->redirectToRoute('app_register');
-            }
+        if ($form->isSubmitted() && $form->isValid()) {
+            $plainPassword = $form->get('plainPassword')->getData();
 
-            if ($password !== $confirmPassword) {
-                $this->addFlash('error', 'Les mots de passe ne correspondent pas.');
-                return $this->redirectToRoute('app_register');
-            }
-
-            // Check if user exists
-            $existingUser = $entityManager->getRepository(User::class)->findOneBy(['email' => $email]);
-            if ($existingUser) {
-                $this->addFlash('error', 'Cet email est déjà utilisé.');
-                return $this->redirectToRoute('app_register');
-            }
-
-            $existingUsername = $entityManager->getRepository(User::class)->findOneBy(['username' => $username]);
-            if ($existingUsername) {
-                $this->addFlash('error', 'Ce nom d\'utilisateur est déjà pris.');
-                return $this->redirectToRoute('app_register');
-            }
-
-            $user = new User();
-            $user->setUsername($username);
-            $user->setEmail($email);
             $user->setStatus(AccountStatus::ACTIVE);
             $user->setPassword(
                 $userPasswordHasher->hashPassword(
                     $user,
-                    $password
+                    $plainPassword
                 )
             );
 
@@ -98,7 +73,9 @@ class SecurityController extends AbstractController
             return $this->redirectToRoute('app_login');
         }
 
-        return $this->render('security/register.html.twig');
+        return $this->render('security/register.html.twig', [
+            'registrationForm' => $form->createView(),
+        ]);
     }
 
     #[Route('/deconnexion', name: 'app_logout')]

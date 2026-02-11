@@ -7,6 +7,7 @@ use App\Entity\TeamMembership;
 use App\Entity\User;
 use App\Enum\TeamRole;
 use App\Enum\TeamStatus;
+use App\Form\TeamCreateType;
 use App\Repository\TeamRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -94,42 +95,11 @@ class TeamController extends AbstractController
             return $this->redirectToRoute('app_team');
         }
 
-        if ($request->isMethod('POST')) {
-            $submittedToken = $request->request->get('_csrf_token');
-            if (!$this->isCsrfTokenValid('create_team', $submittedToken)) {
-                $this->addFlash('error', 'Token CSRF invalide.');
-                return $this->redirectToRoute('app_team_create');
-            }
+        $team = new Team();
+        $form = $this->createForm(TeamCreateType::class, $team);
+        $form->handleRequest($request);
 
-            $name = trim($request->request->get('name', ''));
-            $tag = strtoupper(trim($request->request->get('tag', '')));
-            $description = trim($request->request->get('description', ''));
-
-            if (strlen($name) < 3 || strlen($name) > 50) {
-                $this->addFlash('error', 'Le nom doit faire entre 3 et 50 caractères.');
-                return $this->redirectToRoute('app_team_create');
-            }
-
-            if (strlen($tag) < 3 || strlen($tag) > 5) {
-                $this->addFlash('error', 'Le tag doit faire entre 3 et 5 caractères.');
-                return $this->redirectToRoute('app_team_create');
-            }
-
-            // Unique checks
-            $repo = $entityManager->getRepository(Team::class);
-            if ($repo->findOneBy(['name' => $name])) {
-                $this->addFlash('error', 'Ce nom d\'équipe est déjà pris.');
-                return $this->redirectToRoute('app_team_create');
-            }
-            if ($repo->findOneBy(['tag' => $tag])) {
-                $this->addFlash('error', 'Ce tag est déjà pris.');
-                return $this->redirectToRoute('app_team_create');
-            }
-
-            $team = new Team();
-            $team->setName($name);
-            $team->setTag($tag);
-            $team->setDescription($description);
+        if ($form->isSubmitted() && $form->isValid()) {
             $team->setCaptain($user);
             $team->setInviteCode(strtoupper(ByteString::fromRandom(8)->toString()));
 
@@ -146,7 +116,9 @@ class TeamController extends AbstractController
             return $this->redirectToRoute('app_team');
         }
 
-        return $this->render('team/create.html.twig');
+        return $this->render('team/create.html.twig', [
+            'teamForm' => $form->createView(),
+        ]);
     }
 
     #[Route('/equipe/rejoindre', name: 'app_team_join', methods: ['GET', 'POST'])]
@@ -167,6 +139,12 @@ class TeamController extends AbstractController
             }
 
             $code = strtoupper(trim($request->request->get('invite_code', '')));
+
+            if (empty($code)) {
+                $this->addFlash('error', 'Le code d\'invitation est obligatoire.');
+                return $this->redirectToRoute('app_team_join');
+            }
+
             $team = $teamRepository->findOneByInviteCode($code);
 
             if (!$team || $team->getStatus() !== TeamStatus::ACTIVE) {
@@ -212,10 +190,6 @@ class TeamController extends AbstractController
         $membership = $user->getTeamMemberships()->first();
         $team = $membership->getTeam();
 
-        // If captain leaves, disband team or assign new captain?
-        // For simplicity: Disband if it's the captain and only member, else prevent leaving if captain hasn't transferred ownership.
-        // Actually, simple logic from plan: "If user was captain, assign new captain or disband if last member"
-
         if ($membership->getRole() === TeamRole::CAPTAIN) {
             if ($team->getMembers()->count() > 1) {
                 // Assign new captain (next joined member)
@@ -230,8 +204,6 @@ class TeamController extends AbstractController
                 // Last member, disband
                 $team->setStatus(TeamStatus::DISBANDED);
                 $entityManager->remove($membership);
-                // Also remove team? Or keep as disbanded history?
-                // Let's keep it but mark disbanded.
                 $this->addFlash('warning', 'Équipe dissoute.');
             }
         } else {
