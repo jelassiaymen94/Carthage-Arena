@@ -7,79 +7,9 @@
       id="mainContent"
       class="flex h-screen w-full opacity-0 transition-opacity duration-500"
     >
-      <aside
-        class="flex w-72 flex-col border-r border-white/5 bg-[#161616] p-6 hidden lg:flex overflow-y-auto"
-        role="navigation"
-        aria-label="Navigation principale"
-      >
-        <div class="flex flex-col gap-6 flex-1">
-          <div class="flex flex-col items-center gap-2 px-2">
-            <img
-              src="{{ asset('assets/logo.webp') }}"
-              alt="Carthage Arena Logo"
-              class="h-32 w-auto"
-            />
-            <h1
-              class="text-xl font-black tracking-tight text-white uppercase italic"
-            >
-              Carthage <span class="text-primary">Arena</span>
-            </h1>
-          </div>
-          <nav class="flex flex-col gap-2">
-            <a
-              class="group flex items-center gap-4 rounded-full px-4 py-3 text-gray-400 transition-all hover:bg-surface-hover hover:text-white"
-              href="{{ path('app_dashboard') }}"
-            >
-              <span class="material-symbols-outlined text-[24px]">home</span>
-              <span class="text-sm font-medium tracking-wide">Accueil</span>
-            </a>
-            <a
-              class="group flex items-center gap-4 rounded-full px-4 py-3 text-gray-400 transition-all hover:bg-surface-hover hover:text-white"
-              href="{{ path('app_tournaments') }}"
-            >
-              <span class="material-symbols-outlined text-[24px]">trophy</span>
-              <span class="text-sm font-medium tracking-wide"
-                >Mes Tournois</span
-              >
-            </a>
-            <a
-              class="group flex items-center gap-4 rounded-full bg-primary/10 px-4 py-3 text-primary transition-all hover:bg-primary hover:text-white"
-              href="{{ path('app_shop') }}"
-            >
-              <span
-                class="material-symbols-outlined text-[24px]"
-                data-weight="fill"
-                >shopping_bag</span
-              >
-              <span class="text-sm font-bold tracking-wide">Boutique</span>
-            </a>
-            <a
-              class="group flex items-center gap-4 rounded-full px-4 py-3 text-gray-400 transition-all hover:bg-surface-hover hover:text-white"
-              href="{{ path('app_profile') }}"
-            >
-              <span class="material-symbols-outlined text-[24px]">person</span>
-              <span class="text-sm font-medium tracking-wide">Profil</span>
-            </a>
-            <a
-              class="group flex items-center gap-4 rounded-full px-4 py-3 text-gray-400 transition-all hover:bg-surface-hover hover:text-white mt-4"
-              href="{{ path('app_settings') }}"
-            >
-              <span class="material-symbols-outlined text-[24px]"
-                >settings</span
-              >
-              <span class="text-sm font-medium tracking-wide">Paramètres</span>
-            </a>
-            {% if app.user %}
-            <a
-              class="group flex items-center gap-4 rounded-full px-4 py-3 text-gray-400 transition-all hover:bg-red-500/10 hover:text-red-400 mt-2"
-              href="{{ path('app_logout') }}"
-            >
-              <span class="material-symbols-outlined text-[24px]">logout</span>
-              <span class="text-sm font-medium tracking-wide">Déconnexion</span>
-            </a>
-            {% endif %}
-          </nav>
-        </div>
+      <!-- Sidebar -->
+      {% embed 'components/_sidebar.html.twig' %}
+        {% block sidebar_bottom %}
         <div
           class="relative overflow-hidden rounded-2xl bg-gradient-to-br from-gray-900 to-black p-4 border border-white/10"
         >
@@ -118,7 +48,8 @@
             </button>
           </div>
         </div>
-      </aside>
+        {% endblock %}
+      {% endembed %}
       <main
         class="flex flex-1 flex-col overflow-y-auto bg-background-dark relative"
       >

@@ -1,7 +1,6 @@
 twig:
     file_name_pattern: '*.twig'
-    globals:
-        clerk_publishable_key: '%env(CLERK_PUBLISHABLE_KEY)%'
+
 
 when@test:
     twig:

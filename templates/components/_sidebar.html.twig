@@ -1,81 +1,103 @@
-<aside class="sidebar">
-    <div class="sidebar-logo">
-        <img src="{{ asset('images/logo.png') }}" alt="Carthage Arena">
-        <div class="sidebar-logo-text">
-            CARTHAGE <span class="highlight">ARENA</span>
-        </div>
+<aside
+  class="flex w-72 flex-col border-r border-white/5 bg-[#161616] p-6 hidden lg:flex overflow-y-auto"
+  role="navigation"
+  aria-label="Navigation principale"
+>
+  <div class="flex flex-col gap-6 flex-1">
+    <!-- Logo Area -->
+    <div class="flex flex-col items-center gap-2 px-2">
+      <img
+        src="{{ asset('assets/logo.webp') }}"
+        alt="Carthage Arena Logo"
+        class="h-32 w-auto"
+      />
+      <h1
+        class="text-xl font-black tracking-tight text-white uppercase italic"
+      >
+        Carthage <span class="text-primary">Arena</span>
+      </h1>
     </div>
+    <!-- Navigation -->
+    <nav class="flex flex-col gap-2">
+      <a
+        class="group flex items-center gap-4 rounded-full px-4 py-3 transition-all hover:bg-surface-hover hover:text-white {{ app.request.get('_route') == 'app_dashboard' ? 'bg-primary/10 text-primary' : 'text-gray-400' }}"
+        href="{{ path('app_dashboard') }}"
+      >
+        <span class="material-symbols-outlined text-[24px]" {{ app.request.get('_route') == 'app_dashboard' ? 'data-weight="fill"' : '' }}>home</span>
+        <span class="text-sm font-medium tracking-wide">Accueil</span>
+      </a>
+      <a
+        class="group flex items-center gap-4 rounded-full px-4 py-3 transition-all hover:bg-surface-hover hover:text-white {{ app.request.get('_route') starts with 'app_tournament' ? 'bg-primary/10 text-primary' : 'text-gray-400' }}"
+        href="{{ path('app_tournaments') }}"
+      >
+        <span class="material-symbols-outlined text-[24px]" {{ app.request.get('_route') starts with 'app_tournament' ? 'data-weight="fill"' : '' }}>trophy</span>
+        <span class="text-sm font-medium tracking-wide">Mes Tournois</span>
+      </a>
+      <a
+        class="group flex items-center gap-4 rounded-full px-4 py-3 transition-all hover:bg-surface-hover hover:text-white {{ app.request.get('_route') starts with 'app_shop' ? 'bg-primary/10 text-primary' : 'text-gray-400' }}"
+        href="{{ path('app_shop') }}"
+      >
+        <span class="material-symbols-outlined text-[24px]" {{ app.request.get('_route') starts with 'app_shop' ? 'data-weight="fill"' : '' }}>shopping_bag</span>
+        <span class="text-sm font-medium tracking-wide">Boutique</span>
+      </a>
 
-    <nav>
-        <ul class="sidebar-nav">
-            <li class="sidebar-nav-item">
-                <a href="{{ path('app_dashboard') }}" class="sidebar-nav-link {% if app.request.get('_route') == 'app_dashboard' %}active{% endif %}">
-                    <svg class="sidebar-nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
-                        <polyline points="9 22 9 12 15 12 15 22"></polyline>
-                    </svg>
-                    Accueil
-                </a>
-            </li>
-            <li class="sidebar-nav-item">
-                <a href="{{ path('app_tournaments') }}" class="sidebar-nav-link {% if app.request.get('_route') starts with 'app_tournament' %}active{% endif %}">
-                    <svg class="sidebar-nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"></path>
-                        <path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"></path>
-                        <path d="M4 22h16"></path>
-                        <path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"></path>
-                        <path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"></path>
-                        <path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"></path>
-                    </svg>
-                    Mes Tournois
-                </a>
-            </li>
-            <li class="sidebar-nav-item">
-                <a href="{{ path('app_team') }}" class="sidebar-nav-link {% if app.request.get('_route') starts with 'app_team' %}active{% endif %}">
-                    <svg class="sidebar-nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
-                        <circle cx="9" cy="7" r="4"></circle>
-                        <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
-                        <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
-                    </svg>
-                    Ma Équipe
-                </a>
-            </li>
-            <li class="sidebar-nav-item">
-                <a href="{{ path('app_shop') }}" class="sidebar-nav-link {% if app.request.get('_route') == 'app_shop' %}active{% endif %}">
-                    <svg class="sidebar-nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <circle cx="9" cy="21" r="1"></circle>
-                        <circle cx="20" cy="21" r="1"></circle>
-                        <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
-                    </svg>
-                    Boutique
-                </a>
-            </li>
-            <li class="sidebar-nav-item">
-                <a href="{{ path('app_profile') }}" class="sidebar-nav-link {% if app.request.get('_route') == 'app_profile' %}active{% endif %}">
-                    <svg class="sidebar-nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
-                        <circle cx="12" cy="7" r="4"></circle>
-                    </svg>
-                    Profil
-                </a>
-            </li>
-            <li class="sidebar-nav-item">
-                <a href="{{ path('app_settings') }}" class="sidebar-nav-link {% if app.request.get('_route') == 'app_settings' %}active{% endif %}">
-                    <svg class="sidebar-nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <circle cx="12" cy="12" r="3"></circle>
-                        <path d="M12 1v6m0 6v6m-6-6H0m6 0h6m6 0h6"></path>
-                        <path d="M19.4 15c-.3.6-.6 1.2-1 1.8m-3.4 2.2c-.6.3-1.2.6-1.8 1M9 19.4c-.6-.3-1.2-.6-1.8-1M4.6 15c.3-.6.6-1.2 1-1.8M4.6 9c.3.6.6 1.2 1 1.8M9 4.6c.6.3 1.2.6 1.8 1m3.4-2.2c.6.3 1.2.6 1.8 1M19.4 9c-.3.6-.6 1.2-1 1.8"></path>
-                    </svg>
-                    Paramètres
-                </a>
-            </li>
-        </ul>
+      <!-- Team Link -->
+      <a
+        class="group flex items-center gap-4 rounded-full px-4 py-3 transition-all hover:bg-surface-hover hover:text-white {{ app.request.get('_route') starts with 'app_team' ? 'bg-primary/10 text-primary' : 'text-gray-400' }}"
+        href="{{ path('app_team') }}"
+      >
+        <span class="material-symbols-outlined text-[24px]" {{ app.request.get('_route') starts with 'app_team' ? 'data-weight="fill"' : '' }}>groups</span>
+        <span class="text-sm font-medium tracking-wide">Équipe</span>
+      </a>
+
+      <a
+        class="group flex items-center gap-4 rounded-full px-4 py-3 transition-all hover:bg-surface-hover hover:text-white {{ app.request.get('_route') starts with 'app_profile' ? 'bg-primary/10 text-primary' : 'text-gray-400' }}"
+        href="{{ path('app_profile') }}"
+      >
+        <span class="material-symbols-outlined text-[24px]" {{ app.request.get('_route') starts with 'app_profile' ? 'data-weight="fill"' : '' }}>person</span>
+        <span class="text-sm font-medium tracking-wide">Profil</span>
+      </a>
+      <a
+        class="group flex items-center gap-4 rounded-full px-4 py-3 transition-all hover:bg-surface-hover hover:text-white mt-4 {{ app.request.get('_route') starts with 'app_settings' ? 'bg-primary/10 text-primary' : 'text-gray-400' }}"
+        href="{{ path('app_settings') }}"
+      >
+        <span class="material-symbols-outlined text-[24px]" {{ app.request.get('_route') starts with 'app_settings' ? 'data-weight="fill"' : '' }}>settings</span>
+        <span class="text-sm font-medium tracking-wide">Param&egrave;tres</span>
+      </a>
+      {% if app.user %}
+      <a
+        class="group flex items-center gap-4 rounded-full px-4 py-3 text-gray-400 transition-all hover:bg-red-500/10 hover:text-red-400 mt-2"
+        href="{{ path('app_logout') }}"
+      >
+        <span class="material-symbols-outlined text-[24px]">logout</span>
+        <span class="text-sm font-medium tracking-wide">Déconnexion</span>
+      </a>
+      {% endif %}
     </nav>
+  </div>
 
-    <div class="sidebar-featured">
-        <div class="sidebar-featured-badge">MATCH EN DIRECT</div>
-        <div class="sidebar-featured-title">Cloud9 vs Team Liquid</div>
-        <img src="https://via.placeholder.com/200x120/1A1A1A/FF0022?text=LIVE" alt="Live Match">
+  <!-- Bottom Widget Block -->
+  {% block sidebar_bottom %}
+  <div
+    class="relative overflow-hidden rounded-2xl bg-gradient-to-br from-gray-900 to-black p-4 border border-white/10"
+  >
+    <div
+      class="absolute -right-6 -top-6 h-24 w-24 rounded-full bg-primary/20 blur-2xl"
+    ></div>
+    <div class="relative z-10 flex flex-col gap-3">
+      <div class="flex items-center justify-between">
+        <p class="text-[10px] font-bold uppercase tracking-widest text-primary">
+          Carthage Arena
+        </p>
+        <span class="material-symbols-outlined text-primary text-sm">sports_esports</span>
+      </div>
+      <div>
+        <h4 class="text-sm font-bold text-white">Bienvenue</h4>
+        <p class="text-xs text-gray-400 mt-1">
+          Prêt à jouer ?
+        </p>
+      </div>
     </div>
+  </div>
+  {% endblock %}
 </aside>
