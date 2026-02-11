@@ -8,51 +8,8 @@
       class="flex h-screen w-full opacity-0 transition-opacity duration-500"
     >
       <!-- Sidebar -->
-      <aside
-        class="flex w-72 flex-col border-r border-white/5 bg-[#161616] p-6 hidden lg:flex overflow-y-auto"
-        role="navigation"
-        aria-label="Navigation principale"
-      >
-        <div class="flex flex-col gap-6 flex-1">
-          <div class="flex flex-col items-center gap-2 px-2">
-            <img src="{{ asset('assets/logo.webp') }}" alt="Carthage Arena Logo" class="h-32 w-auto" />
-            <h1 class="text-xl font-black tracking-tight text-white uppercase italic">
-              Carthage <span class="text-primary">Arena</span>
-            </h1>
-          </div>
-          <nav class="flex flex-col gap-2">
-            <a class="group flex items-center gap-4 rounded-full px-4 py-3 text-gray-400 transition-all hover:bg-surface-hover hover:text-white" href="{{ path('app_dashboard') }}">
-              <span class="material-symbols-outlined text-[24px]">home</span>
-              <span class="text-sm font-medium tracking-wide">Accueil</span>
-            </a>
-            <a class="group flex items-center gap-4 rounded-full px-4 py-3 text-gray-400 transition-all hover:bg-surface-hover hover:text-white" href="{{ path('app_tournaments') }}">
-              <span class="material-symbols-outlined text-[24px]">trophy</span>
-              <span class="text-sm font-medium tracking-wide">Mes Tournois</span>
-            </a>
-            <a class="group flex items-center gap-4 rounded-full px-4 py-3 text-gray-400 transition-all hover:bg-surface-hover hover:text-white" href="{{ path('app_shop') }}">
-              <span class="material-symbols-outlined text-[24px]">shopping_bag</span>
-              <span class="text-sm font-medium tracking-wide">Boutique</span>
-            </a>
-            <a class="group flex items-center gap-4 rounded-full px-4 py-3 text-gray-400 transition-all hover:bg-surface-hover hover:text-white" href="{{ path('app_profile') }}">
-              <span class="material-symbols-outlined text-[24px]">person</span>
-              <span class="text-sm font-medium tracking-wide">Profil</span>
-            </a>
-            <a class="group flex items-center gap-4 rounded-full px-4 py-3 text-gray-400 transition-all hover:bg-surface-hover hover:text-white mt-4" href="{{ path('app_settings') }}">
-              <span class="material-symbols-outlined text-[24px]">settings</span>
-              <span class="text-sm font-medium tracking-wide">Param&egrave;tres</span>
-            </a>
-            {% if app.user %}
-            <a
-              class="group flex items-center gap-4 rounded-full px-4 py-3 text-gray-400 transition-all hover:bg-red-500/10 hover:text-red-400 mt-2"
-              href="{{ path('app_logout') }}"
-            >
-              <span class="material-symbols-outlined text-[24px]">logout</span>
-              <span class="text-sm font-medium tracking-wide">Déconnexion</span>
-            </a>
-            {% endif %}
-          </nav>
-        </div>
-        <!-- Bottom Widget -->
+      {% embed 'components/_sidebar.html.twig' %}
+        {% block sidebar_bottom %}
         <div class="relative overflow-hidden rounded-2xl bg-gradient-to-br from-gray-900 to-black p-4 border border-white/10">
           <div class="absolute -right-6 -top-6 h-24 w-24 rounded-full bg-primary/20 blur-2xl"></div>
           <div class="relative z-10 flex flex-col gap-3">
@@ -66,7 +23,8 @@
             </div>
           </div>
         </div>
-      </aside>
+        {% endblock %}
+      {% endembed %}
 
       <!-- Main Content -->
       <main class="flex flex-1 flex-col overflow-y-auto bg-background-dark relative">
@@ -170,9 +128,12 @@
                         {{ member.role }}
                       </span>
                       {% if is_leader and member.role != 'Leader' %}
-                      <button class="rounded-full p-1.5 text-gray-500 hover:bg-white/10 hover:text-white transition-all">
-                        <span class="material-symbols-outlined text-[18px]">more_vert</span>
-                      </button>
+                      <form method="post" action="{{ path('app_team_kick', {'id': member.id}) }}" onsubmit="return confirm('Expulser ce membre ?');" class="inline-block">
+                          <input type="hidden" name="_csrf_token" value="{{ csrf_token('kick_member') }}">
+                          <button type="submit" class="rounded-full p-1.5 text-gray-500 hover:bg-red-500/20 hover:text-red-400 transition-all" title="Expulser">
+                            <span class="material-symbols-outlined text-[18px]">person_remove</span>
+                          </button>
+                      </form>
                       {% endif %}
                     </div>
                   </div>
@@ -265,10 +226,16 @@
                 <h3 class="text-lg font-bold text-white mb-4">Code d'invitation</h3>
                 <div class="flex items-center gap-2 rounded-xl bg-white/5 border border-white/10 p-3">
                   <span class="text-lg font-black text-primary tracking-widest flex-1 text-center">{{ team.invites }}</span>
-                  <button class="rounded-full p-2 text-gray-400 hover:bg-white/10 hover:text-white transition-all" title="Copier le code">
+                  <button class="rounded-full p-2 text-gray-400 hover:bg-white/10 hover:text-white transition-all" title="Copier le code" onclick="navigator.clipboard.writeText('{{ team.invites }}');">
                     <span class="material-symbols-outlined text-[18px]">content_copy</span>
                   </button>
                 </div>
+                <form method="post" action="{{ path('app_team_regenerate_invite') }}" class="mt-3 text-center">
+                    <input type="hidden" name="_csrf_token" value="{{ csrf_token('regenerate_invite') }}">
+                    <button type="submit" class="text-xs text-primary hover:text-red-400 underline transition-colors">
+                        Générer un nouveau code
+                    </button>
+                </form>
                 <p class="text-xs text-gray-500 mt-2 text-center">Partagez ce code pour inviter des joueurs.</p>
               </section>
               {% endif %}
@@ -286,18 +253,24 @@
                     <span class="material-symbols-outlined text-[18px]">person_add</span>
                     G&eacute;rer les invitations
                   </button>
-                  <button class="w-full flex items-center gap-3 rounded-xl bg-red-500/10 border border-red-500/20 px-4 py-3 text-sm font-medium text-red-400 hover:bg-red-500/20 transition-all">
-                    <span class="material-symbols-outlined text-[18px]">logout</span>
-                    Dissoudre l'&eacute;quipe
-                  </button>
+                  <form method="post" action="{{ path('app_team_disband') }}" onsubmit="return confirm('Êtes-vous sûr de vouloir dissoudre l\'équipe ? Cette action est irréversible.');">
+                    <input type="hidden" name="_csrf_token" value="{{ csrf_token('disband_team') }}">
+                    <button type="submit" class="w-full flex items-center gap-3 rounded-xl bg-red-500/10 border border-red-500/20 px-4 py-3 text-sm font-medium text-red-400 hover:bg-red-500/20 transition-all">
+                        <span class="material-symbols-outlined text-[18px]">logout</span>
+                        Dissoudre l'&eacute;quipe
+                    </button>
+                  </form>
                 </div>
               </section>
               {% else %}
               <section class="rounded-2xl bg-surface-dark border border-white/5 p-6">
-                <button class="w-full flex items-center justify-center gap-2 rounded-full bg-red-500 px-6 py-3 text-sm font-bold text-white hover:bg-red-600 transition-all">
-                  <span class="material-symbols-outlined text-[18px]">logout</span>
-                  Quitter l'&eacute;quipe
-                </button>
+                <form method="post" action="{{ path('app_team_leave') }}" onsubmit="return confirm('Êtes-vous sûr de vouloir quitter l\'équipe ?');">
+                    <input type="hidden" name="_csrf_token" value="{{ csrf_token('leave_team') }}">
+                    <button type="submit" class="w-full flex items-center justify-center gap-2 rounded-full bg-red-500 px-6 py-3 text-sm font-bold text-white hover:bg-red-600 transition-all">
+                    <span class="material-symbols-outlined text-[18px]">logout</span>
+                    Quitter l'&eacute;quipe
+                    </button>
+                </form>
               </section>
               {% endif %}
             </div>

@@ -2,6 +2,8 @@
 
 namespace App\Controller;
 
+use App\Entity\User;
+use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
@@ -9,44 +11,41 @@ use Symfony\Component\Routing\Attribute\Route;
 class ProfileController extends AbstractController
 {
     #[Route('/profil', name: 'app_profile')]
-    public function index(): Response
+    public function index(EntityManagerInterface $entityManager): Response
     {
+        /** @var User $user */
         $user = $this->getUser();
+        if (!$user) {
+            return $this->redirectToRoute('app_login');
+        }
+
+        $profile = $user->getProfile();
 
         return $this->render('profile/index.html.twig', [
             'user' => [
-                'name' => $user->getUsername(),
+                'name' => $user->getName(),
                 'email' => $user->getEmail(),
-                'role' => 'JOUEUR PRO',
+                'role' => in_array('ROLE_ADMIN', $user->getRoles()) ? 'ADMINISTRATEUR' : 'JOUEUR',
                 'balance' => number_format($user->getBalance(), 0, ',', ','),
-                'avatar' => $user->getAvatar() ? '/uploads/avatars/' . $user->getAvatar() : 'https://i.pravatar.cc/300?img=12',
-                'rank' => 'Diamond II',
-                'rankProgress' => 75,
-                'level' => 42,
+                'avatar' => $profile && $profile->getAvatarUrl() ? '/uploads/avatars/' . $profile->getAvatarUrl() : 'https://i.pravatar.cc/300?img=12',
+                'rank' => 'Unranked', // This would come from a real ranking system later
+                'rankProgress' => 0,
+                'level' => 1,
                 'joinDate' => $user->getCreatedAt()->format('F Y'),
-                'country' => 'Tunisie',
-                'bio' => 'Joueur professionnel passionné par les jeux compétitifs. Spécialisé en Valorant et League of Legends.',
+                'country' => 'Tunisie', // Could be added to Profile entity later
+                'bio' => $profile ? $profile->getBio() : 'Aucune biographie.',
             ],
+            // Keep mock data for stats/matches/achievements as they are not part of the current plan's scope for implementation
             'stats' => [
-                'matchesPlayed' => 124,
-                'wins' => 77,
-                'losses' => 47,
-                'winRate' => 62,
-                'tournamentsWon' => 8,
-                'totalEarnings' => '45,000 DT',
+                'matchesPlayed' => 0,
+                'wins' => 0,
+                'losses' => 0,
+                'winRate' => 0,
+                'tournamentsWon' => 0,
+                'totalEarnings' => '0 DT',
             ],
-            'recentMatches' => [
-                ['game' => 'Valorant', 'result' => 'Victoire', 'score' => '13-7', 'date' => 'Il y a 2h'],
-                ['game' => 'League of Legends', 'result' => 'Défaite', 'score' => '12-15', 'date' => 'Il y a 5h'],
-                ['game' => 'Valorant', 'result' => 'Victoire', 'score' => '13-9', 'date' => 'Hier'],
-                ['game' => 'CS:GO 2', 'result' => 'Victoire', 'score' => '16-12', 'date' => 'Il y a 2j'],
-            ],
-            'achievements' => [
-                ['name' => 'Champion de la Saison 1', 'icon' => '🏆', 'date' => 'Sept 2024'],
-                ['name' => '100 Victoires', 'icon' => '⭐', 'date' => 'Août 2024'],
-                ['name' => 'Meilleur Joueur', 'icon' => '👑', 'date' => 'Juil 2024'],
-                ['name' => 'Série de 10 Victoires', 'icon' => '🔥', 'date' => 'Juin 2024'],
-            ],
+            'recentMatches' => [],
+            'achievements' => [],
         ]);
     }
 }
