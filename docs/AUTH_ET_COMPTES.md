@@ -52,6 +52,7 @@ Le module **Auth & Comptes** gère l'inscription, la connexion, la déconnexion,
 | `roles`      | `json`            | Non null                             | Rôles (`ROLE_USER` ajouté auto.)     |
 | `createdAt`  | `DateTimeImmutable`| Non null                            | Date de création                     |
 | `balance`    | `int`             | Défaut `0`                           | Solde (monnaie du jeu)               |
+| `licenseId`  | `string(100)`     | Nullable                             | Numéro de licence (arbitres)         |
 | `profile`    | `Profile`         | OneToOne, cascade persist/remove     | Profil associé                       |
 | `authToken`  | `AuthToken`       | OneToOne, cascade persist/remove, orphanRemoval | Token actif |
 
@@ -60,6 +61,13 @@ Le module **Auth & Comptes** gère l'inscription, la connexion, la déconnexion,
 **`getUserIdentifier()`** renvoie l'email — c'est le champ utilisé par Symfony pour charger l'utilisateur.
 
 **`getRoles()`** ajoute toujours `ROLE_USER` au tableau des rôles, garantissant que tout utilisateur a au minimum ce rôle.
+
+**Rôles disponibles :**
+- `ROLE_USER` — rôle de base, ajouté automatiquement à tous les utilisateurs
+- `ROLE_REFEREE` — arbitre, attribué à l'inscription si le type de compte est "Arbitre". L'utilisateur doit fournir un `licenseId`
+- `ROLE_ADMIN` — administrateur, accès au back-office (`/admin`)
+
+**`licenseId`** : Champ spécifique aux arbitres. Nullable pour les joueurs, renseigné lors de l'inscription en tant qu'arbitre. Correspond au numéro de licence d'arbitrage (ex: `ARB-2026-001`).
 
 ---
 
@@ -190,12 +198,14 @@ Quand l'utilisateur se déconnecte :
 | `app_logout`   | `/deconnexion` | GET          | Intercepté par Symfony (ne s'exécute jamais) |
 
 **Inscription (`app_register`)** :
-1. Valide que tous les champs sont remplis
-2. Vérifie que les mots de passe correspondent
-3. Vérifie l'unicité de l'email et du username en base
-4. Crée un `User` avec `status = ACTIVE` et le mot de passe hashé
-5. Crée un `Profile` vide associé à l'utilisateur
-6. Redirige vers la page de connexion
+1. L'utilisateur choisit son type de compte (Joueur ou Arbitre)
+2. Valide que tous les champs sont remplis
+3. Vérifie que les mots de passe correspondent
+4. Vérifie l'unicité de l'email et du username en base
+5. Crée un `User` avec `status = ACTIVE` et le mot de passe hashé
+6. Si type "Arbitre" : attribue `ROLE_REFEREE` et stocke le `licenseId`
+7. Crée un `Profile` vide associé à l'utilisateur
+8. Redirige vers la page de connexion
 
 **Login (`app_login`)** :
 - Si l'utilisateur est déjà connecté → redirige vers le dashboard

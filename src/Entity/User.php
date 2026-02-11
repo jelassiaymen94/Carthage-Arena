@@ -69,6 +69,10 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(type: 'integer')]
     private int $balance = 0;
 
+    #[ORM\Column(length: 100, nullable: true)]
+    #[Assert\Length(max: 100, maxMessage: 'Le numéro de licence ne peut pas dépasser {{ limit }} caractères.')]
+    private ?string $licenseId = null;
+
     #[ORM\OneToOne(mappedBy: 'user', cascade: ['persist', 'remove'])]
     private ?Profile $profile = null;
 
@@ -197,6 +201,17 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function setBalance(int $balance): static
     {
         $this->balance = $balance;
+        return $this;
+    }
+
+    public function getLicenseId(): ?string
+    {
+        return $this->licenseId;
+    }
+
+    public function setLicenseId(?string $licenseId): static
+    {
+        $this->licenseId = $licenseId;
         return $this;
     }
 
