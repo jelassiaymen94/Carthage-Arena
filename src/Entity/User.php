@@ -52,6 +52,9 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\OneToOne(mappedBy: 'user', cascade: ['persist', 'remove'])]
     private ?Profile $profile = null;
 
+    #[ORM\OneToOne(mappedBy: 'user', cascade: ['persist', 'remove'], orphanRemoval: true)]
+    private ?AuthToken $authToken = null;
+
     #[ORM\OneToMany(mappedBy: 'player', targetEntity: TeamMembership::class, orphanRemoval: true)]
     private Collection $teamMemberships;
 
@@ -190,6 +193,22 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         }
 
         $this->profile = $profile;
+
+        return $this;
+    }
+
+    public function getAuthToken(): ?AuthToken
+    {
+        return $this->authToken;
+    }
+
+    public function setAuthToken(?AuthToken $authToken): static
+    {
+        if ($authToken !== null && $authToken->getUser() !== $this) {
+            $authToken->setUser($this);
+        }
+
+        $this->authToken = $authToken;
 
         return $this;
     }
