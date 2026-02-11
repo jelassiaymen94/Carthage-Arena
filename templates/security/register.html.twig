@@ -42,60 +42,56 @@
         <div class="bg-surface-dark border border-white/5 rounded-3xl p-8 shadow-2xl">
           <h2 class="text-xl font-bold text-white mb-6 text-center">Créer un compte</h2>
 
+          {# Global form errors #}
+          {% for error in registrationForm.vars.errors %}
+            <div class="bg-red-500/10 border border-red-500/20 rounded-xl p-4 mb-4 text-sm text-red-400 flex items-start gap-3">
+              <span class="material-symbols-outlined text-[20px]">error</span>
+              <div>{{ error.message }}</div>
+            </div>
+          {% endfor %}
+
           {% for message in app.flashes('error') %}
-            <div class="bg-red-500/10 border border-red-500/20 rounded-xl p-4 mb-6 text-sm text-red-400 flex items-start gap-3">
+            <div class="bg-red-500/10 border border-red-500/20 rounded-xl p-4 mb-4 text-sm text-red-400 flex items-start gap-3">
               <span class="material-symbols-outlined text-[20px]">error</span>
               <div>{{ message }}</div>
             </div>
           {% endfor %}
 
-          <form method="post" action="{{ path('app_register') }}" class="flex flex-col gap-5">
+          {{ form_start(registrationForm, {'attr': {'class': 'flex flex-col gap-5', 'novalidate': 'novalidate'}}) }}
             <div>
-              <label for="username" class="block text-sm font-medium text-gray-400 mb-2">Nom d'utilisateur</label>
-              <input
-                type="text"
-                id="username"
-                name="username"
-                required
-                class="w-full bg-[#161616] border border-white/10 rounded-xl py-3.5 px-4 text-sm text-white placeholder-gray-500 focus:border-primary focus:outline-none input-glow transition-all"
-                placeholder="Pseudo"
-              >
+              <label for="{{ registrationForm.username.vars.id }}" class="block text-sm font-medium text-gray-400 mb-2">Nom d'utilisateur</label>
+              {{ form_widget(registrationForm.username) }}
+              {% for error in registrationForm.username.vars.errors %}
+                <p class="text-xs text-red-400 mt-1">{{ error.message }}</p>
+              {% endfor %}
             </div>
 
             <div>
-              <label for="email" class="block text-sm font-medium text-gray-400 mb-2">Email</label>
-              <input
-                type="email"
-                id="email"
-                name="email"
-                required
-                class="w-full bg-[#161616] border border-white/10 rounded-xl py-3.5 px-4 text-sm text-white placeholder-gray-500 focus:border-primary focus:outline-none input-glow transition-all"
-                placeholder="nom@exemple.com"
-              >
+              <label for="{{ registrationForm.email.vars.id }}" class="block text-sm font-medium text-gray-400 mb-2">Email</label>
+              {{ form_widget(registrationForm.email) }}
+              {% for error in registrationForm.email.vars.errors %}
+                <p class="text-xs text-red-400 mt-1">{{ error.message }}</p>
+              {% endfor %}
             </div>
 
             <div>
-              <label for="password" class="block text-sm font-medium text-gray-400 mb-2">Mot de passe</label>
-              <input
-                type="password"
-                id="password"
-                name="password"
-                required
-                class="w-full bg-[#161616] border border-white/10 rounded-xl py-3.5 px-4 text-sm text-white placeholder-gray-500 focus:border-primary focus:outline-none input-glow transition-all"
-                placeholder="••••••••"
-              >
+              <label for="{{ registrationForm.plainPassword.first.vars.id }}" class="block text-sm font-medium text-gray-400 mb-2">Mot de passe</label>
+              {{ form_widget(registrationForm.plainPassword.first) }}
+              {% for error in registrationForm.plainPassword.first.vars.errors %}
+                <p class="text-xs text-red-400 mt-1">{{ error.message }}</p>
+              {% endfor %}
             </div>
 
             <div>
-              <label for="confirm_password" class="block text-sm font-medium text-gray-400 mb-2">Confirmer le mot de passe</label>
-              <input
-                type="password"
-                id="confirm_password"
-                name="confirm_password"
-                required
-                class="w-full bg-[#161616] border border-white/10 rounded-xl py-3.5 px-4 text-sm text-white placeholder-gray-500 focus:border-primary focus:outline-none input-glow transition-all"
-                placeholder="••••••••"
-              >
+              <label for="{{ registrationForm.plainPassword.second.vars.id }}" class="block text-sm font-medium text-gray-400 mb-2">Confirmer le mot de passe</label>
+              {{ form_widget(registrationForm.plainPassword.second) }}
+              {% for error in registrationForm.plainPassword.second.vars.errors %}
+                <p class="text-xs text-red-400 mt-1">{{ error.message }}</p>
+              {% endfor %}
+              {# Password mismatch error shows on the parent #}
+              {% for error in registrationForm.plainPassword.vars.errors %}
+                <p class="text-xs text-red-400 mt-1">{{ error.message }}</p>
+              {% endfor %}
             </div>
 
             <button
@@ -105,7 +101,7 @@
               <span class="material-symbols-outlined text-[20px]">person_add</span>
               S'inscrire
             </button>
-          </form>
+          {{ form_end(registrationForm) }}
         </div>
 
         <!-- Footer -->

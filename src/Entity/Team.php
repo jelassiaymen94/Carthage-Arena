@@ -8,9 +8,13 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\Types\UuidType;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Uid\Uuid;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: TeamRepository::class)]
+#[UniqueEntity(fields: ['name'], message: 'Ce nom d\'équipe est déjà pris.')]
+#[UniqueEntity(fields: ['tag'], message: 'Ce tag est déjà pris.')]
 class Team
 {
     #[ORM\Id]
@@ -20,12 +24,27 @@ class Team
     private ?Uuid $id = null;
 
     #[ORM\Column(length: 100, unique: true)]
+    #[Assert\NotBlank(message: 'Le nom de l\'équipe est obligatoire.')]
+    #[Assert\Length(
+        min: 3,
+        max: 100,
+        minMessage: 'Le nom doit contenir au moins {{ limit }} caractères.',
+        maxMessage: 'Le nom ne peut pas dépasser {{ limit }} caractères.'
+    )]
     private ?string $name = null;
 
     #[ORM\Column(length: 5, unique: true)]
+    #[Assert\NotBlank(message: 'Le tag est obligatoire.')]
+    #[Assert\Length(
+        min: 3,
+        max: 5,
+        minMessage: 'Le tag doit contenir au moins {{ limit }} caractères.',
+        maxMessage: 'Le tag ne peut pas dépasser {{ limit }} caractères.'
+    )]
     private ?string $tag = null;
 
     #[ORM\Column(length: 500, nullable: true)]
+    #[Assert\Length(max: 500, maxMessage: 'La description ne peut pas dépasser {{ limit }} caractères.')]
     private ?string $description = null;
 
     #[ORM\Column(length: 255, enumType: TeamStatus::class)]

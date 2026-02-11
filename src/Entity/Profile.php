@@ -6,6 +6,7 @@ use App\Repository\ProfileRepository;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\Types\UuidType;
 use Symfony\Component\Uid\Uuid;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: ProfileRepository::class)]
 class Profile
@@ -17,6 +18,7 @@ class Profile
     private ?Uuid $id = null;
 
     #[ORM\Column(length: 500, nullable: true)]
+    #[Assert\Length(max: 500, maxMessage: 'La biographie ne peut pas dépasser {{ limit }} caractères.')]
     private ?string $bio = null;
 
     #[ORM\Column(length: 255, nullable: true)]
