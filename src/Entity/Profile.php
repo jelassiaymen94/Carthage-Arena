@@ -6,7 +6,7 @@ use App\Repository\ProfileRepository;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\Types\UuidType;
 use Symfony\Component\Uid\Uuid;
-
+use DateTimeImmutable;
 #[ORM\Entity(repositoryClass: ProfileRepository::class)]
 class Profile
 {
@@ -34,7 +34,7 @@ class Profile
 
     public function __construct()
     {
-        $this->createdAt = new \DateTimeImmutable();
+        $this->createdAt = new DateTimeImmutable();
     }
 
     public function getId(): ?Uuid
