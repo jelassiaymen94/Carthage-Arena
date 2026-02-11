@@ -66,9 +66,16 @@
               <span class="material-symbols-outlined text-primary">person</span>
               Informations du Profil
             </h3>
-            <form class="flex flex-col gap-6" action="{{ path('app_settings') }}" method="post" enctype="multipart/form-data">
-              <input type="hidden" name="_form_type" value="profile">
-              <input type="hidden" name="_csrf_token" value="{{ csrf_token('profile_update') }}">
+
+            {# Global form errors (like UniqueEntity) #}
+            {% for error in profileForm.vars.errors %}
+              <div class="rounded-xl bg-red-500/10 border border-red-500/30 p-4 mb-4 text-sm text-red-400 flex items-center gap-2">
+                <span class="material-symbols-outlined text-[20px]">error</span>
+                {{ error.message }}
+              </div>
+            {% endfor %}
+
+            {{ form_start(profileForm, {'attr': {'class': 'flex flex-col gap-6', 'novalidate': 'novalidate', 'enctype': 'multipart/form-data'}}) }}
               <!-- Avatar Row -->
               <div class="flex items-center gap-6 mb-2">
                 <div
@@ -77,38 +84,35 @@
                   style="background-image: url('{{ user.avatar }}'); background-size: cover; background-position: center;"
                 ></div>
                 <div>
-                  <input type="file" id="avatarInput" name="avatar" accept="image/jpeg,image/png,image/webp" class="hidden" />
+                  {{ form_widget(profileForm.avatar, {'attr': {'id': 'avatarInput', 'class': 'hidden', 'accept': 'image/jpeg,image/png,image/webp'}}) }}
                   <button type="button" onclick="document.getElementById('avatarInput').click()" class="rounded-full border border-white/10 bg-surface-hover px-5 py-2 text-sm font-bold text-gray-300 hover:bg-white/10 hover:text-white transition-all">
                     Changer l'avatar
                   </button>
                   <p class="text-xs text-gray-500 mt-1">JPG, PNG ou WebP, max 2MB.</p>
+                  {% for error in profileForm.avatar.vars.errors %}
+                    <p class="text-xs text-red-400 mt-1">{{ error.message }}</p>
+                  {% endfor %}
                 </div>
               </div>
               <!-- Fields Grid -->
               <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
                 <div>
-                  <label for="settings_name" class="block text-sm font-medium text-gray-400 mb-2">
+                  <label for="{{ profileForm.username.vars.id }}" class="block text-sm font-medium text-gray-400 mb-2">
                     Nom d'utilisateur <span class="text-primary">*</span>
                   </label>
-                  <input
-                    type="text"
-                    id="settings_name"
-                    name="name"
-                    value="{{ user.name }}"
-                    class="w-full bg-[#161616] border border-white/10 rounded-xl py-3.5 px-4 text-sm text-white placeholder-gray-500 focus:border-primary focus:outline-none input-glow transition-all"
-                  />
+                  {{ form_widget(profileForm.username) }}
+                  {% for error in profileForm.username.vars.errors %}
+                    <p class="text-xs text-red-400 mt-1">{{ error.message }}</p>
+                  {% endfor %}
                 </div>
                 <div>
-                  <label for="settings_email" class="block text-sm font-medium text-gray-400 mb-2">
+                  <label for="{{ profileForm.email.vars.id }}" class="block text-sm font-medium text-gray-400 mb-2">
                     Adresse e-mail <span class="text-primary">*</span>
                   </label>
-                  <input
-                    type="email"
-                    id="settings_email"
-                    name="email"
-                    value="{{ user.email }}"
-                    class="w-full bg-[#161616] border border-white/10 rounded-xl py-3.5 px-4 text-sm text-white placeholder-gray-500 focus:border-primary focus:outline-none input-glow transition-all"
-                  />
+                  {{ form_widget(profileForm.email) }}
+                  {% for error in profileForm.email.vars.errors %}
+                    <p class="text-xs text-red-400 mt-1">{{ error.message }}</p>
+                  {% endfor %}
                 </div>
                 <div>
                   <label for="settings_language" class="block text-sm font-medium text-gray-400 mb-2">
@@ -158,16 +162,13 @@
               </div>
 
               <div>
-                <label for="settings_bio" class="block text-sm font-medium text-gray-400 mb-2">
+                <label for="{{ profileForm.bio.vars.id }}" class="block text-sm font-medium text-gray-400 mb-2">
                   Biographie
                 </label>
-                <textarea
-                  id="settings_bio"
-                  name="bio"
-                  rows="4"
-                  class="w-full bg-[#161616] border border-white/10 rounded-xl py-3.5 px-4 text-sm text-white placeholder-gray-500 focus:border-primary focus:outline-none input-glow transition-all resize-none"
-                  placeholder="Parlez-nous de vous..."
-                >{{ user.bio }}</textarea>
+                {{ form_widget(profileForm.bio) }}
+                {% for error in profileForm.bio.vars.errors %}
+                  <p class="text-xs text-red-400 mt-1">{{ error.message }}</p>
+                {% endfor %}
                 <p class="text-xs text-gray-500 mt-1">Max 500 caractères.</p>
               </div>
 
@@ -180,7 +181,7 @@
                   Enregistrer les modifications
                 </button>
               </div>
-            </form>
+            {{ form_end(profileForm) }}
           </section>
 
           <!-- Security -->
