@@ -2,7 +2,8 @@
 
 namespace App\Security;
 
-use App\Enum\AccountStatus;
+use App\Entity\User;
+use App\Service\AuthService;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -15,7 +16,6 @@ use Symfony\Component\Security\Http\Authenticator\Passport\Credentials\PasswordC
 use Symfony\Component\Security\Http\Authenticator\Passport\Passport;
 use Symfony\Component\Security\Http\SecurityRequestAttributes;
 use Symfony\Component\Security\Http\Util\TargetPathTrait;
-use App\Entity\User;
 
 class LoginFormAuthenticator extends AbstractLoginFormAuthenticator
 {
@@ -23,8 +23,10 @@ class LoginFormAuthenticator extends AbstractLoginFormAuthenticator
 
     public const LOGIN_ROUTE = 'app_login';
 
-    public function __construct(private UrlGeneratorInterface $urlGenerator)
-    {
+    public function __construct(
+        private UrlGeneratorInterface $urlGenerator,
+        private AuthService $authService,
+    ) {
     }
 
     public function authenticate(Request $request): Passport
@@ -48,22 +50,9 @@ class LoginFormAuthenticator extends AbstractLoginFormAuthenticator
             return new RedirectResponse($targetPath);
         }
 
-        // Check user status
         $user = $token->getUser();
         if ($user instanceof User) {
-            if ($user->getStatus() === AccountStatus::SUSPENDED || $user->getStatus() === AccountStatus::DELETED) {
-                // This usually should be done in a UserChecker, but doing a check here or redirecting logic is also possible.
-                // However, onAuthenticationSuccess implies they are logged in.
-                // If we want to prevent login, we should use a UserChecker.
-                // Given the plan says "Check AccountStatus (deny SUSPENDED/DELETED users)",
-                // doing it here is too late to prevent login (session is created),
-                // but we can invalidate and redirect.
-                // A better approach is usually UserCheckerInterface.
-                // But following the plan's implicit simplicity, let's assume we handle standard success here
-                // and maybe adding a UserChecker later if strictly required by framework,
-                // or rely on standard auth flow.
-                // Let's stick to standard success redirect.
-            }
+            $this->authService->authenticate($user);
         }
 
         return new RedirectResponse($this->urlGenerator->generate('app_dashboard'));
