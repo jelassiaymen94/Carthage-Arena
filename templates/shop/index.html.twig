@@ -62,46 +62,7 @@
               Améliorez votre arsenal avec des skins exclusifs.
             </p>
           </div>
-          <div class="flex items-center gap-6">
-            <button
-              class="relative rounded-full p-2 text-gray-400 hover:bg-white/5 hover:text-white transition-colors"
-              aria-label="Notifications - 1 nouvelle notification"
-            >
-              <span class="material-symbols-outlined">notifications</span>
-              <span
-                class="absolute right-2 top-2 h-2 w-2 rounded-full bg-primary"
-              ></span>
-            </button>
-            <div
-              class="flex items-center gap-4 rounded-full border border-white/5 bg-surface-dark py-1.5 pl-4 pr-1.5 shadow-lg"
-            >
-              <div class="flex flex-col items-end mr-2">
-                <span class="text-sm font-bold text-white leading-none"
-                  >ShadowSlayer99</span
-                >
-                <span class="text-[10px] text-gray-400 uppercase tracking-wider"
-                  >Joueur Pro</span
-                >
-              </div>
-              <div
-                class="flex items-center gap-1 rounded-full bg-gradient-to-r from-yellow-600 to-yellow-400 px-3 py-1 text-black shadow-[0_0_10px_rgba(255,215,0,0.3)]"
-                title="Carthage Points - Monnaie virtuelle pour acheter des skins et objets"
-              >
-                <span class="material-symbols-outlined text-[16px] font-bold"
-                  >payments</span
-                >
-                <span class="text-xs font-black">2,450 CP</span>
-              </div>
-              <div
-                class="h-9 w-9 overflow-hidden rounded-full border-2 border-primary bg-gray-800"
-                data-alt="Player profile avatar"
-                style="
-                  background-image: url(&quot;https://lh3.googleusercontent.com/aida-public/AB6AXuCPOwCt1u59UYH0PU7STTOEdwDPy5axibmnqjNIpgS479Ip9V37Za2WKh3X8kperVFrJ9obCf33C2TZhB6JsPTgbyJzS0FRIMrsTTu0eenIWj5ozp4LPq-onFQkqssDiHjUbkZaevMuEylTBzmJ8e5CcrYTVJDLFCCM0qCjn1D7vDfRr-T3UdKaedgaKLyEFpbVU8uU9gjyDEtd3eFHlG-ErvNqNopvpjrtyYiCfNVG_e5MZhjIYXkhtfi4TkCg2KENMGyeWcgs2wE&quot;);
-                  background-size: cover;
-                "
-              ></div>
-            </div>
-          </div>
+          {% include 'components/_header_user_pill.html.twig' %}
         </header>
         <div class="flex flex-col gap-6 p-8 max-w-7xl mx-auto w-full">
           <div
