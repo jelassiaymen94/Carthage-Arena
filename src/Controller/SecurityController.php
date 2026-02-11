@@ -50,6 +50,7 @@ class SecurityController extends AbstractController
 
         if ($form->isSubmitted() && $form->isValid()) {
             $plainPassword = $form->get('plainPassword')->getData();
+            $accountType = $form->get('accountType')->getData();
 
             $user->setStatus(AccountStatus::ACTIVE);
             $user->setPassword(
@@ -58,6 +59,11 @@ class SecurityController extends AbstractController
                     $plainPassword
                 )
             );
+
+            // Assign role based on account type
+            if ($accountType === 'referee') {
+                $user->setRoles(['ROLE_REFEREE']);
+            }
 
             // Create empty profile
             $profile = new Profile();
