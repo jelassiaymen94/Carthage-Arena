@@ -34,15 +34,7 @@ class LoginFormAuthenticator extends AbstractLoginFormAuthenticator
         $request->getSession()->set(SecurityRequestAttributes::LAST_USERNAME, $email);
 
         return new Passport(
-            new UserBadge($email, function (string $userIdentifier) {
-               // Optional: Check if user exists or is active here if needed,
-               // but usually handled by UserChecker or loaded via UserProvider.
-               // For now, simple UserBadge is fine, but we might want to ensure
-               // suspended users are handled. Standard Symfony handles this via UserChecker,
-               // but we can also throw a CustomUserMessageAuthenticationException here if we fetch the user manually.
-               // For standard usage, we trust the UserProvider to find the user.
-               return $userIdentifier;
-            }),
+            new UserBadge($email),
             new PasswordCredentials($request->request->get('password', '')),
             [
                 new CsrfTokenBadge('authenticate', $request->request->get('_csrf_token')),
