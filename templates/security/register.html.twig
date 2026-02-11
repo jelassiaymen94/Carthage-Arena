@@ -58,6 +58,26 @@
           {% endfor %}
 
           {{ form_start(registrationForm, {'attr': {'class': 'flex flex-col gap-5', 'novalidate': 'novalidate'}}) }}
+            {# Account Type Selector #}
+            <div>
+              <label class="block text-sm font-medium text-gray-400 mb-3">Type de compte</label>
+              <div class="flex gap-3">
+                {% for child in registrationForm.accountType %}
+                  <label class="flex-1 cursor-pointer">
+                    <input type="radio" name="{{ child.vars.full_name }}" value="{{ child.vars.value }}" {{ child.vars.checked ? 'checked' }} class="hidden peer" id="{{ child.vars.id }}">
+                    <div class="peer-checked:border-primary peer-checked:bg-primary/10 border border-white/10 rounded-xl py-3 px-4 text-center text-sm font-medium text-gray-400 peer-checked:text-primary transition-all hover:border-white/20">
+                      {% if child.vars.value == 'player' %}
+                        <span class="material-symbols-outlined text-[18px] align-middle mr-1">sports_esports</span>
+                      {% else %}
+                        <span class="material-symbols-outlined text-[18px] align-middle mr-1">gavel</span>
+                      {% endif %}
+                      {{ child.vars.label }}
+                    </div>
+                  </label>
+                {% endfor %}
+              </div>
+            </div>
+
             <div>
               <label for="{{ registrationForm.username.vars.id }}" class="block text-sm font-medium text-gray-400 mb-2">Nom d'utilisateur</label>
               {{ form_widget(registrationForm.username) }}
@@ -70,6 +90,15 @@
               <label for="{{ registrationForm.email.vars.id }}" class="block text-sm font-medium text-gray-400 mb-2">Email</label>
               {{ form_widget(registrationForm.email) }}
               {% for error in registrationForm.email.vars.errors %}
+                <p class="text-xs text-red-400 mt-1">{{ error.message }}</p>
+              {% endfor %}
+            </div>
+
+            {# License ID field - only visible for referees #}
+            <div id="licenseIdField" class="hidden">
+              <label for="{{ registrationForm.licenseId.vars.id }}" class="block text-sm font-medium text-gray-400 mb-2">Numéro de licence</label>
+              {{ form_widget(registrationForm.licenseId) }}
+              {% for error in registrationForm.licenseId.vars.errors %}
                 <p class="text-xs text-red-400 mt-1">{{ error.message }}</p>
               {% endfor %}
             </div>
@@ -113,4 +142,23 @@
         </p>
       </div>
     </div>
+
+    <script>
+      document.addEventListener('DOMContentLoaded', function() {
+        const radios = document.querySelectorAll('input[name="registration[accountType]"]');
+        const licenseField = document.getElementById('licenseIdField');
+
+        function toggleLicenseField() {
+          const selected = document.querySelector('input[name="registration[accountType]"]:checked');
+          if (selected && selected.value === 'referee') {
+            licenseField.classList.remove('hidden');
+          } else {
+            licenseField.classList.add('hidden');
+          }
+        }
+
+        radios.forEach(radio => radio.addEventListener('change', toggleLicenseField));
+        toggleLicenseField();
+      });
+    </script>
 {% endblock %}

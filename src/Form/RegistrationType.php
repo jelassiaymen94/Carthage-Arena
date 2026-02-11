@@ -4,6 +4,7 @@ namespace App\Form;
 
 use App\Entity\User;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\EmailType;
 use Symfony\Component\Form\Extension\Core\Type\PasswordType;
 use Symfony\Component\Form\Extension\Core\Type\RepeatedType;
@@ -16,19 +17,43 @@ class RegistrationType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
+        $inputClass = 'w-full bg-[#161616] border border-white/10 rounded-xl py-3.5 px-4 text-sm text-white placeholder-gray-500 focus:border-primary focus:outline-none input-glow transition-all';
+
         $builder
+            ->add('accountType', ChoiceType::class, [
+                'mapped' => false,
+                'label' => 'Type de compte',
+                'choices' => [
+                    'Joueur' => 'player',
+                    'Arbitre' => 'referee',
+                ],
+                'expanded' => true,
+                'multiple' => false,
+                'data' => 'player',
+                'attr' => [
+                    'class' => 'flex gap-4',
+                ],
+            ])
             ->add('username', TextType::class, [
                 'label' => 'Nom d\'utilisateur',
                 'attr' => [
                     'placeholder' => 'Pseudo',
-                    'class' => 'w-full bg-[#161616] border border-white/10 rounded-xl py-3.5 px-4 text-sm text-white placeholder-gray-500 focus:border-primary focus:outline-none input-glow transition-all',
+                    'class' => $inputClass,
                 ],
             ])
             ->add('email', EmailType::class, [
                 'label' => 'Email',
                 'attr' => [
                     'placeholder' => 'nom@exemple.com',
-                    'class' => 'w-full bg-[#161616] border border-white/10 rounded-xl py-3.5 px-4 text-sm text-white placeholder-gray-500 focus:border-primary focus:outline-none input-glow transition-all',
+                    'class' => $inputClass,
+                ],
+            ])
+            ->add('licenseId', TextType::class, [
+                'label' => 'Numéro de licence',
+                'required' => false,
+                'attr' => [
+                    'placeholder' => 'Ex: ARB-2026-001',
+                    'class' => $inputClass,
                 ],
             ])
             ->add('plainPassword', RepeatedType::class, [
@@ -38,14 +63,14 @@ class RegistrationType extends AbstractType
                     'label' => 'Mot de passe',
                     'attr' => [
                         'placeholder' => '••••••••',
-                        'class' => 'w-full bg-[#161616] border border-white/10 rounded-xl py-3.5 px-4 text-sm text-white placeholder-gray-500 focus:border-primary focus:outline-none input-glow transition-all',
+                        'class' => $inputClass,
                     ],
                 ],
                 'second_options' => [
                     'label' => 'Confirmer le mot de passe',
                     'attr' => [
                         'placeholder' => '••••••••',
-                        'class' => 'w-full bg-[#161616] border border-white/10 rounded-xl py-3.5 px-4 text-sm text-white placeholder-gray-500 focus:border-primary focus:outline-none input-glow transition-all',
+                        'class' => $inputClass,
                     ],
                 ],
                 'invalid_message' => 'Les mots de passe ne correspondent pas.',
