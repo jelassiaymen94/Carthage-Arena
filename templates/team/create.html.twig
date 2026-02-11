@@ -34,19 +34,7 @@
             <h2 class="text-2xl font-bold text-white">Cr&eacute;er une &Eacute;quipe</h2>
             <p class="text-xs text-gray-400">Configurez l'identit&eacute; de votre &eacute;quipe.</p>
           </div>
-          <div class="flex items-center gap-6">
-            <button class="relative rounded-full p-2 text-gray-400 hover:bg-white/5 hover:text-white transition-colors" aria-label="Notifications">
-              <span class="material-symbols-outlined">notifications</span>
-              <span class="absolute right-2 top-2 h-2 w-2 rounded-full bg-primary"></span>
-            </button>
-            <div class="flex items-center gap-4 rounded-full border border-white/5 bg-surface-dark py-1.5 pl-4 pr-1.5 shadow-lg">
-              <div class="flex items-center gap-1 rounded-full bg-gradient-to-r from-yellow-600 to-yellow-400 px-3 py-1 text-black shadow-[0_0_10px_rgba(255,215,0,0.3)]" title="Carthage Points">
-                <span class="material-symbols-outlined text-[16px] font-bold">payments</span>
-                <span class="text-xs font-black">CP</span>
-              </div>
-              <div class="h-9 w-9 overflow-hidden rounded-full border-2 border-primary bg-gray-800"></div>
-            </div>
-          </div>
+          {% include 'components/_header_user_pill.html.twig' %}
         </header>
 
         <div class="flex flex-col gap-6 p-8 max-w-3xl mx-auto w-full">
