@@ -1,0 +1,88 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ title }} - Admin - Carthage Arena{% endblock %}
+
+{% block body %}
+<div id="mainContent" class="opacity-0 transition-opacity duration-500">
+    <div class="flex min-h-screen bg-background-dark">
+        {# Sidebar #}
+        {% include 'admin/_sidebar.html.twig' %}
+
+        {# Main Content Area #}
+        <main class="flex-1 ml-64 overflow-y-auto h-screen">
+            {# Sticky Header #}
+            <header class="sticky top-0 z-30 bg-background-dark/80 backdrop-blur-xl border-b border-white/5">
+                <div class="flex items-center justify-between px-8 py-4">
+                    <div class="flex items-center gap-4">
+                        <a href="{{ path('admin_shop') }}" class="p-2 rounded-xl bg-white/5 hover:bg-white/10 text-white/50 hover:text-white transition-all">
+                            <span class="material-symbols-outlined">arrow_back</span>
+                        </a>
+                        <div>
+                            <h1 class="text-2xl font-bold text-white">{{ title }}</h1>
+                            <p class="text-sm text-white/40 mt-0.5">Gérer les skins de la boutique</p>
+                        </div>
+                    </div>
+                </div>
+            </header>
+
+            {# Page Content #}
+            <div class="p-8 max-w-3xl mx-auto">
+                <div class="bg-surface-dark border border-white/5 rounded-2xl p-8 shadow-2xl">
+                    {{ form_start(form, {'attr': {'class': 'space-y-6'}}) }}
+                        <div class="grid grid-cols-1 gap-6">
+                            <div>
+                                {{ form_label(form.name, 'Nom du skin', {'label_attr': {'class': 'block text-sm font-medium text-white/60 mb-2'}}) }}
+                                {{ form_widget(form.name, {'attr': {'class': 'w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder-white/30 focus:border-primary/50 focus:ring-1 focus:ring-primary/30 outline-none transition-all'}}) }}
+                                {{ form_errors(form.name) }}
+                            </div>
+
+                            <div>
+                                {{ form_label(form.description, 'Description', {'label_attr': {'class': 'block text-sm font-medium text-white/60 mb-2'}}) }}
+                                {{ form_widget(form.description, {'attr': {'class': 'w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder-white/30 focus:border-primary/50 outline-none transition-all'}}) }}
+                                {{ form_errors(form.description) }}
+                            </div>
+
+                            <div class="grid grid-cols-2 gap-6">
+                                <div>
+                                    {{ form_label(form.game, 'Jeu associé', {'label_attr': {'class': 'block text-sm font-medium text-white/60 mb-2'}}) }}
+                                    {{ form_widget(form.game, {'attr': {'class': 'w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white/70 outline-none focus:border-primary/50 form-select [&>option]:text-black'}}) }}
+                                    {{ form_errors(form.game) }}
+                                </div>
+                                <div>
+                                    {{ form_label(form.rarity, 'Rareté', {'label_attr': {'class': 'block text-sm font-medium text-white/60 mb-2'}}) }}
+                                    {{ form_widget(form.rarity, {'attr': {'class': 'w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white/70 outline-none focus:border-primary/50 form-select [&>option]:text-black'}}) }}
+                                    {{ form_errors(form.rarity) }}
+                                </div>
+                            </div>
+
+                            <div class="grid grid-cols-2 gap-6">
+                                <div>
+                                    {{ form_label(form.price, 'Prix (Points)', {'label_attr': {'class': 'block text-sm font-medium text-white/60 mb-2'}}) }}
+                                    {{ form_widget(form.price, {'attr': {'class': 'w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder-white/30 focus:border-primary/50 outline-none transition-all'}}) }}
+                                    {{ form_errors(form.price) }}
+                                </div>
+                            </div>
+
+                            <div>
+                                {{ form_label(form.imageUrl, 'URL de l\'image', {'label_attr': {'class': 'block text-sm font-medium text-white/60 mb-2'}}) }}
+                                {{ form_widget(form.imageUrl, {'attr': {'class': 'w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder-white/30 focus:border-primary/50 outline-none transition-all'}}) }}
+                                {{ form_errors(form.imageUrl) }}
+                            </div>
+                        </div>
+
+                        <div class="flex items-center gap-4 pt-6 border-t border-white/5">
+                            <button type="submit" class="flex-1 inline-flex items-center justify-center gap-2 py-3.5 bg-primary hover:bg-primary/90 text-white font-bold rounded-xl transition-all shadow-lg shadow-primary/20">
+                                <span class="material-symbols-outlined">save</span>
+                                Enregistrer
+                            </button>
+                            <a href="{{ path('admin_shop') }}" class="px-8 py-3.5 bg-white/5 hover:bg-white/10 text-white/60 font-semibold rounded-xl transition-all">
+                                Annuler
+                            </a>
+                        </div>
+                    {{ form_end(form) }}
+                </div>
+            </div>
+        </main>
+    </div>
+</div>
+{% endblock %}

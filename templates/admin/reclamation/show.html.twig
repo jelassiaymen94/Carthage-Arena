@@ -1,0 +1,192 @@
+{% extends 'base_admin.html.twig' %}
+
+{% block title %}Détails Réclamation #{{ reclamation.id }}{% endblock %}
+
+{% block body %}
+<div class="grid grid-cols-1 xl:grid-cols-3 gap-6">
+    {# Main Content #}
+    <div class="xl:col-span-2 space-y-6">
+        <div class="flex items-center justify-between">
+            <a href="{{ path('app_admin_reclamation_index') }}" class="flex items-center gap-2 text-gray-400 hover:text-white transition-colors">
+                <span class="material-symbols-outlined">arrow_back</span>
+                Retour à la liste
+            </a>
+            <div class="flex gap-2">
+                <form method="post" action="{{ path('app_admin_reclamation_show', {'id': reclamation.id}) }}" class="flex gap-2">
+                    {% if reclamation.status.value != 'resolved' and reclamation.status.value != 'closed' %}
+                        <button type="submit" name="status" value="resolved" class="px-4 py-2 rounded-lg bg-green-500/10 text-green-400 hover:bg-green-500 hover:text-white border border-green-500/20 transition-colors text-sm font-bold flex items-center gap-2">
+                            <span class="material-symbols-outlined text-lg">check_circle</span>
+                            Marquer comme Résolu
+                        </button>
+                    {% endif %}
+                    {% if reclamation.status.value != 'closed' %}
+                        <button type="submit" name="status" value="closed" class="px-4 py-2 rounded-lg bg-white/5 text-gray-400 hover:bg-white/10 hover:text-white border border-white/10 transition-colors text-sm font-bold flex items-center gap-2">
+                            <span class="material-symbols-outlined text-lg">lock</span>
+                            Fermer
+                        </button>
+                    {% endif %}
+                </form>
+            </div>
+        </div>
+
+        {# Original Message #}
+        <div class="bg-surface-dark border border-white/5 rounded-2xl p-6">
+            <div class="flex items-start gap-4 mb-6 pb-6 border-b border-white/5">
+                <div class="w-12 h-12 rounded-full bg-primary/20 flex items-center justify-center text-primary font-bold text-lg shrink-0">
+                    {{ reclamation.author.name|slice(0, 2)|upper }}
+                </div>
+                <div>
+                    <h1 class="text-2xl font-bold text-white mb-1">{{ reclamation.subject }}</h1>
+                    <div class="flex items-center gap-3 text-sm text-gray-400">
+                        <span>Par <span class="text-white font-bold">{{ reclamation.author.name }}</span></span>
+                        <span>&bull;</span>
+                        <span>{{ reclamation.createdAt|date('d F Y à H:i') }}</span>
+                    </div>
+                </div>
+            </div>
+            <div class="prose prose-invert max-w-none text-gray-300">
+                {{ reclamation.message|nl2br }}
+            </div>
+        </div>
+
+        {# Conversation #}
+        <div class="space-y-6">
+            {% for response in reclamation.responses %}
+                <div class="flex gap-4 {% if response.isAdminResponse %}justify-end{% else %}justify-start{% endif %}">
+                    {% if not response.isAdminResponse %}
+                        <div class="w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center shrink-0 mt-2 text-primary font-bold text-xs">
+                            {{ response.author.name|slice(0, 2)|upper }}
+                        </div>
+                    {% endif %}
+                    
+                    <div class="max-w-[85%] {% if response.isAdminResponse %}bg-primary text-white{% else %}bg-white/5 text-gray-200 border border-white/10{% endif %} rounded-2xl p-4 shadow-lg">
+                        <div class="flex items-center justify-between gap-4 mb-2 opacity-80">
+                            <span class="text-xs font-bold">
+                                {% if response.isAdminResponse %}Admin ({{ response.author.name }}){% else %}{{ response.author.name }}{% endif %}
+                            </span>
+                            <span class="text-[10px]">{{ response.createdAt|date('d/m H:i') }}</span>
+                        </div>
+                        <p class="text-sm whitespace-pre-wrap">{{ response.message }}</p>
+                    </div>
+
+                    {% if response.isAdminResponse %}
+                        <div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center shrink-0 mt-2 text-white font-bold text-xs">
+                            A
+                        </div>
+                    {% endif %}
+                </div>
+            {% endfor %}
+        </div>
+
+        {# Reply Form #}
+        <div class="bg-surface-dark border border-white/5 rounded-2xl p-6 sticky bottom-6 shadow-2xl">
+            <h3 class="text-white font-bold mb-4 flex items-center gap-2">
+                <span class="material-symbols-outlined text-primary">support_agent</span>
+                Réponse de l'administrateur
+            </h3>
+            <form method="post" action="{{ path('app_admin_reclamation_show', {'id': reclamation.id}) }}">
+                <textarea 
+                    name="message" 
+                    rows="4" 
+                    class="w-full bg-black/20 border border-white/10 rounded-xl p-4 text-white placeholder-gray-500 focus:outline-none focus:border-primary transition-colors resize-none mb-4"
+                    placeholder="Écrivez votre réponse ici..."
+                    required
+                ></textarea>
+                <div class="flex justify-between items-center">
+                    <div class="text-xs text-gray-500">
+                        La réponse sera visible par l'utilisateur.
+                    </div>
+                    <button type="submit" class="px-6 py-2 rounded-xl bg-primary text-white font-bold hover:bg-primary/90 transition-colors flex items-center gap-2 shadow-lg shadow-primary/20">
+                        <span class="material-symbols-outlined text-sm">send</span>
+                        Envoyer la réponse
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    {# Sidebar #}
+    <div class="xl:col-span-1 space-y-6">
+        {# Status Card #}
+        <div class="bg-surface-dark border border-white/5 rounded-2xl p-6">
+            <h3 class="text-gray-400 text-xs font-bold uppercase tracking-widest mb-4">État de la demande</h3>
+            
+            <div class="space-y-6">
+                <div>
+                    <span class="text-gray-500 text-xs block mb-2">Statut Actuel</span>
+                    <form method="post" action="{{ path('app_admin_reclamation_show', {'id': reclamation.id}) }}">
+                        <select name="status" onchange="this.form.submit()" class="w-full bg-black/20 border border-white/10 rounded-lg p-2 text-white text-sm focus:outline-none focus:border-primary">
+                            {% for status in enum('App\\Enum\\ReclamationStatus').cases %}
+                                <option value="{{ status.value }}" {% if reclamation.status == status %}selected{% endif %}>
+                                    {{ status.label }}
+                                </option>
+                            {% endfor %}
+                        </select>
+                    </form>
+                </div>
+
+                <div>
+                    <span class="text-gray-500 text-xs block mb-2">Priorité</span>
+                    <form method="post" action="{{ path('app_admin_reclamation_update_priority', {'id': reclamation.id}) }}">
+                        <select name="priority" onchange="this.form.submit()" class="w-full bg-black/20 border border-white/10 rounded-lg p-2 text-white text-sm focus:outline-none focus:border-primary">
+                            {% for priority in enum('App\\Enum\\ReclamationPriority').cases %}
+                                <option value="{{ priority.value }}" {% if reclamation.priority == priority %}selected{% endif %}>
+                                    {{ priority.label }}
+                                </option>
+                            {% endfor %}
+                        </select>
+                    </form>
+                </div>
+
+                <div>
+                    <span class="text-gray-500 text-xs block mb-1">Catégorie</span>
+                    <div class="flex items-center gap-2 text-white text-sm font-bold p-2 bg-white/5 rounded-lg">
+                        {% if reclamation.category.value == 'technical' %}
+                            <span class="material-symbols-outlined text-blue-400">dns</span>
+                        {% elseif reclamation.category.value == 'tournament' %}
+                            <span class="material-symbols-outlined text-yellow-400">trophy</span>
+                        {% elseif reclamation.category.value == 'payment' %}
+                            <span class="material-symbols-outlined text-green-400">payments</span>
+                        {% else %}
+                            <span class="material-symbols-outlined text-gray-400">help</span>
+                        {% endif %}
+                        {{ reclamation.category.label }}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        {# User Info Card #}
+        <div class="bg-surface-dark border border-white/5 rounded-2xl p-6">
+            <h3 class="text-gray-400 text-xs font-bold uppercase tracking-widest mb-4">Informations Utilisateur</h3>
+            
+            <div class="flex items-center gap-4 mb-4">
+                <div class="w-12 h-12 rounded-full bg-white/10 overflow-hidden">
+                    {% if reclamation.author.avatar %}
+                        <img src="{{ reclamation.author.avatar }}" alt="{{ reclamation.author.name }}" class="w-full h-full object-cover">
+                    {% else %}
+                        <div class="w-full h-full flex items-center justify-center bg-primary/20 text-primary font-bold text-lg">
+                            {{ reclamation.author.name|slice(0, 2)|upper }}
+                        </div>
+                    {% endif %}
+                </div>
+                <div>
+                    <div class="font-bold text-white">{{ reclamation.author.name }}</div>
+                    <div class="text-xs text-gray-500">{{ reclamation.author.email }}</div>
+                </div>
+            </div>
+
+            <div class="space-y-2">
+                <div class="flex justify-between text-sm border-t border-white/5 pt-2">
+                    <span class="text-gray-500">Inscrit le</span>
+                    <span class="text-white">{{ reclamation.author.createdAt|date('d/m/Y') }}</span>
+                </div>
+                <div class="flex justify-between text-sm border-t border-white/5 pt-2">
+                    <span class="text-gray-500">Statut Compte</span>
+                    <span class="text-green-400 font-bold">ACTIF</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
