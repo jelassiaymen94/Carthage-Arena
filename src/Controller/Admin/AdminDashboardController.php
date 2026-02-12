@@ -3,9 +3,12 @@
 namespace App\Controller\Admin;
 
 use App\Entity\Game;
+use App\Enum\AccountStatus;
 use App\Entity\Merch;
 use App\Entity\Skin;
 use App\Entity\Tournoi;
+use App\Entity\User;
+use App\Form\AdminUserType;
 use App\Form\GameType;
 use App\Form\MerchType;
 use App\Form\SkinType;
@@ -69,13 +72,71 @@ class AdminDashboardController extends AbstractController
     public function users(): Response
     {
         return $this->render('admin/users/index.html.twig', [
-            'users' => [
-                ['id' => 1, 'name' => 'ShadowSlayer99', 'email' => 'shadow@example.com', 'role' => 'JOUEUR PRO', 'status' => 'active', 'balance' => '2,450 CP', 'joined' => '2024-01-15'],
-                ['id' => 2, 'name' => 'ProGamer123', 'email' => 'pro@example.com', 'role' => 'JOUEUR', 'status' => 'active', 'balance' => '1,200 CP', 'joined' => '2024-02-20'],
-                ['id' => 3, 'name' => 'ElitePlayer', 'email' => 'elite@example.com', 'role' => 'JOUEUR PRO', 'status' => 'suspended', 'balance' => '500 CP', 'joined' => '2024-01-10'],
-                ['id' => 4, 'name' => 'MasterChief', 'email' => 'master@example.com', 'role' => 'JOUEUR', 'status' => 'active', 'balance' => '3,100 CP', 'joined' => '2024-03-05'],
-            ],
+            'users' => $this->userRepository->findAll(),
         ]);
+    }
+
+    #[Route('/users/{id}/edit', name: 'admin_users_edit', methods: ['GET', 'POST'])]
+    public function editUser(Request $request, User $user): Response
+    {
+        $form = $this->createForm(AdminUserType::class, $user);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $this->entityManager->flush();
+
+            $this->addFlash('success', 'L\'utilisateur "' . $user->getUsername() . '" a été mis à jour avec succès.');
+            return $this->redirectToRoute('admin_users');
+        }
+
+        return $this->render('admin/users/edit.html.twig', [
+            'user' => $user,
+            'form' => $form->createView(),
+        ]);
+    }
+
+    #[Route('/users/{id}/ban', name: 'admin_users_ban', methods: ['POST'])]
+    public function banUser(Request $request, User $user): Response
+    {
+        if (!$this->isCsrfTokenValid('ban' . $user->getId(), $request->request->get('_token'))) {
+            $this->addFlash('error', 'Action non autorisée (CSRF).');
+            return $this->redirectToRoute('admin_users');
+        }
+
+        // Toggle status
+        if ($user->getStatus() === AccountStatus::ACTIVE) {
+            $user->setStatus(AccountStatus::SUSPENDED);
+            $message = 'L\'utilisateur a été suspendu.';
+        } else {
+            $user->setStatus(AccountStatus::ACTIVE);
+            $message = 'L\'utilisateur a été réactivé.';
+        }
+
+        $this->entityManager->flush();
+        $this->addFlash('success', $message);
+
+        return $this->redirectToRoute('admin_users');
+    }
+
+    #[Route('/users/{id}/revoke-license', name: 'admin_users_revoke_license', methods: ['POST'])]
+    public function revokeLicense(Request $request, User $user): Response
+    {
+        if (!$this->isCsrfTokenValid('revoke' . $user->getId(), $request->getPayload()->get('_token'))) {
+            $this->addFlash('error', 'Action non autorisée (CSRF).');
+            return $this->redirectToRoute('admin_users');
+        }
+
+        $license = $user->getLicense();
+        if ($license) {
+            $user->setLicense(null);
+            $license->setAssignedTo(null);
+            $this->entityManager->flush();
+            $this->addFlash('success', 'La licence a été révoquée pour cet utilisateur.');
+        } else {
+            $this->addFlash('warning', 'Cet utilisateur n\'a pas de licence.');
+        }
+
+        return $this->redirectToRoute('admin_users');
     }
 
     #[Route('/tournaments', name: 'admin_tournaments', methods: ['GET', 'POST'])]

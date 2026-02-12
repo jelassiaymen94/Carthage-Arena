@@ -68,26 +68,35 @@
                             <tbody class="divide-y divide-white/5">
                                 {% for user in users %}
                                 <tr class="hover:bg-surface-hover transition-colors">
-                                    <td class="px-6 py-4 text-white/40 font-mono text-xs">#{{ user.id }}</td>
+                                    <td class="px-6 py-4 text-white/40 font-mono text-xs">
+                                        <span title="{{ user.id }}">#...{{ user.id|slice(-8) }}</span>
+                                    </td>
                                     <td class="px-6 py-4">
                                         <div class="flex items-center gap-3">
                                             <div class="w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center">
-                                                <span class="text-xs font-bold text-primary">{{ user.name|first|upper }}</span>
+                                                <span class="text-xs font-bold text-primary">{{ user.username|first|upper }}</span>
                                             </div>
-                                            <span class="font-semibold text-white">{{ user.name }}</span>
+                                            <span class="font-semibold text-white">{{ user.username }}</span>
                                         </div>
                                     </td>
                                     <td class="px-6 py-4 text-white/50">{{ user.email }}</td>
                                     <td class="px-6 py-4">
-                                        <span class="inline-flex px-2.5 py-1 rounded-full text-xs font-semibold
-                                                      {% if user.role == 'ADMIN' %}bg-primary/20 text-primary
-                                                      {% elseif user.role == 'JOUEUR PRO' %}bg-secondary/20 text-secondary
-                                                      {% else %}bg-blue-500/20 text-blue-400{% endif %}">
-                                            {{ user.role }}
-                                        </span>
+                                        <div class="flex gap-1 flex-wrap">
+                                            {% for role in user.roles %}
+                                                {% if role != 'ROLE_USER' %}
+                                                    <span class="inline-flex px-2.5 py-1 rounded-full text-xs font-semibold
+                                                        {% if role == 'ROLE_ADMIN' %}bg-primary/20 text-primary
+                                                        {% elseif role == 'ROLE_PRO' %}bg-secondary/20 text-secondary
+                                                        {% elseif role == 'ROLE_REFEREE' %}bg-purple-500/20 text-purple-400
+                                                        {% else %}bg-blue-500/20 text-blue-400{% endif %}">
+                                                        {{ role|replace({'ROLE_': ''}) }}
+                                                    </span>
+                                                {% endif %}
+                                            {% endfor %}
+                                        </div>
                                     </td>
                                     <td class="px-6 py-4">
-                                        {% if user.status == 'active' %}
+                                        {% if user.status.value == 'active' %}
                                             <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-green-500/20 text-green-400">
                                                 <span class="w-1.5 h-1.5 rounded-full bg-green-400"></span>
                                                 Actif
@@ -102,20 +111,33 @@
                                     <td class="px-6 py-4">
                                         <span class="font-semibold text-secondary">{{ user.balance }}</span>
                                     </td>
-                                    <td class="px-6 py-4 text-white/40 text-xs">{{ user.joined }}</td>
+                                    <td class="px-6 py-4 text-white/40 text-xs">{{ user.createdAt|date('d/m/Y') }}</td>
                                     <td class="px-6 py-4">
                                         <div class="flex items-center gap-2">
-                                            <button class="p-2 rounded-lg bg-white/5 hover:bg-white/10 text-white/50 hover:text-white transition-all" title="Modifier">
+                                            <a href="{{ path('admin_users_edit', {'id': user.id}) }}" class="p-2 rounded-lg bg-white/5 hover:bg-white/10 text-white/50 hover:text-white transition-all" title="Modifier">
                                                 <span class="material-symbols-outlined text-[18px]">edit</span>
-                                            </button>
-                                            {% if user.status == 'active' %}
-                                                <button class="p-2 rounded-lg bg-red-500/10 hover:bg-red-500/20 text-red-400 transition-all" title="Bannir">
-                                                    <span class="material-symbols-outlined text-[18px]">block</span>
-                                                </button>
-                                            {% else %}
-                                                <button class="p-2 rounded-lg bg-green-500/10 hover:bg-green-500/20 text-green-400 transition-all" title="Débannir">
-                                                    <span class="material-symbols-outlined text-[18px]">check_circle</span>
-                                                </button>
+                                            </a>
+                                            
+                                            <form method="post" action="{{ path('admin_users_ban', {'id': user.id}) }}" onsubmit="return confirm('Êtes-vous sûr de vouloir {% if user.status.value == 'active' %}bannir{% else %}réactiver{% endif %} cet utilisateur ?');" class="inline">
+                                                 <input type="hidden" name="_token" value="{{ csrf_token('ban' ~ user.id) }}">
+                                                 {% if user.status.value == 'active' %}
+                                                    <button type="submit" class="p-2 rounded-lg bg-red-500/10 hover:bg-red-500/20 text-red-400 transition-all" title="Bannir">
+                                                        <span class="material-symbols-outlined text-[18px]">block</span>
+                                                    </button>
+                                                {% else %}
+                                                    <button type="submit" class="p-2 rounded-lg bg-green-500/10 hover:bg-green-500/20 text-green-400 transition-all" title="Débannir">
+                                                        <span class="material-symbols-outlined text-[18px]">check_circle</span>
+                                                    </button>
+                                                {% endif %}
+                                            </form>
+
+                                            {% if 'ROLE_REFEREE' in user.roles and user.license %}
+                                                 <form method="post" action="{{ path('admin_users_revoke_license', {'id': user.id}) }}" onsubmit="return confirm('Êtes-vous sûr de vouloir révoquer la licence de cet arbitre ?');" class="inline">
+                                                     <input type="hidden" name="_token" value="{{ csrf_token('revoke' ~ user.id) }}">
+                                                     <button type="submit" class="p-2 rounded-lg bg-orange-500/10 hover:bg-orange-500/20 text-orange-400 transition-all" title="Révoquer Licence">
+                                                        <span class="material-symbols-outlined text-[18px]">gavel</span>
+                                                    </button>
+                                                </form>
                                             {% endif %}
                                         </div>
                                     </td>
