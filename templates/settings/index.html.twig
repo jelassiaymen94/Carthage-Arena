@@ -84,10 +84,10 @@
                   style="background-image: url('{{ user.avatar }}'); background-size: cover; background-position: center;"
                 ></div>
                 <div>
-                  {{ form_widget(profileForm.avatar, {'attr': {'id': 'avatarInput', 'class': 'hidden', 'accept': 'image/jpeg,image/png,image/webp'}}) }}
-                  <button type="button" onclick="document.getElementById('avatarInput').click()" class="rounded-full border border-white/10 bg-surface-hover px-5 py-2 text-sm font-bold text-gray-300 hover:bg-white/10 hover:text-white transition-all">
+                  {{ form_widget(profileForm.avatar, {'attr': {'class': 'hidden', 'accept': 'image/jpeg,image/png,image/webp'}}) }}
+                  <label for="{{ profileForm.avatar.vars.id }}" class="cursor-pointer inline-block rounded-full border border-white/10 bg-surface-hover px-5 py-2 text-sm font-bold text-gray-300 hover:bg-white/10 hover:text-white transition-all">
                     Changer l'avatar
-                  </button>
+                  </label>
                   <p class="text-xs text-gray-500 mt-1">JPG, PNG ou WebP, max 2MB.</p>
                   {% for error in profileForm.avatar.vars.errors %}
                     <p class="text-xs text-red-400 mt-1">{{ error.message }}</p>
@@ -328,17 +328,21 @@
     </div>
 {% endblock %}
 
-{% block scripts %}
+{% block javascripts %}
     <script>
-      document.getElementById('avatarInput').addEventListener('change', function(e) {
-        const file = e.target.files[0];
-        if (file) {
-          const reader = new FileReader();
-          reader.onload = function(ev) {
-            document.getElementById('avatarPreview').style.backgroundImage = 'url(' + ev.target.result + ')';
-          };
-          reader.readAsDataURL(file);
-        }
-      });
+      const avatarInput = document.getElementById('{{ profileForm.avatar.vars.id }}');
+      if (avatarInput) {
+        avatarInput.addEventListener('change', function(e) {
+          const file = e.target.files[0];
+          if (file) {
+            const reader = new FileReader();
+            reader.onload = function(ev) {
+              document.getElementById('avatarPreview').style.backgroundImage = 'url(' + ev.target.result + ')';
+            };
+            reader.readAsDataURL(file);
+          }
+        });
+      }
     </script>
 {% endblock %}
+

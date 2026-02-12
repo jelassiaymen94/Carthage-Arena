@@ -2,6 +2,7 @@
 
 namespace App\Repository;
 
+use App\Enum\AccountStatus;
 use App\Entity\User;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
@@ -31,5 +32,43 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
         $user->setPassword($newHashedPassword);
         $this->getEntityManager()->persist($user);
         $this->getEntityManager()->flush();
+    }
+
+    /**
+     * @return User[]
+     */
+    public function searchAndFilter(?string $search = null, ?string $status = null, ?string $role = null): array
+    {
+        $qb = $this->createQueryBuilder('u');
+
+        if ($search) {
+            $qb->andWhere('u.username LIKE :search OR u.email LIKE :search')
+               ->setParameter('search', '%' . $search . '%');
+        }
+
+        if ($status) {
+            // Check if status is a valid value for the enum
+            $validStatus = false;
+            foreach (\App\Enum\AccountStatus::cases() as $case) {
+                if ($case->value === $status) {
+                    $validStatus = true;
+                    break;
+                }
+            }
+
+            if ($validStatus) {
+                $qb->andWhere('u.status = :status')
+                   ->setParameter('status', $status);
+            }
+        }
+
+        if ($role) {
+            $qb->andWhere('u.roles LIKE :role')
+               ->setParameter('role', '%' . $role . '%');
+        }
+
+        return $qb->orderBy('u.createdAt', 'DESC')
+                  ->getQuery()
+                  ->getResult();
     }
 }

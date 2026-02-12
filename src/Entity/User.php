@@ -38,20 +38,20 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[Assert\Length(
         min: 3,
         max: 50,
-        minMessage: 'Le nom d\'utilisateur doit contenir au moins {{ limit }} caractères.',
-        maxMessage: 'Le nom d\'utilisateur ne peut pas dépasser {{ limit }} caractères.'
+        minMessage: 'Le nom d\'utilisateur doit contenir au moins 3 caractères.',
+        maxMessage: 'Le nom d\'utilisateur ne peut pas dépasser 50 caractères.'
     )]
     private ?string $username = null;
 
     #[ORM\Column(length: 50, nullable: true)]
-    #[Assert\Length(max: 50, maxMessage: 'Le pseudo ne peut pas dépasser {{ limit }} caractères.')]
+    #[Assert\Length(max: 50, maxMessage: 'Le pseudo ne peut pas dépasser 50 caractères.')]
     private ?string $nickname = null;
 
     #[ORM\Column]
     #[Assert\NotBlank(message: 'Le mot de passe est obligatoire.', groups: ['registration'])]
     #[Assert\Length(
         min: 6,
-        minMessage: 'Le mot de passe doit contenir au moins {{ limit }} caractères.',
+        minMessage: 'Le mot de passe doit contenir au moins 6 caractères.',
         groups: ['registration']
     )]
     private ?string $password = null;

@@ -28,25 +28,35 @@
             <div class="p-8 space-y-6">
                 {# Search & Filters #}
                 <div class="bg-surface-dark border border-white/5 rounded-2xl p-4">
-                    <div class="flex items-center gap-4">
+                    <form method="get" action="{{ path('admin_users') }}" class="flex items-center gap-4">
                         <div class="flex-1 relative">
                             <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-white/30 text-[20px]">search</span>
-                            <input type="text" placeholder="Rechercher par nom ou email..."
+                            <input type="text" name="search" value="{{ app.request.query.get('search') }}" placeholder="Rechercher par nom ou email..."
                                    class="w-full bg-white/5 border border-white/10 rounded-xl pl-10 pr-4 py-2.5 text-sm text-white placeholder-white/30 focus:border-primary/50 focus:ring-1 focus:ring-primary/30 outline-none transition-all" />
                         </div>
-                        <select class="bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white/70 outline-none focus:border-primary/50 w-48">
-                            <option>Tous les statuts</option>
-                            <option>Actif</option>
-                            <option>Suspendu</option>
-                            <option>En attente</option>
+                        <select name="status" class="bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white/70 outline-none focus:border-primary/50 w-48">
+                            <option value="">Tous les statuts</option>
+                            <option value="active" {% if app.request.query.get('status') == 'active' %}selected{% endif %}>Actif</option>
+                            <option value="suspended" {% if app.request.query.get('status') == 'suspended' %}selected{% endif %}>Suspendu</option>
                         </select>
-                        <select class="bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white/70 outline-none focus:border-primary/50 w-48">
-                            <option>Tous les rôles</option>
-                            <option>Joueur</option>
-                            <option>Joueur Pro</option>
-                            <option>Admin</option>
+                        <select name="role" class="bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white/70 outline-none focus:border-primary/50 w-48">
+                            <option value="">Tous les rôles</option>
+                            <option value="ROLE_USER" {% if app.request.query.get('role') == 'ROLE_USER' %}selected{% endif %}>Joueur</option>
+                            <option value="ROLE_PRO" {% if app.request.query.get('role') == 'ROLE_PRO' %}selected{% endif %}>Joueur Pro</option>
+                            <option value="ROLE_REFEREE" {% if app.request.query.get('role') == 'ROLE_REFEREE' %}selected{% endif %}>Arbitre</option>
+                            <option value="ROLE_ADMIN" {% if app.request.query.get('role') == 'ROLE_ADMIN' %}selected{% endif %}>Admin</option>
                         </select>
-                    </div>
+                        <div class="flex items-center gap-2">
+                            <button type="submit" class="p-2.5 rounded-xl bg-primary/10 text-primary hover:bg-primary/20 transition-all" title="Filtrer">
+                                <span class="material-symbols-outlined">filter_list</span>
+                            </button>
+                            {% if app.request.query.all|length > 0 %}
+                                <a href="{{ path('admin_users') }}" class="p-2.5 rounded-xl bg-white/5 text-white/50 hover:bg-white/10 hover:text-white transition-all" title="Réinitialiser">
+                                    <span class="material-symbols-outlined">close</span>
+                                </a>
+                            {% endif %}
+                        </div>
+                    </form>
                 </div>
 
                 {# Users Table #}
@@ -150,7 +160,11 @@
                     {# Pagination #}
                     <div class="flex items-center justify-between px-6 py-4 border-t border-white/5">
                         <p class="text-sm text-white/40">
-                            Affichage de 1 à {{ users|length }} sur {{ users|length }} utilisateurs
+                            {% if users|length > 0 %}
+                                Affichage de 1 à {{ users|length }} sur {{ users|length }} utilisateurs
+                            {% else %}
+                                Aucun utilisateur trouvé
+                            {% endif %}
                         </p>
                         <div class="flex items-center gap-2">
                             <button class="px-3 py-1.5 rounded-lg text-sm text-white/30 bg-white/5 cursor-not-allowed" disabled>Précédent</button>
