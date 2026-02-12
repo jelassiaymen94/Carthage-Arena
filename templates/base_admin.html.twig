@@ -1,0 +1,17 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Administration - Carthage Arena{% endblock %}
+
+{% block body %}
+<div class="flex min-h-screen bg-background-dark">
+    {# Premium Sidebar #}
+    {% include 'admin/_sidebar.html.twig' %}
+
+    {# Main Content Area #}
+    <main class="flex-1 ml-64 overflow-y-auto h-screen">
+        <div class="p-8">
+            {% block admin_content %}{% endblock %}
+        </div>
+    </main>
+</div>
+{% endblock %}

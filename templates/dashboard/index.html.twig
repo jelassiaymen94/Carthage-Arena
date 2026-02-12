@@ -11,43 +11,30 @@
       {% embed 'components/_sidebar.html.twig' %}
         {% block sidebar_bottom %}
         <!-- Bottom Ad/Recommendation (Sidebar Widget) -->
-        <div
-          class="relative overflow-hidden rounded-2xl bg-gradient-to-br from-gray-900 to-black p-4 border border-white/10"
-        >
-          <div
-            class="absolute -right-6 -top-6 h-24 w-24 rounded-full bg-primary/20 blur-2xl"
-          ></div>
+        <!-- Bottom Ad/Recommendation (Sidebar Widget) -->
+        {% if featuredSkin is defined and featuredSkin %}
+        <div class="relative overflow-hidden rounded-2xl bg-gradient-to-br from-gray-900 to-black p-4 border border-white/10">
+          <div class="absolute -right-6 -top-6 h-24 w-24 rounded-full bg-primary/20 blur-2xl"></div>
           <div class="relative z-10 flex flex-col gap-3">
             <div class="flex items-center justify-between">
-              <p
-                class="text-[10px] font-bold uppercase tracking-widest text-primary"
-              >
-                Recommandation IA
-              </p>
-              <span class="material-symbols-outlined text-primary text-sm"
-                >auto_awesome</span
-              >
+              <p class="text-[10px] font-bold uppercase tracking-widest text-primary">Recommandation IA</p>
+              <span class="material-symbols-outlined text-primary text-sm">auto_awesome</span>
             </div>
-            <div
-              class="h-24 w-full rounded-lg bg-cover bg-center shadow-inner"
-              data-alt="Cyberpunk character skin recommendation"
-              style="
-                background-image: url(&quot;https://lh3.googleusercontent.com/aida-public/AB6AXuBx_v-jr33CB3Wb3IX0h52CjD2Y2QMuwoJynhPLuS89J-zkxRoDKUbjC-qKR4XxI9dyLNEJWTXN-UhCsiw1CSz6aojAjzzGb4hfUpnlvuMzDRwsAJk5nuiYYQPFHv45mYuz1LkxCHgEm0NgYHY1HX7kzXTHcE38evG56e_YfMxuOlkyiM30hthFVyeen-CMqv0bSTmMEF-wFoibOSp1Cp8L8y068H9-I0GlfiLHeYiMmQNu4C_1gh-BHd8vhT5tckpKrdxVaPtUwCI&quot;);
-              "
+            <div class="h-24 w-full rounded-lg bg-cover bg-center shadow-inner"
+              style="background-image: url('{{ featuredSkin.imageUrl }}');"
             ></div>
             <div>
-              <h4 class="text-sm font-bold text-white">Cyber-Ninja Genji</h4>
+              <h4 class="text-sm font-bold text-white line-clamp-1">{{ featuredSkin.name }}</h4>
               <p class="text-xs text-gray-400 mt-1">
-                Basé sur vos 15 derniers matchs avec Genji.
+                Recommandé pour vous ({{ featuredSkin.game.name|default('Jeu') }})
               </p>
             </div>
-            <button
-              class="mt-1 w-full rounded-full bg-white/5 py-2 px-4 text-xs font-bold text-white hover:bg-white/10 transition-colors"
-            >
+            <a href="{{ path('app_shop_item', {'id': featuredSkin.id}) }}" class="mt-1 w-full flex items-center justify-center rounded-full bg-white/5 py-2 px-4 text-xs font-bold text-white hover:bg-white/10 transition-colors">
               Voir en Boutique
-            </button>
+            </a>
           </div>
         </div>
+        {% endif %}
         {% endblock %}
       {% endembed %}
       <!-- Main Content -->
@@ -63,58 +50,7 @@
             <p class="text-xs text-gray-400">Bon retour, Champion.</p>
           </div>
           <div class="flex items-center gap-6">
-            <!-- Notifications -->
-            <button
-              class="relative rounded-full p-2 text-gray-400 hover:bg-white/5 hover:text-white transition-colors"
-              aria-label="Notifications - 1 nouvelle notification"
-            >
-              <span class="material-symbols-outlined">notifications</span>
-              <span
-                class="absolute right-2 top-2 h-2 w-2 rounded-full bg-primary"
-              ></span>
-            </button>
-            <!-- User Pill -->
-            {% if app.user %}
-            <div
-              class="flex items-center gap-4 rounded-full border border-white/5 bg-surface-dark py-1.5 pl-4 pr-1.5 shadow-lg"
-            >
-              <div class="flex flex-col items-end mr-2">
-                <span class="text-sm font-bold text-white leading-none"
-                  >{{ user.name }}</span
-                >
-                <span class="text-[10px] text-gray-400 uppercase tracking-wider"
-                  >{{ user.role }}</span
-                >
-              </div>
-              <!-- Currency Pill -->
-              <div
-                class="flex items-center gap-1 rounded-full bg-gradient-to-r from-yellow-600 to-yellow-400 px-3 py-1 text-black shadow-[0_0_10px_rgba(255,215,0,0.3)]"
-                title="Carthage Points - Monnaie virtuelle pour acheter des skins et objets"
-              >
-                <span class="material-symbols-outlined text-[16px] font-bold"
-                  >payments</span
-                >
-                <span class="text-xs font-black">{{ user.balance }} CP</span>
-              </div>
-              <!-- Avatar -->
-              <div
-                class="h-9 w-9 overflow-hidden rounded-full border-2 border-primary bg-gray-800"
-                data-alt="Player profile avatar"
-                style="
-                  background-image: url(&quot;{{ user.avatar }}&quot;);
-                  background-size: cover;
-                "
-              ></div>
-            </div>
-            {% else %}
-            <a
-              href="{{ path('app_login') }}"
-              class="flex items-center gap-2 rounded-full bg-primary px-5 py-2.5 text-sm font-bold text-white shadow-lg shadow-red-900/30 hover:bg-red-600 transition-all"
-            >
-              <span class="material-symbols-outlined text-[20px]">login</span>
-              Connexion
-            </a>
-            {% endif %}
+            {% include 'components/_header_user_info.html.twig' %}
           </div>
         </header>
         <div class="flex flex-col gap-8 p-8 max-w-7xl mx-auto w-full">

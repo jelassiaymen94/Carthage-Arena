@@ -1,0 +1,64 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Nouvelle Réclamation - Carthage Arena{% endblock %}
+
+{% block body %}
+<div class="min-h-screen bg-background-dark pt-24 pb-12">
+    <div class="container mx-auto px-4 max-w-3xl">
+        <div class="mb-8 flex items-center gap-4">
+            <a href="{{ path('app_reclamation_index') }}" class="p-2 rounded-lg bg-white/5 hover:bg-white/10 text-white/60 hover:text-white transition-all">
+                <span class="material-symbols-outlined">arrow_back</span>
+            </a>
+            <div>
+                <h1 class="text-3xl font-black text-white tracking-tight">Nouvelle <span class="text-primary">Réclamation</span></h1>
+                <p class="text-gray-400">Signalez un problème ou posez une question à notre équipe support.</p>
+            </div>
+        </div>
+
+        <div class="bg-surface-dark border border-white/5 rounded-3xl p-8 shadow-2xl relative overflow-hidden">
+            {# Background decoration #}
+            <div class="absolute top-0 right-0 p-32 bg-primary/5 rounded-full blur-3xl -mr-16 -mt-16 pointer-events-none"></div>
+
+            {{ form_start(form, {'attr': {'class': 'relative z-10 space-y-6'}}) }}
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        {{ form_label(form.category) }}
+                        {{ form_widget(form.category) }}
+                        {{ form_errors(form.category) }}
+                    </div>
+                    <div>
+                        {{ form_label(form.priority) }}
+                        {{ form_widget(form.priority) }}
+                        {{ form_errors(form.priority) }}
+                    </div>
+                </div>
+
+                <div>
+                    {{ form_label(form.subject) }}
+                    {{ form_widget(form.subject) }}
+                    {{ form_errors(form.subject) }}
+                </div>
+
+                <div>
+                    {{ form_label(form.message) }}
+                    {{ form_widget(form.message) }}
+                    <p class="text-xs text-gray-500 mt-2">Soyez aussi précis que possible pour nous aider à résoudre votre problème rapidement.</p>
+                    {{ form_errors(form.message) }}
+                </div>
+
+                <div class="pt-4 flex justify-end gap-4">
+                    <a href="{{ path('app_reclamation_index') }}" class="px-6 py-3 rounded-xl bg-white/5 text-white font-bold hover:bg-white/10 transition-colors">
+                        Annuler
+                    </a>
+                    <button type="submit" class="px-8 py-3 rounded-xl bg-primary text-white font-bold hover:bg-primary/90 hover:scale-105 transition-all shadow-lg shadow-primary/20 flex items-center gap-2">
+                        <span class="material-symbols-outlined">send</span>
+                        Envoyer la demande
+                    </button>
+                </div>
+
+            {{ form_end(form) }}
+        </div>
+    </div>
+</div>
+{% endblock %}

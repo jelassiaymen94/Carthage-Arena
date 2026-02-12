@@ -1,0 +1,157 @@
+{% extends 'base_admin.html.twig' %}
+
+{% block title %}Tournoi Details{% endblock %}
+
+{% block admin_content %}
+{# Header #}
+<div class="flex items-center justify-between mb-8">
+    <div>
+        <div class="flex items-center gap-3 mb-1">
+            <a href="{{ path('admin_tournaments') }}" class="p-2 rounded-lg bg-white/5 hover:bg-white/10 text-white/40 hover:text-white transition-all">
+                <span class="material-symbols-outlined text-[20px]">arrow_back</span>
+            </a>
+            <h1 class="text-3xl font-black tracking-tight text-white">Détails du <span class="text-primary">Tournoi</span></h1>
+        </div>
+        <p class="text-white/40 text-sm ml-12">Consulter les statistiques et les participants</p>
+    </div>
+    <div class="flex items-center gap-3">
+        <a href="{{ path('app_tournoi_edit', {'id': tournoi.id}) }}" class="inline-flex items-center gap-2 px-5 py-2.5 bg-white/5 hover:bg-white/10 text-white text-sm font-semibold rounded-xl border border-white/10 transition-all">
+            <span class="material-symbols-outlined text-[18px]">edit</span>
+            Modifier
+        </a>
+    </div>
+</div>
+
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+    {# Main Content #}
+    <div class="lg:col-span-2 space-y-8">
+        {# Overview Card #}
+        <div class="bg-surface-dark/50 backdrop-blur-xl border border-white/5 rounded-3xl overflow-hidden shadow-2xl">
+            <div class="p-8 border-b border-white/5">
+                <div class="flex items-center justify-between mb-6">
+                    <div class="flex items-center gap-4">
+                        <div class="w-16 h-16 rounded-2xl bg-primary/20 flex items-center justify-center">
+                            <span class="material-symbols-outlined text-primary text-3xl">trophy</span>
+                        </div>
+                        <div>
+                            <h2 class="text-2xl font-bold text-white">{{ tournoi.nom }}</h2>
+                            <div class="flex items-center gap-2 mt-1">
+                                <span class="text-xs font-semibold text-white/40 uppercase tracking-widest">{{ tournoi.game ? tournoi.game.name : 'Jeu non défini' }}</span>
+                                <span class="w-1 h-1 rounded-full bg-white/20"></span>
+                                <span class="text-xs font-semibold text-primary uppercase tracking-widest">{{ tournoi.type.label }}</span>
+                            </div>
+                        </div>
+                    </div>
+                    {% if tournoi.status.value == 'ongoing' %}
+                        <span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold bg-green-500/10 text-green-400 border border-green-500/20">
+                            <span class="w-1.5 h-1.5 rounded-full bg-green-400 animate-pulse"></span>
+                            ACTIF
+                        </span>
+                    {% elseif tournoi.status.value == 'upcoming' %}
+                        <span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold bg-blue-500/10 text-blue-400 border border-blue-500/20">
+                            EN ATTENTE
+                        </span>
+                    {% else %}
+                        <span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold bg-white/5 text-white/40 border border-white/10">
+                            {{ tournoi.status.label|upper }}
+                        </span>
+                    {% endif %}
+                </div>
+
+                <div class="grid grid-cols-3 gap-4">
+                    <div class="p-4 rounded-2xl bg-white/5 border border-white/5">
+                        <div class="text-[10px] font-bold text-white/20 uppercase tracking-widest mb-1">Cagnotte</div>
+                        <div class="text-lg font-black text-secondary">{{ tournoi.prizePool|number_format }} <span class="text-xs">DT</span></div>
+                    </div>
+                    <div class="p-4 rounded-2xl bg-white/5 border border-white/5">
+                        <div class="text-[10px] font-bold text-white/20 uppercase tracking-widest mb-1">Équipes</div>
+                        <div class="text-lg font-black text-white">{{ teams|length }} <span class="text-white/20">/</span> {{ tournoi.nbEquipesMax }}</div>
+                    </div>
+                    <div class="p-4 rounded-2xl bg-white/5 border border-white/5">
+                        <div class="text-[10px] font-bold text-white/20 uppercase tracking-widest mb-1">Date Début</div>
+                        <div class="text-lg font-black text-white">{{ tournoi.dateDebut|date('d M') }} <span class="text-xs text-white/20">{{ tournoi.dateDebut|date('Y') }}</span></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="p-8">
+                <h3 class="text-sm font-bold text-white uppercase tracking-widest mb-6 flex items-center gap-2">
+                    <span class="material-symbols-outlined text-primary text-[20px]">group</span>
+                    Équipes Inscrites
+                </h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    {% for team in teams %}
+                        <div class="flex items-center justify-between p-4 rounded-2xl bg-white/5 border border-white/5 hover:bg-white/10 transition-all group">
+                            <div class="flex items-center gap-3">
+                                <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-primary/20 to-secondary/20 flex items-center justify-center text-sm font-bold text-white">
+                                    {{ team.tag|default(team.name|first|upper) }}
+                                </div>
+                                <div>
+                                    <div class="text-sm font-bold text-white">{{ team.name }}</div>
+                                    <div class="text-[10px] text-white/40 font-medium uppercase tracking-wider">Capitaine: {{ team.captain.username }}</div>
+                                </div>
+                            </div>
+                            <span class="material-symbols-outlined text-white/0 group-hover:text-white/20 transition-all">chevron_right</span>
+                        </div>
+                    {% else %}
+                        <div class="col-span-2 py-12 text-center bg-white/5 border border-dashed border-white/10 rounded-2xl">
+                            <span class="material-symbols-outlined text-white/10 text-4xl mb-2">group_off</span>
+                            <p class="text-white/30 text-sm">Aucune équipe inscrite pour le moment</p>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {# Sidebar Staff #}
+    <div class="space-y-6">
+        <div class="bg-surface-dark/50 backdrop-blur-xl border border-white/5 rounded-3xl p-6 shadow-xl">
+            <h3 class="text-sm font-bold text-white/60 uppercase tracking-widest mb-4">Staff & Officiels</h3>
+            <div class="space-y-4">
+                <div class="p-4 rounded-2xl bg-white/5 border border-white/5">
+                    <div class="text-[10px] font-bold text-white/20 uppercase tracking-wider mb-3">Arbitre de Match</div>
+                    {% if tournoi.referee %}
+                        <div class="flex items-center gap-3">
+                            <div class="w-10 h-10 rounded-full border-2 border-primary/30 p-0.5">
+                                <div class="w-full h-full rounded-full bg-primary/20 flex items-center justify-center text-xs font-bold text-primary">
+                                    {{ tournoi.referee.username|first|upper }}
+                                </div>
+                            </div>
+                            <div>
+                                <div class="text-sm font-bold text-white">{{ tournoi.referee.username }}</div>
+                                <div class="text-[10px] text-green-400 font-bold uppercase tracking-widest">Assigné</div>
+                            </div>
+                        </div>
+                    {% else %}
+                        <div class="flex items-center gap-3 text-white/30 italic text-sm">
+                            <span class="material-symbols-outlined text-[20px]">person_off</span>
+                            Non assigné
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <div class="bg-secondary/5 backdrop-blur-xl border border-secondary/10 rounded-3xl p-6 shadow-xl">
+            <h3 class="text-sm font-bold text-secondary uppercase tracking-widest mb-4">Résultat Final</h3>
+            {% if tournoi.winner %}
+                <div class="text-center p-6 rounded-2xl bg-secondary/10 border border-secondary/20">
+                    <div class="text-4xl mb-3">🏆</div>
+                    <div class="text-xs font-bold text-secondary/60 uppercase tracking-widest mb-1">Vainqueur</div>
+                    <div class="text-xl font-black text-white">{{ tournoi.winner.name }}</div>
+                </div>
+            {% else %}
+                <div class="text-center p-6 border border-dashed border-white/10 rounded-2xl">
+                    <span class="material-symbols-outlined text-white/10 text-3xl mb-2">military_tech</span>
+                    <p class="text-white/30 text-xs font-medium">Le tournoi est toujours en cours ou n'a pas encore de vainqueur.</p>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<div class="mt-12 flex justify-end gap-4">
+     {{ include('tournoi/_delete_form.html.twig') }}
+</div>
+{% endblock %}

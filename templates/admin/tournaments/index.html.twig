@@ -17,7 +17,7 @@
                         <h1 class="text-2xl font-bold text-white">Gestion des Tournois</h1>
                         <p class="text-sm text-white/40 mt-0.5">Créer et gérer les tournois de la plateforme</p>
                     </div>
-                    <button class="inline-flex items-center gap-2 px-5 py-2.5 bg-primary hover:bg-primary/90 text-white text-sm font-semibold rounded-xl transition-all">
+                    <button onclick="toggleModal()" class="inline-flex items-center gap-2 px-5 py-2.5 bg-primary hover:bg-primary/90 text-white text-sm font-semibold rounded-xl transition-all">
                         <span class="material-symbols-outlined text-[18px]">add</span>
                         + Créer
                     </button>
@@ -26,6 +26,15 @@
 
             {# Page Content #}
             <div class="p-8 space-y-6">
+                {# Flash Messages #}
+                {% for label, messages in app.flashes %}
+                    {% for message in messages %}
+                        <div class="p-4 rounded-xl {% if label == 'success' %}bg-green-500/10 border border-green-500/20 text-green-400{% else %}bg-red-500/10 border border-red-500/20 text-red-400{% endif %} flex items-center gap-3">
+                            <span class="material-symbols-outlined">{% if label == 'success' %}check_circle{% else %}error{% endif %}</span>
+                            <span class="text-sm font-medium">{{ message }}</span>
+                        </div>
+                    {% endfor %}
+                {% endfor %}
                 {# Search & Filters #}
                 <div class="bg-surface-dark border border-white/5 rounded-2xl p-4">
                     <div class="flex items-center gap-4">
@@ -68,37 +77,38 @@
                             <tbody class="divide-y divide-white/5">
                                 {% for tournament in tournaments %}
                                 <tr class="hover:bg-surface-hover transition-colors">
-                                    <td class="px-6 py-4 text-white/40 font-mono text-xs">#{{ tournament.id }}</td>
+                                    <td class="px-6 py-4 text-white/40 font-mono text-xs">#{{ tournament.id|slice(0, 8) }}</td>
                                     <td class="px-6 py-4">
                                         <div class="flex items-center gap-3">
                                             <div class="w-8 h-8 rounded-lg bg-primary/20 flex items-center justify-center">
                                                 <span class="material-symbols-outlined text-primary text-[18px]">trophy</span>
                                             </div>
-                                            <span class="font-semibold text-white">{{ tournament.name }}</span>
+                                            <span class="font-semibold text-white">{{ tournament.nom }}</span>
                                         </div>
                                     </td>
                                     <td class="px-6 py-4">
+                                        {# Assuming game is commented out or might be null #}
                                         <span class="inline-flex px-2.5 py-1 rounded-full text-xs font-semibold bg-blue-500/20 text-blue-400">
-                                            {{ tournament.game }}
+                                            {{ tournament.game ? tournament.game.name : (tournament.type ? tournament.type.label : 'N/A') }}
                                         </span>
                                     </td>
                                     <td class="px-6 py-4">
                                         <div class="flex items-center gap-2">
-                                            <span class="font-semibold text-white">{{ tournament.teams }}</span>
+                                            <span class="font-semibold text-white">{{ tournament.teams|length }}</span>
                                             <span class="text-white/30">/</span>
-                                            <span class="text-white/40">{{ tournament.maxTeams }}</span>
+                                            <span class="text-white/40">{{ tournament.nbEquipesMax }}</span>
                                         </div>
                                         <div class="w-20 h-1.5 bg-white/5 rounded-full overflow-hidden mt-1">
-                                            <div class="h-full rounded-full bg-primary" style="width: {{ (tournament.teams / tournament.maxTeams * 100)|round }}%"></div>
+                                            <div class="h-full rounded-full bg-primary" style="width: {{ (tournament.nbEquipesMax > 0 ? (tournament.teams|length / tournament.nbEquipesMax * 100)|round : 0) }}%"></div>
                                         </div>
                                     </td>
                                     <td class="px-6 py-4">
-                                        {% if tournament.status == 'active' %}
+                                        {% if tournament.status.value == 'ongoing' %}
                                             <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-green-500/20 text-green-400">
                                                 <span class="w-1.5 h-1.5 rounded-full bg-green-400"></span>
                                                 Actif
                                             </span>
-                                        {% elseif tournament.status == 'pending' %}
+                                        {% elseif tournament.status.value == 'upcoming' %}
                                             <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-yellow-500/20 text-yellow-400">
                                                 <span class="w-1.5 h-1.5 rounded-full bg-yellow-400"></span>
                                                 En attente
@@ -106,23 +116,24 @@
                                         {% else %}
                                             <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-white/10 text-white/50">
                                                 <span class="w-1.5 h-1.5 rounded-full bg-white/50"></span>
-                                                Terminé
+                                                {{ tournament.status.label }}
                                             </span>
                                         {% endif %}
                                     </td>
                                     <td class="px-6 py-4">
-                                        <span class="font-bold text-secondary">{{ tournament.prize }}</span>
+                                        <span class="font-bold text-secondary">{{ tournament.prizePool|number_format }} DT</span>
                                     </td>
-                                    <td class="px-6 py-4 text-white/40 text-xs">{{ tournament.date }}</td>
+                                    <td class="px-6 py-4 text-white/40 text-xs">{{ tournament.dateDebut|date('Y-m-d') }}</td>
                                     <td class="px-6 py-4">
                                         <div class="flex items-center gap-2">
-                                            <button class="p-2 rounded-lg bg-white/5 hover:bg-white/10 text-white/50 hover:text-white transition-all" title="Voir">
+                                            <a href="{{ path('app_tournoi_show', {'id': tournament.id}) }}" class="p-2 rounded-lg bg-white/5 hover:bg-white/10 text-white/50 hover:text-white transition-all" title="Voir">
                                                 <span class="material-symbols-outlined text-[18px]">visibility</span>
-                                            </button>
-                                            <button class="p-2 rounded-lg bg-white/5 hover:bg-white/10 text-white/50 hover:text-white transition-all" title="Modifier">
+                                            </a>
+                                            <a href="{{ path('app_tournoi_edit', {'id': tournament.id}) }}" class="p-2 rounded-lg bg-white/5 hover:bg-white/10 text-white/50 hover:text-white transition-all" title="Modifier">
                                                 <span class="material-symbols-outlined text-[18px]">edit</span>
-                                            </button>
-                                            <button class="p-2 rounded-lg bg-red-500/10 hover:bg-red-500/20 text-red-400 transition-all" title="Supprimer">
+                                            </a>
+                                            {# Delete would typically use the delete form, but let's at least link to edit for now or just provide the visual action #}
+                                            <button class="p-2 rounded-lg bg-red-500/10 hover:bg-red-500/20 text-red-400 transition-all" title="Supprimer" onclick="if(confirm('Supprimer ce tournoi ?')) { window.location.href = '{{ path('app_tournoi_edit', {'id': tournament.id}) }}' }">
                                                 <span class="material-symbols-outlined text-[18px]">delete</span>
                                             </button>
                                         </div>
@@ -137,4 +148,142 @@
         </main>
     </div>
 </div>
+
+{# Modal for New Tournament #}
+<div id="newTournamentModal" class="fixed inset-0 z-50 hidden bg-black/60 backdrop-blur-sm overflow-y-auto h-full w-full">
+    <div class="relative top-20 mx-auto p-5 border w-[600px] shadow-2xl rounded-2xl bg-surface-dark border-white/10">
+        <div class="flex justify-between items-center mb-6">
+            <h3 class="text-xl font-bold text-white">Nouveau Tournoi</h3>
+            <button onclick="toggleModal()" class="text-white/50 hover:text-white transition-colors">
+                <span class="material-symbols-outlined">close</span>
+            </button>
+        </div>
+
+        {{ form_start(form, {'attr': {'id': 'tournamentForm', 'novalidate': 'novalidate'}}) }}
+            {% if not form.vars.valid %}
+                <div class="mb-6 p-4 bg-red-500/10 border border-red-500/20 rounded-xl">
+                    <div class="flex items-center gap-2 text-red-400 mb-2">
+                        <span class="material-symbols-outlined text-[18px]">error</span>
+                        <span class="font-semibold text-sm">Veuillez corriger les erreurs suivantes :</span>
+                    </div>
+                    {{ form_errors(form) }}
+                </div>
+            {% endif %}
+            <div class="space-y-4">
+                <div class="grid grid-cols-1 gap-4">
+                    <div>
+                        {{ form_label(form.nom, 'Nom du Tournoi', {'label_attr': {'class': 'block text-sm font-medium text-white/60 mb-1'}}) }}
+                        {{ form_widget(form.nom, {'attr': {'class': 'w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white focus:border-primary/50 outline-none'}}) }}
+                        {{ form_errors(form.nom) }}
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        {{ form_label(form.dateDebut, 'Date Début', {'label_attr': {'class': 'block text-sm font-medium text-white/60 mb-1'}}) }}
+                        {{ form_widget(form.dateDebut, {'attr': {
+                            'class': 'w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white focus:border-primary/50 outline-none',
+                            'max': '9999-12-31'
+                        }}) }}
+                        {{ form_errors(form.dateDebut) }}
+                    </div>
+                    <div>
+                        {{ form_label(form.dateFin, 'Date Fin', {'label_attr': {'class': 'block text-sm font-medium text-white/60 mb-1'}}) }}
+                        {{ form_widget(form.dateFin, {'attr': {
+                            'class': 'w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white focus:border-primary/50 outline-none',
+                            'max': '9999-12-31'
+                        }}) }}
+                        {{ form_errors(form.dateFin) }}
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        {{ form_label(form.nbEquipesMax, 'Équipes Max', {'label_attr': {'class': 'block text-sm font-medium text-white/60 mb-1'}}) }}
+                        {{ form_widget(form.nbEquipesMax, {'attr': {'class': 'w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white focus:border-primary/50 outline-none'}}) }}
+                        {{ form_errors(form.nbEquipesMax) }}
+                    </div>
+                    <div>
+                        {{ form_label(form.prizePool, 'Prize Pool (DT)', {'label_attr': {'class': 'block text-sm font-medium text-white/60 mb-1'}}) }}
+                        {{ form_widget(form.prizePool, {'attr': {'class': 'w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white focus:border-primary/50 outline-none'}}) }}
+                        {{ form_errors(form.prizePool) }}
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        {{ form_label(form.game, 'Jeu', {'label_attr': {'class': 'block text-sm font-medium text-white/60 mb-1'}}) }}
+                        {{ form_widget(form.game, {'attr': {'class': 'w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white focus:border-primary/50 outline-none form-select [&>option]:text-black'}}) }}
+                        {{ form_errors(form.game) }}
+                    </div>
+                    <div>
+                        {{ form_label(form.status, 'Statut', {'label_attr': {'class': 'block text-sm font-medium text-white/60 mb-1'}}) }}
+                        {{ form_widget(form.status, {'attr': {'class': 'w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white focus:border-primary/50 outline-none form-select [&>option]:text-black'}}) }}
+                        {{ form_errors(form.status) }}
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 gap-4">
+                    <div>
+                        {{ form_label(form.teams, 'Équipes Participantes', {'label_attr': {'class': 'block text-sm font-medium text-white/60 mb-1'}}) }}
+                        {{ form_widget(form.teams, {'attr': {'class': 'w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white focus:border-primary/50 outline-none form-select h-32 [&>option]:text-black'}}) }}
+                        {{ form_errors(form.teams) }}
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 gap-4">
+                    <div>
+                        {{ form_label(form.type, 'Type de Tournoi', {'label_attr': {'class': 'block text-sm font-medium text-white/60 mb-1'}}) }}
+                        {{ form_widget(form.type, {'attr': {'class': 'w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white focus:border-primary/50 outline-none form-select [&>option]:text-black'}}) }}
+                        {{ form_errors(form.type) }}
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-2 gap-4">
+                     <div>
+                        {{ form_label(form.referee, 'Arbitre', {'label_attr': {'class': 'block text-sm font-medium text-white/60 mb-1'}}) }}
+                        {{ form_widget(form.referee, {'attr': {'class': 'w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white focus:border-primary/50 outline-none form-select [&>option]:text-black'}}) }}
+                        {{ form_errors(form.referee) }}
+                    </div>
+                    <div>
+                        {{ form_label(form.winner, 'Gagnant', {'label_attr': {'class': 'block text-sm font-medium text-white/60 mb-1'}}) }}
+                        {{ form_widget(form.winner, {'attr': {'class': 'w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white focus:border-primary/50 outline-none form-select [&>option]:text-black'}}) }}
+                        {{ form_errors(form.winner) }}
+                    </div>
+                </div>
+
+                <div class="flex justify-end gap-3 mt-8">
+                    <button type="button" onclick="toggleModal()" class="px-5 py-2.5 bg-white/5 hover:bg-white/10 text-white font-semibold rounded-xl transition-all">
+                        Annuler
+                    </button>
+                    <button type="submit" class="px-5 py-2.5 bg-primary hover:bg-primary/90 text-white font-semibold rounded-xl shadow-lg shadow-primary/20 transition-all">
+                        Enregistrer
+                    </button>
+                </div>
+            </div>
+        {{ form_end(form) }}
+    </div>
+</div>
+
+<script>
+function toggleModal() {
+    const modal = document.getElementById('newTournamentModal');
+    modal.classList.toggle('hidden');
+}
+
+// Ensure the modal stays open if there are errors
+{% if not form.vars.valid or form.vars.submitted %}
+    {% if not form.vars.valid %}
+        document.getElementById('newTournamentModal').classList.remove('hidden');
+    {% endif %}
+{% endif %}
+
+// Ensure the modal closes if clicking outside of it
+window.onclick = function(event) {
+    const modal = document.getElementById('newTournamentModal');
+    if (event.target == modal) {
+        modal.classList.add('hidden');
+    }
+}
+</script>
 {% endblock %}

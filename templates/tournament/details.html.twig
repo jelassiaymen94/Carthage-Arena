@@ -68,49 +68,13 @@
           <div class="flex flex-col">
             <h2 class="text-2xl font-bold text-white">Détails du Tournoi</h2>
             <div class="flex items-center gap-2">
-              <p class="text-xs text-gray-400">{{ tournament.season }}</p>
+              <p class="text-xs text-gray-400">Saison {{ tournoi.dateDebut|date('Y') }}</p>
               <span class="h-1 w-1 rounded-full bg-gray-600"></span>
               <p class="text-xs text-gray-400">Phase Éliminatoire</p>
             </div>
           </div>
           <div class="flex items-center gap-6">
-            <button
-              class="relative rounded-full p-2 text-gray-400 hover:bg-white/5 hover:text-white transition-colors"
-              aria-label="Notifications - 1 nouvelle notification"
-            >
-              <span class="material-symbols-outlined">notifications</span>
-              <span
-                class="absolute right-2 top-2 h-2 w-2 rounded-full bg-primary"
-              ></span>
-            </button>
-            <div
-              class="flex items-center gap-4 rounded-full border border-white/5 bg-surface-dark py-1.5 pl-4 pr-1.5 shadow-lg"
-            >
-              <div class="flex flex-col items-end mr-2">
-                <span class="text-sm font-bold text-white leading-none"
-                  >ShadowSlayer99</span
-                >
-                <span class="text-[10px] text-gray-400 uppercase tracking-wider"
-                  >Capitaine d'Équipe</span
-                >
-              </div>
-              <div
-                class="flex items-center gap-1 rounded-full bg-gradient-to-r from-yellow-600 to-yellow-400 px-3 py-1 text-black shadow-[0_0_10px_rgba(255,215,0,0.3)]"
-                title="Carthage Points - Monnaie virtuelle pour acheter des skins et objets"
-              >
-                <span class="material-symbols-outlined text-[16px] font-bold"
-                  >payments</span
-                >
-                <span class="text-xs font-black">2,450 CP</span>
-              </div>
-              <div
-                class="h-9 w-9 overflow-hidden rounded-full border-2 border-primary bg-gray-800"
-                style="
-                  background-image: url(&quot;https://lh3.googleusercontent.com/aida-public/AB6AXuCPOwCt1u59UYH0PU7STTOEdwDPy5axibmnqjNIpgS479Ip9V37Za2WKh3X8kperVFrJ9obCf33C2TZhB6JsPTgbyJzS0FRIMrsTTu0eenIWj5ozp4LPq-onFQkqssDiHjUbkZaevMuEylTBzmJ8e5CcrYTVJDLFCCM0qCjn1D7vDfRr-T3UdKaedgaKLyEFpbVU8uU9gjyDEtd3eFHlG-ErvNqNopvpjrtyYiCfNVG_e5MZhjIYXkhtfi4TkCg2KENMGyeWcgs2wE&quot;);
-                  background-size: cover;
-                "
-              ></div>
-            </div>
+            {% include 'components/_header_user_info.html.twig' %}
           </div>
         </header>
         <div class="flex flex-col gap-6 p-4 md:p-8 max-w-7xl mx-auto w-full">
@@ -119,8 +83,8 @@
           >
             <div
               class="absolute inset-0 bg-cover bg-center transition-transform duration-700 group-hover:scale-105"
-              style="
-                background-image: url(&quot;https://lh3.googleusercontent.com/aida-public/AB6AXuCcZqheJY9ruVOgrkXrHV2Fsmw5qc0CofbM9zdu5UvR2X8sGXxP3M8k_ro9zS78kUowDWD0n9YK43d1osbasPQEb_eXCOO6fJvmmJdmWqMv3q7TkppO8zG2fHUpjbrEEXmrp4Ol2tm_m5wIMEfOr8nLQq66ilSTjii6Lk9OmcsNyUl7TF3K4I-X2xEyJRaRCeshmnxcuTDIzG2bP8aeDBiHbsBBKooED9BFKEyK_kHf5lYixOjCJ77hwzhDS-dWB9AGEm1KPf6MBus&quot;);
+                style="
+                background-image: url('{{ (tournoi.game and tournoi.game.imageUrl) ? tournoi.game.imageUrl : 'https://images.unsplash.com/photo-1542751371-adc38448a05e?w=800&h=400&fit=crop' }}');
               "
             ></div>
             <div
@@ -135,26 +99,24 @@
               <div class="flex items-center gap-3">
                 <span
                   class="px-3 py-1 bg-secondary text-black text-[10px] font-black uppercase tracking-wider rounded-md"
-                  >{{ tournament.status }}</span
+                  >{{ tournoi.status.value }}</span
                 >
+                {% if tournoi.game %}
                 <span
                   class="px-3 py-1 bg-white/10 backdrop-blur-md text-white border border-white/10 text-[10px] font-bold uppercase tracking-wider rounded-md"
-                  >{{ tournament.game }}</span
+                  >{{ tournoi.game.name }}</span
                 >
+                {% endif %}
               </div>
               <h1
                 class="text-3xl md:text-5xl font-black text-white italic tracking-tight drop-shadow-xl uppercase"
               >
-                {{ tournament.name }}
-                <span
-                  class="text-transparent bg-clip-text bg-gradient-to-r from-primary to-orange-600"
-                  >{{ tournament.subtitle }}</span
-                >
+                {{ tournoi.nom }}
               </h1>
               <p
                 class="text-gray-300 text-sm md:text-base max-w-xl line-clamp-2"
               >
-                {{ tournament.description }}
+                Un tournoi {{ tournoi.type.value }} {% if tournoi.game %}sur {{ tournoi.game.name }}{% endif %}.
               </p>
             </div>
           </div>
@@ -180,7 +142,7 @@
                       >
                       <span
                         class="text-4xl md:text-5xl font-black tracking-tighter"
-                        >{{ tournament.prizePool|split(' ')[0] }}<span class="text-2xl ml-1">{{ tournament.prizePool|split(' ')[1] }}</span></span
+                        >{{ tournoi.prizePool|number_format(0, ',', ' ') }} <span class="text-2xl ml-1">DT</span></span
                       >
                     </div>
                     <span
@@ -210,7 +172,7 @@
                         <div>
                           <p class="text-sm font-bold text-gray-200">Format</p>
                           <p class="text-xs text-gray-500">
-                            {{ tournament.format }}
+                            {{ tournoi.type.value }}
                           </p>
                         </div>
                       </div>
@@ -226,7 +188,7 @@
                         <div>
                           <p class="text-sm font-bold text-gray-200">Equipes</p>
                           <p class="text-xs text-gray-500">
-                            5 joueurs titulaires + 2 remplaçants max.
+                            {{ tournoi.nbEquipesMax }} équipes max.
                           </p>
                         </div>
                       </div>
@@ -240,9 +202,9 @@
                           >
                         </div>
                         <div>
-                          <p class="text-sm font-bold text-gray-200">Retard</p>
+                          <p class="text-sm font-bold text-gray-200">Dates</p>
                           <p class="text-xs text-gray-500">
-                            15 min de tolérance avant forfait automatique.
+                            Du {{ tournoi.dateDebut|date('d/m') }} au {{ tournoi.dateFin|date('d/m/Y') }}
                           </p>
                         </div>
                       </div>
@@ -268,161 +230,115 @@
                   </div>
                 </div>
               </div>
-              <div
-                class="bg-surface-dark border border-white/5 rounded-3xl p-6"
-              >
-                <div class="flex items-center justify-between mb-6">
-                  <h3
-                    class="text-lg font-bold text-white flex items-center gap-2"
-                  >
-                    <span class="material-symbols-outlined text-primary"
-                      >account_tree</span
+                  <div class="flex-1">
+                    <h3
+                      class="text-lg font-bold text-white mb-4 flex items-center gap-2"
                     >
-                    Arbre de compétition
-                  </h3>
-                  <span
-                    class="text-[10px] font-bold uppercase text-gray-500 bg-white/5 px-2 py-1 rounded"
-                    >Phase Finale</span
-                  >
-                </div>
-                <div class="overflow-x-auto pb-4">
-                  <div
-                    class="min-w-[600px] flex justify-between items-center px-4"
-                  >
-                    <div class="flex flex-col gap-10 w-1/3">
-                      <div class="relative">
-                        <p
-                          class="text-[10px] text-gray-500 uppercase font-bold mb-1 ml-1"
-                        >
-                          Demi-finale 1
-                        </p>
-                        <div
-                          class="bg-[#161616] border border-white/10 rounded-xl overflow-hidden"
-                        >
-                          <div
-                            class="flex justify-between items-center p-2 border-b border-white/5 bg-white/5"
-                          >
-                            <div class="flex items-center gap-2">
-                              <div
-                                class="h-5 w-5 bg-blue-500 rounded-full"
-                              ></div>
-                              <span class="text-xs font-bold">{{ tournament.bracket.demiFinale1[0].name }}</span>
-                            </div>
-                            <span class="text-xs font-bold text-green-400"
-                              >{{ tournament.bracket.demiFinale1[0].score }}</span
-                            >
-                          </div>
-                          <div class="flex justify-between items-center p-2">
-                            <div class="flex items-center gap-2">
-                              <div
-                                class="h-5 w-5 bg-red-500 rounded-full"
-                              ></div>
-                              <span class="text-xs font-bold text-gray-400"
-                                >{{ tournament.bracket.demiFinale1[1].name }}</span
-                              >
-                            </div>
-                            <span class="text-xs font-bold text-gray-500"
-                              >{{ tournament.bracket.demiFinale1[1].score }}</span
-                            >
-                          </div>
+                      <span class="material-symbols-outlined text-primary"
+                        >sports_esports</span
+                      >
+                      Matchs du Tournoi
+                    </h3>
+                    
+                    {% if tournoi.getMatches()|length > 0 %}
+                        {% set matchesByRound = {} %}
+                        {% for match in tournoi.getMatches() %}
+                            {% set round = 'round_' ~ match.round %}
+                            {% if matchesByRound[round] is not defined %}
+                                {% set matchesByRound = matchesByRound|merge({(round): []}) %}
+                            {% endif %}
+                            {% set matchesByRound = matchesByRound|merge({(round): matchesByRound[round]|merge([match])}) %}
+                        {% endfor %}
+
+                        <div class="space-y-4">
+                            {% for roundKey, matches in matchesByRound %}
+                                {% set roundNumber = roundKey|replace({'round_': ''}) %}
+                                <div class="bg-white/5 rounded-2xl p-4 border border-white/10">
+                                    <h4 class="text-white font-bold mb-3 flex items-center gap-2">
+                                        <span class="w-8 h-8 rounded-lg bg-primary/20 flex items-center justify-center text-primary text-sm font-black">{{ roundNumber }}</span>
+                                        Round {{ roundNumber }}
+                                        {% if tournoi.type.value == 'elimination' %}
+                                            {% if roundNumber == (matchesByRound|length) %}
+                                                <span class="text-xs text-yellow-400 bg-yellow-400/10 px-2 py-1 rounded-full font-bold">FINALE</span>
+                                            {% elseif roundNumber == (matchesByRound|length - 1) %}
+                                                <span class="text-xs text-orange-400 bg-orange-400/10 px-2 py-1 rounded-full font-bold">DEMI-FINALES</span>
+                                            {% endif %}
+                                        {% endif %}
+                                    </h4>
+                                    <div class="space-y-2">
+                                        {% for match in matches %}
+                                            <div class="bg-surface-dark/80 rounded-xl p-4 border border-white/5 hover:border-primary/30 transition-all group">
+                                                <div class="flex items-center justify-between gap-4">
+                                                    <div class="flex-1 flex items-center justify-between">
+                                                        {% if match.team1 %}
+                                                            <div class="flex items-center gap-2 flex-1">
+                                                                <div class="w-8 h-8 rounded-lg bg-blue-600 flex items-center justify-center text-white font-black text-xs">
+                                                                    {{ match.team1.name|slice(0, 2)|upper }}
+                                                                </div>
+                                                                <span class="text-white font-bold group-hover:text-primary transition-colors">{{ match.team1.name }}</span>
+                                                            </div>
+                                                        {% else %}
+                                                            <div class="flex items-center gap-2 flex-1">
+                                                                <div class="w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center">
+                                                                    <span class="material-symbols-outlined text-gray-600 text-sm">help</span>
+                                                                </div>
+                                                                <span class="text-gray-500 italic text-sm">À déterminer</span>
+                                                            </div>
+                                                        {% endif %}
+                                                        
+                                                        <div class="px-4">
+                                                            <span class="text-white/40 font-black text-sm">VS</span>
+                                                        </div>
+                                                        
+                                                        {% if match.team2 %}
+                                                            <div class="flex items-center gap-2 flex-1 justify-end">
+                                                                <span class="text-white font-bold group-hover:text-primary transition-colors">{{ match.team2.name }}</span>
+                                                                <div class="w-8 h-8 rounded-lg bg-red-600 flex items-center justify-center text-white font-black text-xs">
+                                                                    {{ match.team2.name|slice(0, 2)|upper }}
+                                                                </div>
+                                                            </div>
+                                                        {% else %}
+                                                            <div class="flex items-center gap-2 flex-1 justify-end">
+                                                                <span class="text-gray-500 italic text-sm">À déterminer</span>
+                                                                <div class="w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center">
+                                                                    <span class="material-symbols-outlined text-gray-600 text-sm">help</span>
+                                                                </div>
+                                                            </div>
+                                                        {% endif %}
+                                                    </div>
+                                                    
+                                                    <div class="ml-4">
+                                                        <span class="px-3 py-1 rounded-lg text-xs font-bold
+                                                            {% if match.status.value == 'scheduled' %}bg-blue-500/20 text-blue-400 border border-blue-500/30
+                                                            {% elseif match.status.value == 'in_progress' %}bg-yellow-500/20 text-yellow-400 border border-yellow-500/30
+                                                            {% elseif match.status.value == 'completed' %}bg-green-500/20 text-green-400 border border-green-500/30
+                                                            {% else %}bg-gray-500/20 text-gray-400 border border-gray-500/30{% endif %}">
+                                                            {% if match.status.value == 'scheduled' %}PROGRAMMÉ
+                                                            {% elseif match.status.value == 'in_progress' %}EN COURS
+                                                            {% elseif match.status.value == 'completed' %}TERMINÉ
+                                                            {% else %}{{ match.status.value|upper }}{% endif %}
+                                                        </span>
+                                                    </div>
+                                                </div>
+                                                {% if match.scheduledAt %}
+                                                    <div class="mt-2 pt-2 border-t border-white/5 flex items-center gap-2 text-xs text-gray-400">
+                                                        <span class="material-symbols-outlined text-sm">schedule</span>
+                                                        <span>{{ match.scheduledAt|date('d M Y') }}</span>
+                                                    </div>
+                                                {% endif %}
+                                            </div>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                            {% endfor %}
                         </div>
-                      </div>
-                      <div class="relative">
-                        <p
-                          class="text-[10px] text-gray-500 uppercase font-bold mb-1 ml-1"
-                        >
-                          Demi-finale 2
-                        </p>
-                        <div
-                          class="bg-[#161616] border border-white/10 rounded-xl overflow-hidden"
-                        >
-                          <div
-                            class="flex justify-between items-center p-2 border-b border-white/5"
-                          >
-                            <div class="flex items-center gap-2">
-                              <div
-                                class="h-5 w-5 bg-yellow-500 rounded-full"
-                              ></div>
-                              <span class="text-xs font-bold text-gray-400"
-                                >{{ tournament.bracket.demiFinale2[0].name }}</span
-                              >
-                            </div>
-                            <span class="text-xs font-bold text-gray-500"
-                              >{{ tournament.bracket.demiFinale2[0].score }}</span
-                            >
-                          </div>
-                          <div
-                            class="flex justify-between items-center p-2 bg-white/5"
-                          >
-                            <div class="flex items-center gap-2">
-                              <div
-                                class="h-5 w-5 bg-purple-500 rounded-full"
-                              ></div>
-                              <span class="text-xs font-bold">{{ tournament.bracket.demiFinale2[1].name }}</span>
-                            </div>
-                            <span class="text-xs font-bold text-green-400"
-                              >{{ tournament.bracket.demiFinale2[1].score }}</span
-                            >
-                          </div>
+                    {% else %}
+                        <div class="flex flex-col items-center justify-center h-64 bg-white/5 rounded-xl border border-white/10 p-8 text-center">
+                            <span class="material-symbols-outlined text-4xl text-gray-500 mb-3">sports_esports</span>
+                            <h4 class="text-lg font-bold text-white">Aucun match généré</h4>
+                            <p class="text-sm text-gray-400 mt-2 max-w-xs">Les matchs seront disponibles une fois que l'administrateur aura généré le bracket du tournoi.</p>
                         </div>
-                      </div>
-                    </div>
-                    <div class="flex flex-col w-12 h-36 justify-center">
-                      <div class="h-1/2 w-full bracket-connector-up"></div>
-                      <div class="h-1/2 w-full bracket-connector-down"></div>
-                    </div>
-                    <div class="w-8 h-[2px] bg-[#333]"></div>
-                    <div class="flex flex-col justify-center w-1/3">
-                      <div class="relative">
-                        <div
-                          class="absolute -top-8 left-1/2 -translate-x-1/2 flex flex-col items-center"
-                        >
-                          <span
-                            class="material-symbols-outlined text-secondary text-xl"
-                            >emoji_events</span
-                          >
-                        </div>
-                        <p
-                          class="text-[10px] text-secondary text-center uppercase font-black mb-2 tracking-widest"
-                        >
-                          Grande Finale
-                        </p>
-                        <div
-                          class="bg-[#161616] border border-secondary/30 rounded-xl overflow-hidden shadow-[0_0_15px_rgba(255,215,0,0.1)]"
-                        >
-                          <div
-                            class="flex justify-between items-center p-3 border-b border-white/5"
-                          >
-                            <div class="flex items-center gap-2">
-                              <div
-                                class="h-6 w-6 bg-blue-500 rounded-full border border-white/10"
-                              ></div>
-                              <span class="text-sm font-bold">{{ tournament.bracket.finale[0].name }}</span>
-                            </div>
-                            <span class="text-sm font-bold text-gray-500"
-                              >-</span
-                            >
-                          </div>
-                          <div class="flex justify-between items-center p-3">
-                            <div class="flex items-center gap-2">
-                              <div
-                                class="h-6 w-6 bg-purple-500 rounded-full border border-white/10"
-                              ></div>
-                              <span class="text-sm font-bold">{{ tournament.bracket.finale[1].name }}</span>
-                            </div>
-                            <span class="text-sm font-bold text-gray-500"
-                              >-</span
-                            >
-                          </div>
-                        </div>
-                        <div class="mt-3 text-center">
-                          <span
-                            class="px-2 py-0.5 rounded text-[10px] font-bold bg-red-500/20 text-red-500 border border-red-500/20 uppercase"
-                            >Bientôt en direct</span
-                          >
-                        </div>
-                      </div>
-                    </div>
+                    {% endif %}
                   </div>
                 </div>
               </div>
@@ -438,21 +354,22 @@
                   <div>
                     <p class="text-sm text-gray-400">Inscriptions</p>
                     <p class="text-2xl font-black text-white">
-                      {{ tournament.inscriptions }} <span class="text-gray-600 text-lg">/ {{ tournament.maxInscriptions }}</span>
+                      {{ tournoi.teams|length }} <span class="text-gray-600 text-lg">/ {{ tournoi.nbEquipesMax }}</span>
                     </p>
                   </div>
                   <div class="text-right">
                     <p
                       class="text-[10px] text-gray-400 uppercase tracking-wider font-bold"
                     >
-                      Clôture dans
+                      Clôture le
                     </p>
-                    <p class="text-sm font-bold text-white">{{ tournament.deadline }}</p>
+                    <p class="text-sm font-bold text-white">{{ tournoi.dateFin|date('d M Y') }}</p>
                   </div>
                 </div>
                 <div class="w-full bg-white/5 rounded-full h-2 overflow-hidden">
                   <div
-                    class="bg-primary h-full rounded-full w-3/4 shadow-[0_0_10px_rgba(230,0,19,0.5)]"
+                    class="bg-primary h-full rounded-full shadow-[0_0_10px_rgba(230,0,19,0.5)]"
+                    style="width: {{ (tournoi.teams|length / tournoi.nbEquipesMax) * 100 }}%"
                   ></div>
                 </div>
                 <div class="space-y-3 pt-2">
@@ -472,11 +389,16 @@
                   </div>
                 </div>
                 <button
-                  class="w-full py-3 px-6 mt-2 rounded-xl bg-primary text-white font-bold text-lg shadow-lg shadow-red-900/30 hover:bg-red-600 hover:shadow-red-600/40 hover:-translate-y-0.5 transition-all flex items-center justify-center gap-2"
+                  class="w-full py-3 px-6 mt-2 rounded-xl bg-primary text-white font-bold text-lg shadow-lg shadow-red-900/30 hover:bg-red-600 hover:shadow-red-600/40 hover:-translate-y-0.5 transition-all flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
                   aria-label="Rejoindre le tournoi avec mon équipe"
+                  {% if tournoi.teams|length >= tournoi.nbEquipesMax %}disabled{% endif %}
                 >
-                  Rejoindre avec mon équipe
-                  <span class="material-symbols-outlined">arrow_forward</span>
+                  {% if tournoi.teams|length >= tournoi.nbEquipesMax %}
+                    Complet
+                  {% else %}
+                    Rejoindre avec mon équipe
+                    <span class="material-symbols-outlined">arrow_forward</span>
+                  {% endif %}
                 </button>
               </div>
               <div
@@ -500,33 +422,38 @@
                 >
                   {% set teamColors = ['bg-blue-600', 'bg-yellow-500', 'bg-purple-600', 'bg-red-600', 'bg-orange-600'] %}
                   {% set teamTextColors = ['text-white', 'text-black', 'text-white', 'text-white', 'text-white'] %}
-                  {% for team in tournament.registeredTeams %}
-                  <div
-                    class="flex items-center justify-between p-3 rounded-xl bg-white/5 hover:bg-white/10 transition-colors cursor-pointer group"
-                  >
-                    <div class="flex items-center gap-3">
+                  
+                  {% if tournoi.teams is empty %}
+                    <p class="text-sm text-gray-500 text-center py-4">Aucune équipe inscrite pour le moment.</p>
+                  {% else %}
+                      {% for team in tournoi.teams %}
                       <div
-                        class="h-10 w-10 rounded-lg {{ teamColors[loop.index0] }} flex items-center justify-center {{ teamTextColors[loop.index0] }} font-black shadow-lg"
+                        class="flex items-center justify-between p-3 rounded-xl bg-white/5 hover:bg-white/10 transition-colors cursor-pointer group"
                       >
-                        {{ team.tag }}
-                      </div>
-                      <div>
-                        <p
-                          class="text-sm font-bold text-white group-hover:text-primary transition-colors"
+                        <div class="flex items-center gap-3">
+                          <div
+                            class="h-10 w-10 rounded-lg {{ teamColors[loop.index0 % 5] }} flex items-center justify-center {{ teamTextColors[loop.index0 % 5] }} font-black shadow-lg"
+                          >
+                            {{ team.name|slice(0, 2)|upper }}
+                          </div>
+                          <div>
+                            <p
+                              class="text-sm font-bold text-white group-hover:text-primary transition-colors"
+                            >
+                              {{ team.name }}
+                            </p>
+                            <p class="text-[10px] text-gray-400">
+                              {{ team.members|length }} membres &bull; <span class="text-green-400">Inscrit</span>
+                            </p>
+                          </div>
+                        </div>
+                        <span
+                          class="material-symbols-outlined text-gray-600 group-hover:text-white text-lg"
+                          >chevron_right</span
                         >
-                          {{ team.name }}
-                        </p>
-                        <p class="text-[10px] text-gray-400">
-                          {{ team.members }} membres &bull; <span class="text-green-400">Prêt</span>
-                        </p>
                       </div>
-                    </div>
-                    <span
-                      class="material-symbols-outlined text-gray-600 group-hover:text-white text-lg"
-                      >chevron_right</span
-                    >
-                  </div>
-                  {% endfor %}
+                      {% endfor %}
+                  {% endif %}
                 </div>
               </div>
             </div>

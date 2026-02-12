@@ -1,0 +1,59 @@
+{% extends 'base_admin.html.twig' %}
+
+{% block admin_content %}
+    <div class="flex justify-between items-center mb-6">
+        <h1 class="text-3xl font-bold text-gray-100">Tournois</h1>
+        <a href="{{ path('app_tournoi_new') }}" class="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors">
+            Create new
+        </a>
+    </div>
+
+    <div class="bg-surface-dark rounded-xl shadow-lg border border-gray-800 overflow-hidden">
+        <div class="overflow-x-auto">
+            <table class="w-full text-left text-gray-300">
+                <thead class="bg-gray-800/50 uppercase text-xs font-semibold text-gray-400">
+                    <tr>
+                        <th class="px-6 py-4">Nom</th>
+                        <th class="px-6 py-4">Dates</th>
+                        <th class="px-6 py-4">Equipes Max</th>
+                        <th class="px-6 py-4">Status</th>
+                        <th class="px-6 py-4">Type</th>
+                        <th class="px-6 py-4 text-right">Actions</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-gray-800">
+                {% for tournoi in tournois %}
+                    <tr class="hover:bg-gray-800/30 transition-colors">
+                        <td class="px-6 py-4 font-medium text-white">{{ tournoi.nom }}</td>
+                        <td class="px-6 py-4">
+                            <div class="text-sm">
+                                <div><span class="text-gray-500">Du:</span> {{ tournoi.dateDebut ? tournoi.dateDebut|date('Y-m-d') : '' }}</div>
+                                <div><span class="text-gray-500">Au:</span> {{ tournoi.dateFin ? tournoi.dateFin|date('Y-m-d') : '' }}</div>
+                            </div>
+                        </td>
+                        <td class="px-6 py-4">{{ tournoi.nbEquipesMax }}</td>
+                        <td class="px-6 py-4">
+                            <span class="px-2 py-1 text-xs font-semibold rounded-full
+                                {% if tournoi.status.value == 'upcoming' %}bg-blue-900 text-blue-200
+                                {% elseif tournoi.status.value == 'ongoing' %}bg-green-900 text-green-200
+                                {% elseif tournoi.status.value == 'completed' %}bg-gray-700 text-gray-300
+                                {% else %}bg-red-900 text-red-200{% endif %}">
+                                {{ tournoi.status.label }}
+                            </span>
+                        </td>
+                        <td class="px-6 py-4">{{ tournoi.type ? tournoi.type.label : '' }}</td>
+                        <td class="px-6 py-4 text-right space-x-2">
+                            <a href="{{ path('app_tournoi_show', {'id': tournoi.id}) }}" class="text-blue-400 hover:text-blue-300">Show</a>
+                            <a href="{{ path('app_tournoi_edit', {'id': tournoi.id}) }}" class="text-purple-400 hover:text-purple-300">Edit</a>
+                        </td>
+                    </tr>
+                {% else %}
+                    <tr>
+                        <td colspan="6" class="px-6 py-8 text-center text-gray-500">No tournaments found</td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+{% endblock %}

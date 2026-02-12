@@ -27,6 +27,16 @@
 
             {# Page Content #}
             <div class="p-8 space-y-6">
+                {# Flash Messages #}
+                {% for label, messages in app.flashes %}
+                    {% for message in messages %}
+                        <div class="p-4 rounded-xl {% if label == 'success' %}bg-green-500/10 border border-green-500/20 text-green-400{% else %}bg-red-500/10 border border-red-500/20 text-red-400{% endif %} flex items-center gap-3">
+                            <span class="material-symbols-outlined">{% if label == 'success' %}check_circle{% else %}error{% endif %}</span>
+                            <span class="text-sm font-medium">{{ message }}</span>
+                        </div>
+                    {% endfor %}
+                {% endfor %}
+
                 {# Search & Filters #}
                 <div class="bg-surface-dark border border-white/5 rounded-2xl p-4">
                     <div class="flex items-center gap-4">
@@ -54,19 +64,26 @@
                 <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
                     {% for game in games %}
                     <div class="bg-surface-dark border border-white/5 rounded-2xl overflow-hidden hover:border-white/10 transition-all group">
-                        {# Game Header with Icon #}
-                        <div class="relative h-28 bg-gradient-to-br from-primary/20 to-primary/5 flex items-center justify-center">
-                            <span class="text-6xl">{{ game.icon }}</span>
+                        {# Game Header with Illustration #}
+                        <div class="relative h-48 bg-background-light flex items-center justify-center overflow-hidden">
+                            {% if game.imageUrl %}
+                                <img src="{{ game.imageUrl }}" alt="{{ game.name }}" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
+                            {% else %}
+                                <div class="w-full h-full bg-gradient-to-br from-primary/20 to-primary/5 flex items-center justify-center">
+                                    <span class="material-symbols-outlined text-[64px] text-primary/40">sports_esports</span>
+                                </div>
+                            {% endif %}
+                            
                             {# Status Badge #}
                             <div class="absolute top-3 right-3">
-                                {% if game.status == 'active' %}
-                                    <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold bg-green-500/20 text-green-400 backdrop-blur-sm">
+                                {% if game.status.value == 'active' %}
+                                    <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-green-500/20 text-green-400 backdrop-blur-md border border-green-500/20">
                                         <span class="w-1.5 h-1.5 rounded-full bg-green-400"></span>
                                         Actif
                                     </span>
                                 {% else %}
-                                    <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold bg-red-500/20 text-red-400 backdrop-blur-sm">
-                                        <span class="w-1.5 h-1.5 rounded-full bg-red-400"></span>
+                                    <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-red-500/20 text-red-400 backdrop-blur-md border border-red-500/20">
+                                        <span class="w-1.5 h-1.5 rounded-full bg-red-400 animate-pulse"></span>
                                         Inactif
                                     </span>
                                 {% endif %}
@@ -77,41 +94,48 @@
                         <div class="p-5">
                             <div class="flex items-center justify-between mb-3">
                                 <h3 class="text-lg font-bold text-white">{{ game.name }}</h3>
-                                <span class="inline-flex px-2.5 py-1 rounded-full text-xs font-semibold
-                                              {% if game.category == 'FPS' %}bg-primary/20 text-primary
-                                              {% elseif game.category == 'MOBA' %}bg-purple-500/20 text-purple-400
-                                              {% else %}bg-blue-500/20 text-blue-400{% endif %}">
-                                    {{ game.category }}
+                                <span class="inline-flex px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider bg-primary/20 text-primary border border-primary/20">
+                                    {{ game.type.name }}
                                 </span>
                             </div>
 
-                            <p class="text-sm text-white/40 mb-4">{{ game.publisher }}</p>
+                            <p class="text-sm text-white/40 mb-4 line-clamp-2 min-h-[40px]">{{ game.description|default('Aucune description disponible.') }}</p>
 
                             {# Stats #}
                             <div class="grid grid-cols-2 gap-3">
-                                <div class="bg-white/5 rounded-xl p-3 text-center">
-                                    <p class="text-xs text-white/30 mb-0.5">Tournois</p>
-                                    <p class="text-lg font-bold text-secondary">{{ game.tournaments }}</p>
+                                <div class="bg-white/5 rounded-xl p-3 text-center border border-white/5">
+                                    <p class="text-[10px] text-white/30 uppercase tracking-widest mb-0.5">Tournois</p>
+                                    <p class="text-lg font-bold text-secondary">{{ game.tournois|length }}</p>
                                 </div>
-                                <div class="bg-white/5 rounded-xl p-3 text-center">
-                                    <p class="text-xs text-white/30 mb-0.5">Joueurs</p>
-                                    <p class="text-lg font-bold text-green-400">{{ game.players }}</p>
+                                <div class="bg-white/5 rounded-xl p-3 text-center border border-white/5">
+                                    <p class="text-[10px] text-white/30 uppercase tracking-widest mb-0.5">Skins</p>
+                                    <p class="text-lg font-bold text-green-400">{{ game.skins|length }}</p>
                                 </div>
                             </div>
 
                             {# Actions #}
                             <div class="flex items-center gap-2 mt-4 pt-4 border-t border-white/5">
-                                <button class="flex-1 inline-flex items-center justify-center gap-1.5 py-2 rounded-xl bg-white/5 hover:bg-white/10 text-sm text-white/60 hover:text-white transition-all">
+                                <a href="{{ path('admin_games_edit', {'id': game.id}) }}" class="flex-1 inline-flex items-center justify-center gap-1.5 py-2.5 rounded-xl bg-white/5 hover:bg-white/10 text-xs font-semibold text-white/60 hover:text-white transition-all">
                                     <span class="material-symbols-outlined text-[16px]">edit</span>
                                     Modifier
-                                </button>
-                                <button class="flex-1 inline-flex items-center justify-center gap-1.5 py-2 rounded-xl bg-red-500/10 hover:bg-red-500/20 text-sm text-red-400 transition-all">
-                                    <span class="material-symbols-outlined text-[16px]">delete</span>
-                                    Supprimer
-                                </button>
+                                </a>
+                                <form method="post" action="{{ path('admin_games_delete', {'id': game.id}) }}" class="flex-1" onsubmit="return confirm('Supprimer ce jeu ainsi que tous ses tournois et skins associés ?');">
+                                    <button type="submit" class="w-full inline-flex items-center justify-center gap-1.5 py-2.5 rounded-xl bg-red-500/10 hover:bg-red-500/20 text-xs font-semibold text-red-400 transition-all">
+                                        <span class="material-symbols-outlined text-[16px]">delete</span>
+                                        Supprimer
+                                    </button>
+                                </form>
                             </div>
                         </div>
                     </div>
+                    {% else %}
+                        <div class="col-span-full py-12 text-center">
+                            <div class="w-20 h-20 bg-white/5 rounded-2xl flex items-center justify-center mx-auto mb-4 border border-white/10">
+                                <span class="material-symbols-outlined text-[40px] text-white/20">search_off</span>
+                            </div>
+                            <h3 class="text-lg font-bold text-white">Aucun jeu trouvé</h3>
+                            <p class="text-white/40 text-sm mt-1">Commencez par ajouter votre premier jeu à la plateforme.</p>
+                        </div>
                     {% endfor %}
                 </div>
             </div>
@@ -130,51 +154,42 @@
             </button>
         </div>
 
-        <form class="space-y-5">
+        {{ form_start(form, {'attr': {'class': 'space-y-5'}}) }}
             <div>
-                <label class="block text-sm font-medium text-white/60 mb-1.5">Nom du jeu</label>
-                <input type="text" placeholder="Ex: Valorant"
-                       class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white placeholder-white/30 focus:border-primary/50 focus:ring-1 focus:ring-primary/30 outline-none transition-all" />
+                {{ form_label(form.name, 'Nom du jeu', {'label_attr': {'class': 'block text-sm font-medium text-white/60 mb-1.5'}}) }}
+                {{ form_widget(form.name, {'attr': {'class': 'w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white placeholder-white/30 focus:border-primary/50 focus:ring-1 focus:ring-primary/30 outline-none transition-all'}}) }}
+                {{ form_errors(form.name) }}
+            </div>
+
+            <div>
+                {{ form_label(form.description, 'Description', {'label_attr': {'class': 'block text-sm font-medium text-white/60 mb-1.5'}}) }}
+                {{ form_widget(form.description, {'attr': {'class': 'w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white placeholder-white/30 focus:border-primary/50 outline-none transition-all', 'rows': '3'}}) }}
+                {{ form_errors(form.description) }}
             </div>
 
             <div class="grid grid-cols-2 gap-4">
                 <div>
-                    <label class="block text-sm font-medium text-white/60 mb-1.5">Éditeur</label>
-                    <input type="text" placeholder="Ex: Riot Games"
-                           class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white placeholder-white/30 focus:border-primary/50 focus:ring-1 focus:ring-primary/30 outline-none transition-all" />
+                    {{ form_label(form.type, 'Catégorie', {'label_attr': {'class': 'block text-sm font-medium text-white/60 mb-1.5'}}) }}
+                    {{ form_widget(form.type, {'attr': {'class': 'w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white/70 outline-none focus:border-primary/50 form-select [&>option]:text-black'}}) }}
+                    {{ form_errors(form.type) }}
                 </div>
                 <div>
-                    <label class="block text-sm font-medium text-white/60 mb-1.5">Catégorie</label>
-                    <select class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white/70 outline-none focus:border-primary/50">
-                        <option>FPS</option>
-                        <option>MOBA</option>
-                        <option>Battle Royale</option>
-                        <option>Sports</option>
-                        <option>RPG</option>
-                        <option>Strategy</option>
-                    </select>
+                    {{ form_label(form.status, 'Statut', {'label_attr': {'class': 'block text-sm font-medium text-white/60 mb-1.5'}}) }}
+                    {{ form_widget(form.status, {'attr': {'class': 'w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white/70 outline-none focus:border-primary/50 form-select [&>option]:text-black'}}) }}
+                    {{ form_errors(form.status) }}
                 </div>
             </div>
 
-            <div class="grid grid-cols-2 gap-4">
-                <div>
-                    <label class="block text-sm font-medium text-white/60 mb-1.5">Icône (emoji)</label>
-                    <input type="text" placeholder="Ex: 🎯" maxlength="2"
-                           class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white placeholder-white/30 focus:border-primary/50 outline-none transition-all" />
-                </div>
-                <div>
-                    <label class="block text-sm font-medium text-white/60 mb-1.5">Statut</label>
-                    <select class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white/70 outline-none focus:border-primary/50">
-                        <option value="active">Actif</option>
-                        <option value="inactive">Inactif</option>
-                    </select>
-                </div>
+            <div>
+                {{ form_label(form.imageUrl, 'Image URL', {'label_attr': {'class': 'block text-sm font-medium text-white/60 mb-1.5'}}) }}
+                {{ form_widget(form.imageUrl, {'attr': {'class': 'w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white placeholder-white/30 focus:border-primary/50 outline-none transition-all'}}) }}
+                {{ form_errors(form.imageUrl) }}
             </div>
 
             <div class="flex items-center gap-3 pt-4">
-                <button type="submit" class="flex-1 inline-flex items-center justify-center gap-2 py-2.5 bg-primary hover:bg-primary/90 text-white text-sm font-semibold rounded-xl transition-all">
+                <button type="submit" class="flex-1 inline-flex items-center justify-center gap-2 py-2.5 bg-primary hover:bg-primary/90 text-white text-sm font-semibold rounded-xl transition-all shadow-lg shadow-primary/20">
                     <span class="material-symbols-outlined text-[18px]">check</span>
-                    Ajouter le Jeu
+                    Enregistrer le Jeu
                 </button>
                 <button type="button"
                         onclick="document.getElementById('addGameModal').classList.add('hidden')"
@@ -182,7 +197,7 @@
                     Annuler
                 </button>
             </div>
-        </form>
+        {{ form_end(form) }}
     </div>
 </div>
 {% endblock %}

@@ -1,0 +1,140 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Détails Réclamation - Carthage Arena{% endblock %}
+
+{% block body %}
+<div class="min-h-screen bg-background-dark pt-24 pb-12">
+    <div class="container mx-auto px-4 max-w-4xl">
+        <div class="mb-6 flex items-center justify-between">
+            <a href="{{ path('app_reclamation_index') }}" class="flex items-center gap-2 text-gray-400 hover:text-white transition-colors">
+                <span class="material-symbols-outlined">arrow_back</span>
+                Retour à mes demandes
+            </a>
+            <div class="flex items-center gap-3">
+                <span class="px-3 py-1 rounded-full text-xs font-bold border {{ reclamation.priority.color }}">
+                    Priorité {{ reclamation.priority.label }}
+                </span>
+                <span class="px-3 py-1 rounded-full text-xs font-bold border {{ reclamation.status.color }}">
+                    {{ reclamation.status.label }}
+                </span>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            {# Main Conversation Area #}
+            <div class="lg:col-span-2 space-y-6">
+                {# Initial Reclamation #}
+                <div class="bg-surface-dark border border-white/5 rounded-2xl p-6">
+                    <div class="flex items-center gap-4 mb-4 pb-4 border-b border-white/5">
+                        <div class="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center text-primary font-bold">
+                            {{ reclamation.author.name|slice(0, 2)|upper }}
+                        </div>
+                        <div>
+                            <h3 class="text-white font-bold">{{ reclamation.author.name }}</h3>
+                            <p class="text-xs text-gray-400">{{ reclamation.createdAt|date('d M Y à H:i') }}</p>
+                        </div>
+                    </div>
+                    <h2 class="text-xl font-bold text-white mb-2">{{ reclamation.subject }}</h2>
+                    <div class="text-gray-300 prose prose-invert max-w-none">
+                        {{ reclamation.message|nl2br }}
+                    </div>
+                </div>
+
+                {# Responses #}
+                {% for response in reclamation.responses %}
+                    <div class="flex gap-4 {% if response.isAdminResponse or response.author != app.user %}justify-start{% else %}justify-end{% endif %}">
+                        {% if response.isAdminResponse %}
+                            <div class="w-8 h-8 rounded-full bg-red-500 flex items-center justify-center shrink-0 mt-2">
+                                <span class="material-symbols-outlined text-white text-sm">support_agent</span>
+                            </div>
+                        {% endif %}
+                        
+                        <div class="max-w-[80%] {% if response.isAdminResponse %}bg-white/10{% else %}bg-primary/10 border-primary/20{% endif %} border border-white/5 rounded-2xl p-4">
+                            <div class="flex items-center justify-between gap-4 mb-2">
+                                <span class="text-xs font-bold {% if response.isAdminResponse %}text-red-400{% else %}text-primary{% endif %}">
+                                    {% if response.isAdminResponse %}Support Admin{% else %}Vous{% endif %}
+                                </span>
+                                <span class="text-[10px] text-gray-500">{{ response.createdAt|date('d/m H:i') }}</span>
+                            </div>
+                            <p class="text-gray-200 text-sm whitespace-pre-wrap">{{ response.message }}</p>
+                        </div>
+
+                        {% if not response.isAdminResponse %}
+                            <div class="w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center shrink-0 mt-2 text-primary font-bold text-xs">
+                                {{ app.user.name|slice(0, 2)|upper }}
+                            </div>
+                        {% endif %}
+                    </div>
+                {% endfor %}
+
+                {# Reply Form #}
+                {% if reclamation.status.value != 'closed' %}
+                    <div class="bg-surface-dark border border-white/5 rounded-2xl p-6 mt-8">
+                        <h3 class="text-white font-bold mb-4 flex items-center gap-2">
+                            <span class="material-symbols-outlined text-primary">reply</span>
+                            Ajouter une réponse
+                        </h3>
+                        <form method="post" action="{{ path('app_reclamation_show', {'id': reclamation.id}) }}">
+                            <textarea 
+                                name="message" 
+                                rows="4" 
+                                class="w-full bg-black/20 border border-white/10 rounded-xl p-4 text-white placeholder-gray-500 focus:outline-none focus:border-primary transition-colors resize-none mb-4"
+                                placeholder="Votre réponse..."
+                                required
+                            ></textarea>
+                            <div class="flex justify-end">
+                                <button type="submit" class="px-6 py-2 rounded-xl bg-primary text-white font-bold hover:bg-primary/90 transition-colors flex items-center gap-2">
+                                    <span class="material-symbols-outlined text-sm">send</span>
+                                    Envoyer
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                {% else %}
+                    <div class="bg-red-500/10 border border-red-500/20 rounded-xl p-4 text-center">
+                        <p class="text-red-400 font-bold flex items-center justify-center gap-2">
+                            <span class="material-symbols-outlined">lock</span>
+                            Cette réclamation est fermée. Vous ne pouvez plus y répondre.
+                        </p>
+                    </div>
+                {% endif %}
+            </div>
+
+            {# Sidebar Info #}
+            <div class="lg:col-span-1">
+                <div class="bg-surface-dark border border-white/5 rounded-2xl p-6 sticky top-24">
+                    <h3 class="text-gray-400 text-xs font-bold uppercase tracking-widest mb-4">Informations</h3>
+                    
+                    <div class="space-y-4">
+                        <div>
+                            <span class="text-gray-500 text-xs block mb-1">Catégorie</span>
+                            <div class="flex items-center gap-2 text-white">
+                                {% if reclamation.category.value == 'technical' %}
+                                    <span class="material-symbols-outlined text-white">dns</span>
+                                {% elseif reclamation.category.value == 'tournament' %}
+                                    <span class="material-symbols-outlined text-white">trophy</span>
+                                {% elseif reclamation.category.value == 'payment' %}
+                                    <span class="material-symbols-outlined text-white">payments</span>
+                                {% else %}
+                                    <span class="material-symbols-outlined text-white">help</span>
+                                {% endif %}
+                                {{ reclamation.category.label }}
+                            </div>
+                        </div>
+
+                        <div>
+                            <span class="text-gray-500 text-xs block mb-1">Date de création</span>
+                            <p class="text-white">{{ reclamation.createdAt|date('d F Y à H:i') }}</p>
+                        </div>
+
+                        <div>
+                            <span class="text-gray-500 text-xs block mb-1">Dernière mise à jour</span>
+                            <p class="text-white">{{ reclamation.updatedAt ? reclamation.updatedAt|date('d/m/Y H:i') : reclamation.createdAt|date('d/m/Y H:i') }}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
