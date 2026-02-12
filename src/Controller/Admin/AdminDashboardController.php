@@ -69,10 +69,14 @@ class AdminDashboardController extends AbstractController
     }
 
     #[Route('/users', name: 'admin_users')]
-    public function users(): Response
+    public function users(Request $request): Response
     {
+        $search = $request->query->get('search');
+        $status = $request->query->get('status');
+        $role = $request->query->get('role');
+
         return $this->render('admin/users/index.html.twig', [
-            'users' => $this->userRepository->findAll(),
+            'users' => $this->userRepository->searchAndFilter($search, $status, $role),
         ]);
     }
 
