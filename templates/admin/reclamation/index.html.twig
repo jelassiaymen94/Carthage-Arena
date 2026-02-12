@@ -1,0 +1,132 @@
+{% extends 'base_admin.html.twig' %}
+
+{% block title %}Gestion des Réclamations{% endblock %}
+
+{% block body %}
+<div class="space-y-6">
+    {# Header & Stats #}
+    <div class="flex items-center justify-between">
+        <div>
+            <h1 class="text-3xl font-black text-white">Gestion des <span class="text-primary">Réclamations</span></h1>
+            <p class="text-gray-400">Gérez les tickets de support et les signalements des utilisateurs</p>
+        </div>
+        
+        <div class="flex gap-4">
+            <div class="px-4 py-2 bg-white/5 border border-white/10 rounded-xl">
+                <span class="block text-xs text-gray-400 uppercase font-bold">Total</span>
+                <span class="text-2xl font-black text-white">{{ stats.total }}</span>
+            </div>
+            <div class="px-4 py-2 bg-blue-500/10 border border-blue-500/20 rounded-xl">
+                <span class="block text-xs text-blue-400 uppercase font-bold">En Attente</span>
+                <span class="text-2xl font-black text-blue-400">{{ stats.pending }}</span>
+            </div>
+            <div class="px-4 py-2 bg-red-500/10 border border-red-500/20 rounded-xl">
+                <span class="block text-xs text-red-400 uppercase font-bold">Urgent</span>
+                <span class="text-2xl font-black text-red-400">{{ stats.urgent }}</span>
+            </div>
+        </div>
+    </div>
+
+    {# Filters #}
+    <div class="flex gap-2 pb-4 overflow-x-auto">
+        <a href="{{ path('app_admin_reclamation_index') }}" 
+           class="px-4 py-2 rounded-lg text-sm font-bold transition-colors whitespace-nowrap {{ current_status is null and current_priority is null ? 'bg-primary text-white' : 'bg-white/5 text-gray-400 hover:bg-white/10' }}">
+           Tout voir
+        </a>
+        <a href="{{ path('app_admin_reclamation_index', {'status': 'pending'}) }}" 
+           class="px-4 py-2 rounded-lg text-sm font-bold transition-colors whitespace-nowrap {{ current_status == 'pending' ? 'bg-gray-500 text-white' : 'bg-white/5 text-gray-400 hover:bg-white/10' }}">
+           En Attente
+        </a>
+        <a href="{{ path('app_admin_reclamation_index', {'status': 'in_progress'}) }}" 
+           class="px-4 py-2 rounded-lg text-sm font-bold transition-colors whitespace-nowrap {{ current_status == 'in_progress' ? 'bg-blue-500 text-white' : 'bg-white/5 text-gray-400 hover:bg-white/10' }}">
+           En Cours
+        </a>
+        <a href="{{ path('app_admin_reclamation_index', {'status': 'resolved'}) }}" 
+           class="px-4 py-2 rounded-lg text-sm font-bold transition-colors whitespace-nowrap {{ current_status == 'resolved' ? 'bg-green-500 text-white' : 'bg-white/5 text-gray-400 hover:bg-white/10' }}">
+           Résolu
+        </a>
+        <div class="w-px h-8 bg-white/10 mx-2"></div>
+        <a href="{{ path('app_admin_reclamation_index', {'priority': 'urgent'}) }}" 
+           class="px-4 py-2 rounded-lg text-sm font-bold transition-colors whitespace-nowrap {{ current_priority == 'urgent' ? 'bg-red-500 text-white' : 'bg-white/5 text-gray-400 hover:bg-white/10' }}">
+           Urgent
+        </a>
+    </div>
+
+    {# Table #}
+    <div class="bg-surface-dark border border-white/5 rounded-2xl overflow-hidden">
+        <table class="w-full text-left">
+            <thead>
+                <tr class="bg-white/5 border-b border-white/5">
+                    <th class="p-4 text-xs font-bold text-gray-400 uppercase">Sujet / Auteur</th>
+                    <th class="p-4 text-xs font-bold text-gray-400 uppercase">Catégorie</th>
+                    <th class="p-4 text-xs font-bold text-gray-400 uppercase">Priorité</th>
+                    <th class="p-4 text-xs font-bold text-gray-400 uppercase">Statut</th>
+                    <th class="p-4 text-xs font-bold text-gray-400 uppercase">Date</th>
+                    <th class="p-4 text-xs font-bold text-gray-400 uppercase text-right">Actions</th>
+                </tr>
+            </thead>
+            <tbody class="divide-y divide-white/5">
+                {% for reclamation in reclamations %}
+                    <tr class="hover:bg-white/5 transition-colors group">
+                        <td class="p-4">
+                            <div class="flex items-center gap-3">
+                                <div class="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center text-primary font-bold shrink-0">
+                                    {{ reclamation.author.name|slice(0, 2)|upper }}
+                                </div>
+                                <div>
+                                    <div class="font-bold text-white group-hover:text-primary transition-colors">
+                                        {{ reclamation.subject }}
+                                    </div>
+                                    <div class="text-xs text-gray-500">{{ reclamation.author.email }}</div>
+                                </div>
+                            </div>
+                        </td>
+                        <td class="p-4">
+                            <span class="flex items-center gap-2 text-sm text-gray-300">
+                                {% if reclamation.category.value == 'technical' %}
+                                    <span class="material-symbols-outlined text-blue-400 text-base">dns</span>
+                                {% elseif reclamation.category.value == 'tournament' %}
+                                    <span class="material-symbols-outlined text-yellow-400 text-base">trophy</span>
+                                {% elseif reclamation.category.value == 'payment' %}
+                                    <span class="material-symbols-outlined text-green-400 text-base">payments</span>
+                                {% else %}
+                                    <span class="material-symbols-outlined text-gray-400 text-base">help</span>
+                                {% endif %}
+                                {{ reclamation.category.label }}
+                            </span>
+                        </td>
+                        <td class="p-4">
+                            <span class="text-xs px-2 py-0.5 rounded border {{ reclamation.priority.color }}">
+                                {{ reclamation.priority.label }}
+                            </span>
+                        </td>
+                        <td class="p-4">
+                            <span class="text-xs px-2 py-0.5 rounded border {{ reclamation.status.color }}">
+                                {{ reclamation.status.label }}
+                            </span>
+                        </td>
+                        <td class="p-4">
+                            <div class="text-sm text-gray-400">
+                                {{ reclamation.createdAt|date('d/m/Y') }}
+                                <span class="text-xs text-gray-600 block">{{ reclamation.createdAt|date('H:i') }}</span>
+                            </div>
+                        </td>
+                        <td class="p-4 text-right">
+                            <a href="{{ path('app_admin_reclamation_show', {'id': reclamation.id}) }}" class="inline-flex items-center justify-center w-8 h-8 rounded-lg bg-white/5 text-gray-400 hover:bg-primary hover:text-white transition-colors">
+                                <span class="material-symbols-outlined text-lg">visibility</span>
+                            </a>
+                        </td>
+                    </tr>
+                {% else %}
+                    <tr>
+                        <td colspan="6" class="p-12 text-center text-gray-500">
+                            <span class="material-symbols-outlined text-4xl mb-2">inbox</span>
+                            <p>Aucune réclamation trouvée</p>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

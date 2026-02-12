@@ -35,17 +35,7 @@
             <p class="text-xs text-gray-400">D&eacute;tail de l'article</p>
           </div>
           <div class="flex items-center gap-6">
-            <button class="relative rounded-full p-2 text-gray-400 hover:bg-white/5 hover:text-white transition-colors" aria-label="Notifications">
-              <span class="material-symbols-outlined">notifications</span>
-              <span class="absolute right-2 top-2 h-2 w-2 rounded-full bg-primary"></span>
-            </button>
-            <div class="flex items-center gap-4 rounded-full border border-white/5 bg-surface-dark py-1.5 pl-4 pr-1.5 shadow-lg">
-              <div class="flex items-center gap-1 rounded-full bg-gradient-to-r from-yellow-600 to-yellow-400 px-3 py-1 text-black shadow-[0_0_10px_rgba(255,215,0,0.3)]" title="Carthage Points">
-                <span class="material-symbols-outlined text-[16px] font-bold">payments</span>
-                <span class="text-xs font-black">CP</span>
-              </div>
-              <div class="h-9 w-9 overflow-hidden rounded-full border-2 border-primary bg-gray-800"></div>
-            </div>
+            {% include 'components/_header_user_info.html.twig' %}
           </div>
         </header>
 
@@ -65,9 +55,9 @@
             <div class="lg:col-span-3 flex flex-col gap-4">
               <!-- Main Image -->
               <div class="relative overflow-hidden rounded-2xl bg-surface-dark border border-white/5">
-                {% if item.images is defined and item.images|length > 0 %}
+                {% if item.imageUrl %}
                 <img
-                  src="{{ item.images[0] }}"
+                  src="{{ item.imageUrl }}"
                   alt="{{ item.name }}"
                   class="w-full aspect-video object-cover"
                   id="mainProductImage"
@@ -78,23 +68,6 @@
                 </div>
                 {% endif %}
               </div>
-              <!-- Thumbnails -->
-              {% if item.images is defined and item.images|length > 1 %}
-              <div class="grid grid-cols-3 sm:grid-cols-4 gap-3">
-                {% for image in item.images %}
-                <div
-                  class="overflow-hidden rounded-xl border-2 cursor-pointer transition-all hover:border-primary/50 {{ loop.first ? 'border-primary' : 'border-white/10' }}"
-                  onclick="document.getElementById('mainProductImage').src='{{ image }}'; this.parentNode.querySelectorAll('div').forEach(el => el.classList.remove('border-primary')); this.classList.add('border-primary');"
-                >
-                  <img
-                    src="{{ image }}"
-                    alt="{{ item.name }} {{ loop.index }}"
-                    class="w-full aspect-video object-cover"
-                  />
-                </div>
-                {% endfor %}
-              </div>
-              {% endif %}
             </div>
 
             <!-- Product Info (2/5) -->
@@ -107,12 +80,17 @@
                     {% elseif item.game == 'LOL' %}bg-blue-500/20 text-blue-400 border border-blue-500/30
                     {% else %}bg-purple-500/20 text-purple-400 border border-purple-500/30{% endif %}
                   ">{{ item.game }}</span>
-                  <span class="rounded-full px-3 py-1 text-[10px] font-bold uppercase tracking-wider
-                    {% if item.rarity == 'LEGENDAIRE' or item.rarity == 'L&Eacute;GENDAIRE' %}bg-secondary/20 text-secondary border border-secondary/30
-                    {% elseif item.rarity == 'EPIQUE' or item.rarity == '&Eacute;PIQUE' %}bg-purple-500/20 text-purple-400 border border-purple-500/30
-                    {% elseif item.rarity == 'PREMIUM' %}bg-cyan-500/20 text-cyan-400 border border-cyan-500/30
-                    {% else %}bg-white/5 text-gray-400 border border-white/10{% endif %}
-                  ">{{ item.rarity }}</span>
+                  
+                  {% set rarityClasses = {
+                      'legendary': 'bg-secondary/20 text-secondary border border-secondary/30',
+                      'epic': 'bg-purple-500/20 text-purple-400 border border-purple-500/30',
+                      'rare': 'bg-cyan-500/20 text-cyan-400 border border-cyan-500/30',
+                      'common': 'bg-white/5 text-gray-400 border border-white/10',
+                      'MERCH': 'bg-white/10 text-white border-white/10'
+                  } %}
+                  <span class="rounded-full px-3 py-1 text-[10px] font-bold uppercase tracking-wider 
+                    {{ rarityClasses[item.rarity] ?? rarityClasses['common'] }}
+                  ">{{ item.rarity|trans }}</span>
                 </div>
 
                 <!-- Title & Description -->
@@ -130,9 +108,6 @@
                       <span class="text-2xl font-black text-secondary">{{ item.price }}</span>
                     </div>
                   </div>
-                  <p class="text-xs text-gray-500 text-right">
-                    Votre solde: <span class="text-secondary font-bold">2,450 CP</span>
-                  </p>
                 </div>
 
                 <!-- Actions -->
@@ -150,26 +125,6 @@
             </div>
           </div>
 
-          <!-- Features Section -->
-          {% if item.features is defined and item.features|length > 0 %}
-          <section class="rounded-2xl bg-surface-dark border border-white/5 p-8">
-            <h2 class="text-xl font-bold text-white flex items-center gap-2 mb-6">
-              <span class="h-6 w-1 rounded-full bg-primary"></span>
-              Caract&eacute;ristiques
-            </h2>
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {% for feature in item.features %}
-              <div class="flex items-start gap-3 rounded-xl bg-white/5 p-4">
-                <div class="flex-shrink-0 h-8 w-8 rounded-full bg-primary/20 flex items-center justify-center">
-                  <span class="material-symbols-outlined text-primary text-[16px]">check</span>
-                </div>
-                <p class="text-sm text-gray-300 pt-1">{{ feature }}</p>
-              </div>
-              {% endfor %}
-            </div>
-          </section>
-          {% endif %}
-
           <!-- Similar Items -->
           <section class="rounded-2xl bg-surface-dark border border-white/5 p-8">
             <h2 class="text-xl font-bold text-white flex items-center gap-2 mb-6">
@@ -179,17 +134,21 @@
             <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
               {% for i in 1..4 %}
               <div class="group overflow-hidden rounded-2xl bg-white/5 border border-white/5 transition-all hover:border-primary/30 hover:-translate-y-1 cursor-pointer">
-                <div class="h-32 bg-gradient-to-br from-surface-dark to-background-dark relative overflow-hidden">
+                <div class="h-32 bg-gradient-to-br from-surface-dark to-background-dark relative overflow-hidden flex items-center justify-center">
+                  {% if item.imageUrl %}
+                  <img src="{{ item.imageUrl }}" class="w-full h-full object-cover opacity-50 group-hover:opacity-100 transition-all">
+                  {% else %}
+                  <span class="material-symbols-outlined text-gray-600 text-4xl">image</span>
+                  {% endif %}
                   <div class="absolute top-2 left-2">
                     <span class="rounded-full bg-black/60 backdrop-blur-sm px-2 py-0.5 text-[8px] font-bold uppercase text-white">{{ item.game }}</span>
                   </div>
                 </div>
                 <div class="p-3">
-                  <p class="text-sm font-bold text-white group-hover:text-primary transition-colors mb-1">Skin Similaire {{ i }}</p>
-                  <span class="rounded-full bg-cyan-500/20 text-cyan-400 border border-cyan-500/30 px-2 py-0.5 text-[8px] font-bold uppercase">PREMIUM</span>
+                  <p class="text-sm font-bold text-white group-hover:text-primary transition-colors mb-1">Article Similaire {{ i }}</p>
                   <div class="flex items-center gap-1 mt-2 text-secondary">
                     <span class="material-symbols-outlined text-[14px]">payments</span>
-                    <span class="text-sm font-black">{{ (item.price - 200 + (i * 100)) }}</span>
+                    <span class="text-sm font-black">{{ (item.price * 0.9)|number_format(0) }}</span>
                   </div>
                 </div>
               </div>

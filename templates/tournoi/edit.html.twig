@@ -1,0 +1,162 @@
+{% extends 'base_admin.html.twig' %}
+
+{% block title %}Edit Tournoi{% endblock %}
+
+{% block admin_content %}
+{# Header #}
+<div class="flex items-center justify-between mb-8">
+    <div>
+        <div class="flex items-center gap-3 mb-1">
+            <a href="{{ path('admin_tournaments') }}" class="p-2 rounded-lg bg-white/5 hover:bg-white/10 text-white/40 hover:text-white transition-all">
+                <span class="material-symbols-outlined text-[20px]">arrow_back</span>
+            </a>
+            <h1 class="text-3xl font-black tracking-tight text-white">Modifier le <span class="text-primary">Tournoi</span></h1>
+        </div>
+        <p class="text-white/40 text-sm ml-12">Mettre à jour les paramètres et les participants du tournoi</p>
+    </div>
+</div>
+
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+    {# Main Form Area #}
+    <div class="lg:col-span-2 space-y-6">
+        <div class="bg-surface-dark/50 backdrop-blur-xl border border-white/5 rounded-3xl p-8 shadow-2xl">
+            <h2 class="text-xl font-bold text-white mb-6 flex items-center gap-2">
+                <span class="material-symbols-outlined text-primary">settings</span>
+                Configuration Générale
+            </h2>
+            {{ include('tournoi/_form.html.twig', {'button_label': 'Mettre à jour le tournoi'}) }}
+        </div>
+
+        {# Match Management Section #}
+        {% if tournoi.getTeams()|length > 0 %}
+        <div class="bg-surface-dark/50 backdrop-blur-xl border border-white/5 rounded-3xl p-8 shadow-2xl">
+            <div class="flex items-center justify-between mb-6">
+                <h2 class="text-xl font-bold text-white flex items-center gap-2">
+                    <span class="material-symbols-outlined text-secondary">sports_esports</span>
+                    Gestion des Matchs
+                </h2>
+                <form method="post" action="{{ path('app_tournoi_generate_matches', {'id': tournoi.id}) }}" onsubmit="return confirm('Êtes-vous sûr de vouloir générer les matchs ? Cela supprimera tous les matchs existants.');">
+                    <input type="hidden" name="_token" value="{{ csrf_token('generate-matches-' ~ tournoi.id) }}">
+                    <button type="submit" class="px-6 py-3 bg-gradient-to-r from-secondary to-secondary/80 hover:from-secondary/90 hover:to-secondary/70 text-white font-bold rounded-2xl transition-all duration-300 shadow-lg hover:shadow-secondary/50 flex items-center gap-2">
+                        <span class="material-symbols-outlined">auto_awesome</span>
+                        Générer les Matchs
+                    </button>
+                </form>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+                <div class="bg-white/5 rounded-2xl p-4">
+                    <div class="text-white/40 text-xs uppercase tracking-wider mb-1">Type de Tournoi</div>
+                    <div class="text-white font-bold text-lg">{{ tournoi.type.label() }}</div>
+                </div>
+                <div class="bg-white/5 rounded-2xl p-4">
+                    <div class="text-white/40 text-xs uppercase tracking-wider mb-1">Équipes Inscrites</div>
+                    <div class="text-white font-bold text-lg">{{ tournoi.getTeams()|length }}</div>
+                </div>
+                <div class="bg-white/5 rounded-2xl p-4">
+                    <div class="text-white/40 text-xs uppercase tracking-wider mb-1">Matchs Générés</div>
+                    <div class="text-white font-bold text-lg">{{ tournoi.getMatches()|length }}</div>
+                </div>
+            </div>
+
+            {# Display Matches if they exist #}
+            {% if tournoi.getMatches()|length > 0 %}
+                {% set matchesByRound = {} %}
+                {% for match in tournoi.getMatches() %}
+                    {% set round = 'round_' ~ match.round %}
+                    {% if matchesByRound[round] is not defined %}
+                        {% set matchesByRound = matchesByRound|merge({(round): []}) %}
+                    {% endif %}
+                    {% set matchesByRound = matchesByRound|merge({(round): matchesByRound[round]|merge([match])}) %}
+                {% endfor %}
+
+                <div class="space-y-4">
+                    {% for roundKey, matches in matchesByRound %}
+                        {% set roundNumber = roundKey|replace({'round_': ''}) %}
+                        <div class="bg-white/5 rounded-2xl p-4">
+                            <h3 class="text-white font-bold mb-3 flex items-center gap-2">
+                                <span class="w-8 h-8 rounded-lg bg-primary/20 flex items-center justify-center text-primary text-sm">{{ roundNumber }}</span>
+                                Round {{ roundNumber }}
+                                {% if tournoi.type.value == 'elimination' %}
+                                    {% if roundNumber == (matchesByRound|length) %}
+                                        <span class="text-xs text-yellow-400">(Finale)</span>
+                                    {% elseif roundNumber == (matchesByRound|length - 1) %}
+                                        <span class="text-xs text-orange-400">(Demi-finales)</span>
+                                    {% endif %}
+                                {% endif %}
+                            </h3>
+                            <div class="space-y-2">
+                                {% for match in matches %}
+                                    <div class="bg-surface-dark/50 rounded-xl p-3 flex items-center justify-between">
+                                        <div class="flex items-center gap-4 flex-1">
+                                            {% if match.team1 %}
+                                                <div class="flex-1 text-white font-medium">{{ match.team1.name }}</div>
+                                            {% else %}
+                                                <div class="flex-1 text-white/30 italic">À déterminer</div>
+                                            {% endif %}
+                                            <span class="text-white/40 font-bold">VS</span>
+                                            {% if match.team2 %}
+                                                <div class="flex-1 text-white font-medium text-right">{{ match.team2.name }}</div>
+                                            {% else %}
+                                                <div class="flex-1 text-white/30 italic text-right">À déterminer</div>
+                                            {% endif %}
+                                        </div>
+                                        <div class="ml-4">
+                                            <span class="px-3 py-1 rounded-lg text-xs font-bold
+                                                {% if match.status.value == 'scheduled' %}bg-blue-500/20 text-blue-400
+                                                {% elseif match.status.value == 'in_progress' %}bg-yellow-500/20 text-yellow-400
+                                                {% elseif match.status.value == 'completed' %}bg-green-500/20 text-green-400
+                                                {% else %}bg-gray-500/20 text-gray-400{% endif %}">
+                                                {{ match.status.value|upper }}
+                                            </span>
+                                        </div>
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <div class="text-center py-8">
+                    <span class="material-symbols-outlined text-white/20 text-6xl mb-4">sports_esports</span>
+                    <p class="text-white/40">Aucun match généré. Cliquez sur "Générer les Matchs" pour créer le bracket.</p>
+                </div>
+            {% endif %}
+        </div>
+        {% endif %}
+    </div>
+
+    {# Sidebar Info / Danger Zone #}
+    <div class="space-y-6">
+        <div class="bg-surface-dark/50 backdrop-blur-xl border border-white/5 rounded-3xl p-6">
+            <h3 class="text-sm font-bold text-white/60 uppercase tracking-widest mb-4">Informations Actuelles</h3>
+            <div class="space-y-4">
+                <div class="flex items-center gap-3 p-3 rounded-2xl bg-white/5">
+                    <div class="w-10 h-10 rounded-xl bg-primary/20 flex items-center justify-center">
+                        <span class="material-symbols-outlined text-primary">calendar_today</span>
+                    </div>
+                    <div>
+                        <div class="text-[10px] font-bold text-white/20 uppercase tracking-wider">Début</div>
+                        <div class="text-sm text-white font-medium">{{ tournoi.dateDebut|date('d M Y') }}</div>
+                    </div>
+                </div>
+                <div class="flex items-center gap-3 p-3 rounded-2xl bg-white/5">
+                    <div class="w-10 h-10 rounded-xl bg-secondary/20 flex items-center justify-center">
+                        <span class="material-symbols-outlined text-secondary">group</span>
+                    </div>
+                    <div>
+                        <div class="text-[10px] font-bold text-white/20 uppercase tracking-wider">Participants</div>
+                        <div class="text-sm text-white font-medium">{{ tournoi.getTeams()|length }} / {{ tournoi.nbEquipesMax }}</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="bg-red-500/5 backdrop-blur-xl border border-red-500/10 rounded-3xl p-6">
+            <h3 class="text-sm font-bold text-red-400 uppercase tracking-widest mb-4">Zone de Danger</h3>
+            <p class="text-white/40 text-xs mb-4">La suppression d'un tournoi est irréversible. Toutes les données associées seront perdues.</p>
+            {{ include('tournoi/_delete_form.html.twig') }}
+        </div>
+    </div>
+</div>
+{% endblock %}

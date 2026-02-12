@@ -2,38 +2,59 @@
 
 namespace App\Controller\Admin;
 
+use App\Entity\Game;
+use App\Entity\Merch;
+use App\Entity\Skin;
+use App\Entity\Tournoi;
+use App\Form\GameType;
+use App\Form\MerchType;
+use App\Form\SkinType;
+use App\Form\TournoiType;
+use App\Repository\GameRepository;
+use App\Repository\MerchRepository;
+use App\Repository\SkinRepository;
+use App\Repository\TournoiRepository;
+use App\Repository\UserRepository;
+use App\Repository\TeamRepository;
+use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 
 #[Route('/admin')]
 class AdminDashboardController extends AbstractController
 {
+    public function __construct(
+        private readonly TournoiRepository $tournoiRepository,
+        private readonly UserRepository $userRepository,
+        private readonly TeamRepository $teamRepository,
+        private readonly GameRepository $gameRepository,
+        private readonly SkinRepository $skinRepository,
+        private readonly MerchRepository $merchRepository,
+        private readonly EntityManagerInterface $entityManager,
+    ) {
+    }
     #[Route('/', name: 'admin_dashboard')]
     public function index(): Response
     {
+        $tournois = $this->tournoiRepository->findBy([], ['dateDebut' => 'DESC'], 5);
+        $totalUsers = $this->userRepository->count([]);
+        $totalTournaments = $this->tournoiRepository->count([]);
+
         return $this->render('admin/dashboard/index.html.twig', [
             'stats' => [
-                'totalUsers' => 1247,
-                'activeUsers' => 892,
-                'totalTournaments' => 45,
-                'activeTournaments' => 12,
+                'totalUsers' => $totalUsers,
+                'activeUsers' => $totalUsers, // Simplification for now
+                'totalTournaments' => $totalTournaments,
+                'activeTournaments' => count($this->tournoiRepository->findBy(['status' => 'ongoing'])),
                 'totalRevenue' => '125,450 DT',
                 'monthlyRevenue' => '18,200 DT',
                 'totalMatches' => 3421,
                 'todayMatches' => 28,
             ],
-            'recentUsers' => [
-                ['name' => 'ShadowSlayer99', 'email' => 'shadow@example.com', 'joined' => 'Il y a 2h', 'status' => 'active'],
-                ['name' => 'ProGamer123', 'email' => 'pro@example.com', 'joined' => 'Il y a 5h', 'status' => 'active'],
-                ['name' => 'ElitePlayer', 'email' => 'elite@example.com', 'joined' => 'Hier', 'status' => 'pending'],
-                ['name' => 'MasterChief', 'email' => 'master@example.com', 'joined' => 'Il y a 2j', 'status' => 'active'],
-            ],
-            'recentTournaments' => [
-                ['name' => 'Carthage Championship S1', 'game' => 'LoL', 'teams' => 12, 'status' => 'active', 'prize' => '10,000 DT'],
-                ['name' => 'Valorant Pro Cup', 'game' => 'Valorant', 'teams' => 8, 'status' => 'active', 'prize' => '5,000 DT'],
-                ['name' => 'CS:GO Masters', 'game' => 'CS2', 'teams' => 4, 'status' => 'pending', 'prize' => '15,000 DT'],
-            ],
+            'recentUsers' => $this->userRepository->findBy([], ['id' => 'DESC'], 5),
+            'recentTournaments' => $tournois,
             'systemHealth' => [
                 'serverStatus' => 'online',
                 'cpuUsage' => 45,
@@ -57,15 +78,28 @@ class AdminDashboardController extends AbstractController
         ]);
     }
 
-    #[Route('/tournaments', name: 'admin_tournaments')]
-    public function tournaments(): Response
+    #[Route('/tournaments', name: 'admin_tournaments', methods: ['GET', 'POST'])]
+    public function tournaments(Request $request): Response
     {
+        $tournoi = new Tournoi();
+        $form = $this->createForm(TournoiType::class, $tournoi);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted()) {
+            if ($form->isValid()) {
+                $this->entityManager->persist($tournoi);
+                $this->entityManager->flush();
+
+                $this->addFlash('success', 'Le tournoi "' . $tournoi->getNom() . '" a été créé avec succès !');
+                return $this->redirectToRoute('admin_tournaments');
+            } else {
+                $this->addFlash('error', 'Le formulaire contient des erreurs. Veuillez les corriger.');
+            }
+        }
+
         return $this->render('admin/tournaments/index.html.twig', [
-            'tournaments' => [
-                ['id' => 1, 'name' => 'Carthage Championship S1', 'game' => 'LoL', 'teams' => 12, 'maxTeams' => 16, 'status' => 'active', 'prize' => '10,000 DT', 'date' => '2024-10-24'],
-                ['id' => 2, 'name' => 'Valorant Pro Cup', 'game' => 'Valorant', 'teams' => 8, 'maxTeams' => 8, 'status' => 'active', 'prize' => '5,000 DT', 'date' => '2024-10-21'],
-                ['id' => 3, 'name' => 'CS:GO Masters', 'game' => 'CS2', 'teams' => 4, 'maxTeams' => 16, 'status' => 'pending', 'prize' => '15,000 DT', 'date' => '2024-11-05'],
-            ],
+            'tournaments' => $this->tournoiRepository->findAll(),
+            'form' => $form->createView(),
         ]);
     }
 
@@ -106,26 +140,191 @@ class AdminDashboardController extends AbstractController
     #[Route('/shop', name: 'admin_shop')]
     public function shop(): Response
     {
+        $skins = $this->skinRepository->findAll();
+        $merch = $this->merchRepository->findAll();
+
+        $items = [];
+
+        foreach ($skins as $skin) {
+            $items[] = [
+                'id' => $skin->getId(),
+                'name' => $skin->getName(),
+                'game' => $skin->getGame() ? $skin->getGame()->getName() : 'N/A',
+                'price' => $skin->getPrice() . ' DT', // Assuming currency
+                'sales' => 0, // Placeholder
+                'revenue' => '0 DT', // Placeholder
+                'stock' => 'Illimité',
+                'type' => 'Skin',
+                'imageUrl' => $skin->getImageUrl(),
+            ];
+        }
+
+        foreach ($merch as $m) {
+            $items[] = [
+                'id' => $m->getId(),
+                'name' => $m->getName(),
+                'game' => $m->getGame() ? $m->getGame()->getName() : 'N/A',
+                'price' => $m->getPrice() . ' DT',
+                'sales' => 0, // Placeholder
+                'revenue' => '0 DT', // Placeholder
+                'stock' => $m->getStock(),
+                'type' => 'Merch',
+                'imageUrl' => $m->getImageUrl(),
+            ];
+        }
+
         return $this->render('admin/shop/index.html.twig', [
-            'items' => [
-                ['id' => 1, 'name' => 'Elderflame Vandal', 'game' => 'VALORANT', 'price' => 2175, 'sales' => 145, 'revenue' => '315,375 DT', 'stock' => 'unlimited'],
-                ['id' => 2, 'name' => 'Project Ashe', 'game' => 'LoL', 'price' => 1820, 'sales' => 98, 'revenue' => '178,360 DT', 'stock' => 'unlimited'],
-                ['id' => 3, 'name' => 'AK-47 Asiimov', 'game' => 'CS2', 'price' => 1200, 'sales' => 203, 'revenue' => '243,600 DT', 'stock' => 'unlimited'],
-            ],
+            'items' => $items,
         ]);
     }
 
-    #[Route('/games', name: 'admin_games')]
-    public function games(): Response
+    #[Route('/shop/skin/add', name: 'admin_shop_skin_add', methods: ['GET', 'POST'])]
+    public function addSkin(Request $request): Response
     {
+        $skin = new Skin();
+        $form = $this->createForm(SkinType::class, $skin);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $this->entityManager->persist($skin);
+            $this->entityManager->flush();
+
+            $this->addFlash('success', 'Le skin "' . $skin->getName() . '" a été ajouté avec succès !');
+            return $this->redirectToRoute('admin_shop');
+        }
+
+        return $this->render('admin/shop/skin_form.html.twig', [
+            'form' => $form->createView(),
+            'title' => 'Ajouter un Skin'
+        ]);
+    }
+
+    #[Route('/shop/skin/{id}/edit', name: 'admin_shop_skin_edit', methods: ['GET', 'POST'])]
+    public function editSkin(Request $request, Skin $skin): Response
+    {
+        $form = $this->createForm(SkinType::class, $skin);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $this->entityManager->flush();
+
+            $this->addFlash('success', 'Le skin "' . $skin->getName() . '" a été mis à jour avec succès !');
+            return $this->redirectToRoute('admin_shop');
+        }
+
+        return $this->render('admin/shop/skin_form.html.twig', [
+            'form' => $form->createView(),
+            'title' => 'Modifier : ' . $skin->getName()
+        ]);
+    }
+
+    #[Route('/shop/skin/{id}/delete', name: 'admin_shop_skin_delete', methods: ['POST'])]
+    public function deleteSkin(Skin $skin): Response
+    {
+        $this->entityManager->remove($skin);
+        $this->entityManager->flush();
+
+        $this->addFlash('success', 'Le skin a été supprimé avec succès.');
+        return $this->redirectToRoute('admin_shop');
+    }
+
+    #[Route('/shop/merch/add', name: 'admin_shop_merch_add', methods: ['GET', 'POST'])]
+    public function addMerch(Request $request): Response
+    {
+        $merch = new Merch();
+        $form = $this->createForm(MerchType::class, $merch);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $this->entityManager->persist($merch);
+            $this->entityManager->flush();
+
+            $this->addFlash('success', 'L\'article "' . $merch->getName() . '" a été ajouté avec succès !');
+            return $this->redirectToRoute('admin_shop');
+        }
+
+        return $this->render('admin/shop/merch_form.html.twig', [
+            'form' => $form->createView(),
+            'title' => 'Ajouter un Article (Merch)'
+        ]);
+    }
+
+    #[Route('/shop/merch/{id}/edit', name: 'admin_shop_merch_edit', methods: ['GET', 'POST'])]
+    public function editMerch(Request $request, Merch $merch): Response
+    {
+        $form = $this->createForm(MerchType::class, $merch);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $this->entityManager->flush();
+
+            $this->addFlash('success', 'L\'article "' . $merch->getName() . '" a été mis à jour avec succès !');
+            return $this->redirectToRoute('admin_shop');
+        }
+
+        return $this->render('admin/shop/merch_form.html.twig', [
+            'form' => $form->createView(),
+            'title' => 'Modifier : ' . $merch->getName()
+        ]);
+    }
+
+    #[Route('/shop/merch/{id}/delete', name: 'admin_shop_merch_delete', methods: ['POST'])]
+    public function deleteMerch(Merch $merch): Response
+    {
+        $this->entityManager->remove($merch);
+        $this->entityManager->flush();
+
+        $this->addFlash('success', 'L\'article a été supprimé avec succès.');
+        return $this->redirectToRoute('admin_shop');
+    }
+
+    #[Route('/games', name: 'admin_games', methods: ['GET', 'POST'])]
+    public function games(Request $request): Response
+    {
+        $game = new Game();
+        $form = $this->createForm(GameType::class, $game);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $this->entityManager->persist($game);
+            $this->entityManager->flush();
+
+            $this->addFlash('success', 'Le jeu "' . $game->getName() . '" a été ajouté avec succès !');
+            return $this->redirectToRoute('admin_games');
+        }
+
         return $this->render('admin/games/index.html.twig', [
-            'games' => [
-                ['id' => 1, 'name' => 'Valorant', 'publisher' => 'Riot Games', 'category' => 'FPS', 'tournaments' => 15, 'players' => 450, 'status' => 'active', 'icon' => '🎯'],
-                ['id' => 2, 'name' => 'League of Legends', 'publisher' => 'Riot Games', 'category' => 'MOBA', 'tournaments' => 12, 'players' => 380, 'status' => 'active', 'icon' => '⚔️'],
-                ['id' => 3, 'name' => 'CS:GO 2', 'publisher' => 'Valve', 'category' => 'FPS', 'tournaments' => 8, 'players' => 290, 'status' => 'active', 'icon' => '🔫'],
-                ['id' => 4, 'name' => 'Rocket League', 'publisher' => 'Psyonix', 'category' => 'Sports', 'tournaments' => 5, 'players' => 120, 'status' => 'active', 'icon' => '🚗'],
-                ['id' => 5, 'name' => 'Apex Legends', 'publisher' => 'EA', 'category' => 'Battle Royale', 'tournaments' => 3, 'players' => 85, 'status' => 'inactive', 'icon' => '🎮'],
-            ],
+            'games' => $this->gameRepository->findAll(),
+            'form' => $form->createView(),
+        ]);
+    }
+
+    #[Route('/games/{id}/delete', name: 'admin_games_delete', methods: ['POST'])]
+    public function deleteGame(Game $game): Response
+    {
+        $this->entityManager->remove($game);
+        $this->entityManager->flush();
+
+        $this->addFlash('success', 'Le jeu a été supprimé avec succès.');
+        return $this->redirectToRoute('admin_games');
+    }
+
+    #[Route('/games/{id}/edit', name: 'admin_games_edit', methods: ['GET', 'POST'])]
+    public function editGame(Request $request, Game $game): Response
+    {
+        $form = $this->createForm(GameType::class, $game);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $this->entityManager->flush();
+
+            $this->addFlash('success', 'Le jeu "' . $game->getName() . '" a été mis à jour avec succès !');
+            return $this->redirectToRoute('admin_games');
+        }
+
+        return $this->render('admin/games/edit.html.twig', [
+            'game' => $game,
+            'form' => $form->createView(),
         ]);
     }
 }
