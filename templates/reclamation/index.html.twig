@@ -1,0 +1,86 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Mes Réclamations - Carthage Arena{% endblock %}
+
+{% block body %}
+<div class="min-h-screen bg-background-dark pt-24 pb-12">
+    <div class="container mx-auto px-4 max-w-5xl">
+        <div class="flex items-center justify-between mb-8">
+            <div>
+                <h1 class="text-3xl font-black text-white tracking-tight">Mes <span class="text-primary">Réclamations</span></h1>
+                <p class="text-gray-400">Suivez l'état de vos demandes et échangez avec le support.</p>
+            </div>
+            <a href="{{ path('app_reclamation_new') }}" class="px-6 py-3 rounded-xl bg-primary text-white font-bold hover:bg-primary/90 hover:scale-105 transition-all shadow-lg shadow-primary/20 flex items-center gap-2">
+                <span class="material-symbols-outlined">add</span>
+                Nouvelle demande
+            </a>
+        </div>
+
+        {% if reclamations is empty %}
+            <div class="bg-surface-dark border border-white/5 rounded-3xl p-12 text-center">
+                <div class="w-16 h-16 rounded-full bg-white/5 flex items-center justify-center mx-auto mb-4">
+                    <span class="material-symbols-outlined text-3xl text-gray-500">inbox</span>
+                </div>
+                <h3 class="text-xl font-bold text-white mb-2">Aucune réclamation</h3>
+                <p class="text-gray-400 max-w-md mx-auto mb-6">Vous n'avez pas encore soumis de réclamation. Si vous rencontrez un problème, n'hésitez pas à nous contacter.</p>
+                <a href="{{ path('app_reclamation_new') }}" class="text-primary hover:text-white font-bold transition-colors">Créer une demande</a>
+            </div>
+        {% else %}
+            <div class="grid gap-4">
+                {% for reclamation in reclamations %}
+                    <a href="{{ path('app_reclamation_show', {'id': reclamation.id}) }}" class="bg-surface-dark border border-white/5 rounded-2xl p-6 hover:border-primary/30 transition-all group relative overflow-hidden">
+                        <div class="absolute inset-0 bg-gradient-to-r from-transparent via-transparent to-white/5 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000"></div>
+                        
+                        <div class="flex items-start justify-between relative z-10">
+                            <div class="flex items-start gap-4">
+                                <div class="w-12 h-12 rounded-xl bg-white/5 flex items-center justify-center shrink-0 border border-white/5 group-hover:border-primary/20 transition-colors">
+                                    {% if reclamation.category.value == 'technical' %}
+                                        <span class="material-symbols-outlined text-white">dns</span>
+                                    {% elseif reclamation.category.value == 'tournament' %}
+                                        <span class="material-symbols-outlined text-white">trophy</span>
+                                    {% elseif reclamation.category.value == 'payment' %}
+                                        <span class="material-symbols-outlined text-white">payments</span>
+                                    {% elseif reclamation.category.value == 'account' %}
+                                        <span class="material-symbols-outlined text-white">person</span>
+                                    {% else %}
+                                        <span class="material-symbols-outlined text-white">help</span>
+                                    {% endif %}
+                                </div>
+                                <div>
+                                    <div class="flex items-center gap-3 mb-1">
+                                        <h3 class="text-lg font-bold text-white group-hover:text-primary transition-colors">{{ reclamation.subject }}</h3>
+                                        <span class="text-xs px-2 py-0.5 rounded {{ reclamation.status.color }}">
+                                            {{ reclamation.status.label }}
+                                        </span>
+                                        <span class="text-xs px-2 py-0.5 rounded {{ reclamation.priority.color }}">
+                                            {{ reclamation.priority.label }}
+                                        </span>
+                                    </div>
+                                    <p class="text-gray-400 text-sm line-clamp-1 mb-2">{{ reclamation.message }}</p>
+                                    <div class="flex items-center gap-4 text-xs text-gray-500">
+                                        <span class="flex items-center gap-1">
+                                            <span class="material-symbols-outlined text-[14px]">calendar_today</span>
+                                            {{ reclamation.createdAt|date('d/m/Y H:i') }}
+                                        </span>
+                                        <span class="flex items-center gap-1">
+                                            <span class="material-symbols-outlined text-[14px]">label</span>
+                                            {{ reclamation.category.label }}
+                                        </span>
+                                        {% if reclamation.responses|length > 0 %}
+                                            <span class="flex items-center gap-1 text-primary">
+                                                <span class="material-symbols-outlined text-[14px]">chat</span>
+                                                {{ reclamation.responses|length }} réponse(s)
+                                            </span>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                            <span class="material-symbols-outlined text-gray-600 group-hover:text-primary transition-colors">chevron_right</span>
+                        </div>
+                    </a>
+                {% endfor %}
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

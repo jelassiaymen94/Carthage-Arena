@@ -338,7 +338,7 @@
         background-color: #333;
       }
 
-      {% block extra_styles %}{% endblock %}
+      {% block stylesheets %}{% endblock %}
     </style>
   </head>
   <body class="{% block body_class %}bg-background-dark text-white font-display overflow-hidden{% endblock %}">
@@ -365,7 +365,44 @@
       </div>
     </div>
 
+    <div id="flash-messages" class="fixed top-24 right-8 z-[100] flex flex-col gap-4">
+        {% for label, messages in app.flashes %}
+            {% for message in messages %}
+                <div class="flex items-center gap-3 px-6 py-4 rounded-xl border backdrop-blur-md shadow-2xl animate-slide-in
+                    {% if label == 'success' %}bg-green-500/10 border-green-500/20 text-green-400
+                    {% elseif label == 'error' %}bg-red-500/10 border-red-500/20 text-red-400
+                    {% elseif label == 'warning' %}bg-yellow-500/10 border-yellow-500/20 text-yellow-400
+                    {% else %}bg-blue-500/10 border-blue-500/20 text-blue-400{% endif %}">
+                    <span class="material-symbols-outlined">
+                        {% if label == 'success' %}check_circle
+                        {% elseif label == 'error' %}error
+                        {% elseif label == 'warning' %}warning
+                        {% else %}info{% endif %}
+                    </span>
+                    <p class="text-sm font-semibold">{{ message }}</p>
+                    <button onclick="this.parentElement.remove()" class="ml-4 text-white/40 hover:text-white transition-colors">
+                        <span class="material-symbols-outlined text-[18px]">close</span>
+                    </button>
+                </div>
+            {% endfor %}
+        {% endfor %}
+    </div>
+
     {% block body %}{% endblock %}
+
+    <script>
+        // Auto dismiss flash messages
+        setTimeout(() => {
+            const flashes = document.getElementById('flash-messages');
+            if (flashes) {
+                Array.from(flashes.children).forEach(flash => {
+                    flash.style.opacity = '0';
+                    flash.style.transform = 'translateX(100%)';
+                    setTimeout(() => flash.remove(), 500);
+                });
+            }
+        }, 5000);
+    </script>
 
     <script>
       // Loading screen animation with percentage counter
@@ -399,6 +436,6 @@
         }, interval);
       });
     </script>
-    {% block scripts %}{% endblock %}
+    {% block javascripts %}{% endblock %}
   </body>
 </html>

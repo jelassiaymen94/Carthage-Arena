@@ -1,0 +1,18 @@
+{% extends 'base_admin.html.twig' %}
+
+{% block title %}Create Tournoi{% endblock %}
+
+{% block admin_content %}
+    <div class="max-w-2xl mx-auto">
+        <div class="flex justify-between items-center mb-6">
+            <h1 class="text-3xl font-bold text-gray-100">Create New Tournoi</h1>
+            <a href="{{ path('app_tournoi_index') }}" class="text-gray-400 hover:text-white transition-colors">
+                Back to list
+            </a>
+        </div>
+
+        <div class="bg-surface-dark rounded-xl shadow-lg border border-gray-800 p-6">
+            {{ include('tournoi/_form.html.twig') }}
+        </div>
+    </div>
+{% endblock %}

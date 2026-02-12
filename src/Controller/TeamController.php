@@ -51,7 +51,7 @@ class TeamController extends AbstractController
             $membersData[] = [
                 'id' => $mem->getId(), // Needed for kick action
                 'name' => $memberUser->getUsername(),
-                'role' => match($mem->getRole()) {
+                'role' => match ($mem->getRole()) {
                     TeamRole::CAPTAIN => 'Leader',
                     TeamRole::CO_CAPTAIN => 'Co-Leader',
                     default => 'Membre'
@@ -147,6 +147,34 @@ class TeamController extends AbstractController
         }
 
         return $this->render('team/create.html.twig');
+    }
+
+    #[Route('/equipe/modifier', name: 'app_team_edit', methods: ['GET', 'POST'])]
+    public function edit(Request $request, EntityManagerInterface $entityManager): Response
+    {
+        /** @var User $user */
+        $user = $this->getUser();
+        $membership = $user->getTeamMemberships()->first();
+
+        if (!$membership || $membership->getRole() !== TeamRole::CAPTAIN) {
+            $this->addFlash('error', 'Action non autorisée.');
+            return $this->redirectToRoute('app_team');
+        }
+
+        $team = $membership->getTeam();
+        $form = $this->createForm(\App\Form\TeamType::class, $team);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $entityManager->flush();
+            $this->addFlash('success', 'Équipe modifiée avec succès !');
+            return $this->redirectToRoute('app_team');
+        }
+
+        return $this->render('team/edit.html.twig', [
+            'form' => $form->createView(),
+            'team' => $team,
+        ]);
     }
 
     #[Route('/equipe/rejoindre', name: 'app_team_join', methods: ['GET', 'POST'])]
@@ -304,33 +332,33 @@ class TeamController extends AbstractController
     #[Route('/equipe/expulser/{id}', name: 'app_team_kick', methods: ['POST'])]
     public function kick(string $id, Request $request, EntityManagerInterface $entityManager): Response
     {
-         /** @var User $user */
-         $user = $this->getUser();
-         $captainMembership = $user->getTeamMemberships()->first();
+        /** @var User $user */
+        $user = $this->getUser();
+        $captainMembership = $user->getTeamMemberships()->first();
 
-         if (!$captainMembership || $captainMembership->getRole() !== TeamRole::CAPTAIN) {
-             return $this->redirectToRoute('app_team');
-         }
+        if (!$captainMembership || $captainMembership->getRole() !== TeamRole::CAPTAIN) {
+            return $this->redirectToRoute('app_team');
+        }
 
-         $submittedToken = $request->request->get('_csrf_token');
-         if (!$this->isCsrfTokenValid('kick_member', $submittedToken)) {
-             return $this->redirectToRoute('app_team');
-         }
+        $submittedToken = $request->request->get('_csrf_token');
+        if (!$this->isCsrfTokenValid('kick_member', $submittedToken)) {
+            return $this->redirectToRoute('app_team');
+        }
 
-         $targetMembership = $entityManager->getRepository(TeamMembership::class)->find($id);
-         if (!$targetMembership || $targetMembership->getTeam() !== $captainMembership->getTeam()) {
-             return $this->redirectToRoute('app_team');
-         }
+        $targetMembership = $entityManager->getRepository(TeamMembership::class)->find($id);
+        if (!$targetMembership || $targetMembership->getTeam() !== $captainMembership->getTeam()) {
+            return $this->redirectToRoute('app_team');
+        }
 
-         if ($targetMembership === $captainMembership) {
-             $this->addFlash('error', 'Vous ne pouvez pas vous expulser vous-même.');
-             return $this->redirectToRoute('app_team');
-         }
+        if ($targetMembership === $captainMembership) {
+            $this->addFlash('error', 'Vous ne pouvez pas vous expulser vous-même.');
+            return $this->redirectToRoute('app_team');
+        }
 
-         $entityManager->remove($targetMembership);
-         $entityManager->flush();
+        $entityManager->remove($targetMembership);
+        $entityManager->flush();
 
-         $this->addFlash('success', 'Membre expulsé.');
-         return $this->redirectToRoute('app_team');
+        $this->addFlash('success', 'Membre expulsé.');
+        return $this->redirectToRoute('app_team');
     }
 }

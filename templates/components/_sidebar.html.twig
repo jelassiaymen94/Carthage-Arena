@@ -58,6 +58,13 @@
         <span class="text-sm font-medium tracking-wide">Profil</span>
       </a>
       <a
+        class="group flex items-center gap-4 rounded-full px-4 py-3 transition-all hover:bg-surface-hover hover:text-white {{ app.request.get('_route') starts with 'app_reclamation' ? 'bg-primary/10 text-primary' : 'text-gray-400' }}"
+        href="{{ path('app_reclamation_index') }}"
+      >
+        <span class="material-symbols-outlined text-[24px]" {{ app.request.get('_route') starts with 'app_reclamation' ? 'data-weight="fill"' : '' }}>support_agent</span>
+        <span class="text-sm font-medium tracking-wide">Réclamations</span>
+      </a>
+      <a
         class="group flex items-center gap-4 rounded-full px-4 py-3 transition-all hover:bg-surface-hover hover:text-white mt-4 {{ app.request.get('_route') starts with 'app_settings' ? 'bg-primary/10 text-primary' : 'text-gray-400' }}"
         href="{{ path('app_settings') }}"
       >

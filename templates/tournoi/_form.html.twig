@@ -1,0 +1,78 @@
+{{ form_start(form, {'attr': {'novalidate': 'novalidate', 'class': 'space-y-6'}}) }}
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div class="md:col-span-2">
+            {{ form_label(form.nom, 'Nom du Tournoi', {'label_attr': {'class': 'block text-[10px] font-bold text-white/40 uppercase tracking-widest mb-2 ml-1'}}) }}
+            {{ form_widget(form.nom, {'attr': {'class': 'w-full bg-white/5 border border-white/10 rounded-2xl px-5 py-3.5 text-white placeholder-white/20 focus:border-primary/50 focus:ring-1 focus:ring-primary/20 outline-none transition-all'}}) }}
+            {{ form_errors(form.nom) }}
+        </div>
+
+        <div>
+            {{ form_label(form.game, 'Jeu Associé', {'label_attr': {'class': 'block text-[10px] font-bold text-white/40 uppercase tracking-widest mb-2 ml-1'}}) }}
+            {{ form_widget(form.game, {'attr': {'class': 'w-full bg-white/5 border border-white/10 rounded-2xl px-5 py-3.5 text-white focus:border-primary/50 outline-none [&>option]:bg-[#1a1a1a]'}}) }}
+            {{ form_errors(form.game) }}
+        </div>
+
+        <div>
+            {{ form_label(form.type, 'Type de Compétition', {'label_attr': {'class': 'block text-[10px] font-bold text-white/40 uppercase tracking-widest mb-2 ml-1'}}) }}
+            {{ form_widget(form.type, {'attr': {'class': 'w-full bg-white/5 border border-white/10 rounded-2xl px-5 py-3.5 text-white focus:border-primary/50 outline-none [&>option]:bg-[#1a1a1a]'}}) }}
+            {{ form_errors(form.type) }}
+        </div>
+
+        <div>
+            {{ form_label(form.dateDebut, 'Date de Début', {'label_attr': {'class': 'block text-[10px] font-bold text-white/40 uppercase tracking-widest mb-2 ml-1'}}) }}
+            {{ form_widget(form.dateDebut, {'attr': {'class': 'w-full bg-white/5 border border-white/10 rounded-2xl px-5 py-3.5 text-white focus:border-primary/50 outline-none'}}) }}
+            {{ form_errors(form.dateDebut) }}
+        </div>
+
+        <div>
+            {{ form_label(form.dateFin, 'Date de Fin', {'label_attr': {'class': 'block text-[10px] font-bold text-white/40 uppercase tracking-widest mb-2 ml-1'}}) }}
+            {{ form_widget(form.dateFin, {'attr': {'class': 'w-full bg-white/5 border border-white/10 rounded-2xl px-5 py-3.5 text-white focus:border-primary/50 outline-none'}}) }}
+            {{ form_errors(form.dateFin) }}
+        </div>
+
+        <div>
+            {{ form_label(form.nbEquipesMax, 'Nombre Max Équipes', {'label_attr': {'class': 'block text-[10px] font-bold text-white/40 uppercase tracking-widest mb-2 ml-1'}}) }}
+            {{ form_widget(form.nbEquipesMax, {'attr': {'class': 'w-full bg-white/5 border border-white/10 rounded-2xl px-5 py-3.5 text-white focus:border-primary/50 outline-none'}}) }}
+            {{ form_errors(form.nbEquipesMax) }}
+        </div>
+
+        <div>
+            {{ form_label(form.prizePool, 'Prize Pool (DT)', {'label_attr': {'class': 'block text-[10px] font-bold text-white/40 uppercase tracking-widest mb-2 ml-1'}}) }}
+            {{ form_widget(form.prizePool, {'attr': {'class': 'w-full bg-white/5 border border-white/10 rounded-2xl px-5 py-3.5 text-white focus:border-primary/50 outline-none'}}) }}
+            {{ form_errors(form.prizePool) }}
+        </div>
+
+        <div>
+            {{ form_label(form.status, 'Statut du Tournoi', {'label_attr': {'class': 'block text-[10px] font-bold text-white/40 uppercase tracking-widest mb-2 ml-1'}}) }}
+            {{ form_widget(form.status, {'attr': {'class': 'w-full bg-white/5 border border-white/10 rounded-2xl px-5 py-3.5 text-white focus:border-primary/50 outline-none [&>option]:bg-[#1a1a1a]'}}) }}
+            {{ form_errors(form.status) }}
+        </div>
+
+        <div>
+            {{ form_label(form.referee, 'Arbitre Assigné', {'label_attr': {'class': 'block text-[10px] font-bold text-white/40 uppercase tracking-widest mb-2 ml-1'}}) }}
+            {{ form_widget(form.referee, {'attr': {'class': 'w-full bg-white/5 border border-white/10 rounded-2xl px-5 py-3.5 text-white focus:border-primary/50 outline-none [&>option]:bg-[#1a1a1a]'}}) }}
+            {{ form_errors(form.referee) }}
+        </div>
+
+        <div class="md:col-span-2">
+            {{ form_label(form.teams, 'Équipes Sélectionnées', {'label_attr': {'class': 'block text-[10px] font-bold text-white/40 uppercase tracking-widest mb-2 ml-1'}}) }}
+            {{ form_widget(form.teams, {'attr': {'class': 'w-full bg-white/5 border border-white/10 rounded-2xl px-5 py-3.5 text-white focus:border-primary/50 outline-none h-40 [&>option]:bg-[#1a1a1a]'}}) }}
+            {{ form_errors(form.teams) }}
+        </div>
+
+        <div class="md:col-span-2">
+            {{ form_label(form.winner, 'Vainqueur du Tournoi', {'label_attr': {'class': 'block text-[10px] font-bold text-white/40 uppercase tracking-widest mb-2 ml-1'}}) }}
+            {{ form_widget(form.winner, {'attr': {'class': 'w-full bg-white/5 border border-white/10 rounded-2xl px-5 py-3.5 text-white focus:border-primary/50 outline-none [&>option]:bg-[#1a1a1a]'}}) }}
+            {{ form_errors(form.winner) }}
+        </div>
+    </div>
+
+    <div class="pt-6 border-t border-white/5 flex justify-end">
+        <button type="submit" class="group relative inline-flex items-center justify-center px-8 py-3.5 font-bold text-white transition-all duration-200 bg-primary rounded-2xl hover:bg-primary/90 focus:ring-2 focus:ring-offset-2 focus:ring-primary shadow-lg shadow-primary/20">
+            <span class="flex items-center gap-2">
+                <span class="material-symbols-outlined text-[20px] group-hover:rotate-12 transition-transform">save</span>
+                {{ button_label|default('Enregistrer les modifications') }}
+            </span>
+        </button>
+    </div>
+{{ form_end(form) }}
