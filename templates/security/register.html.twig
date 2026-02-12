@@ -130,7 +130,8 @@
               <span class="material-symbols-outlined text-[20px]">person_add</span>
               S'inscrire
             </button>
-          {{ form_end(registrationForm) }}
+          {{ form_row(registrationForm._token) }}
+          {{ form_end(registrationForm, {'render_rest': false}) }}
         </div>
 
         <!-- Footer -->
