@@ -13,6 +13,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Authentication\AuthenticationUtils;
+use App\Repository\LicenseRepository;
 
 class SecurityController extends AbstractController
 {
@@ -38,7 +39,8 @@ class SecurityController extends AbstractController
     public function register(
         Request $request,
         UserPasswordHasherInterface $userPasswordHasher,
-        EntityManagerInterface $entityManager
+        EntityManagerInterface $entityManager,
+        LicenseRepository $licenseRepository
     ): Response {
         if ($this->getUser()) {
             return $this->redirectToRoute('app_dashboard');
@@ -60,9 +62,20 @@ class SecurityController extends AbstractController
                 )
             );
 
-            // Assign role based on account type
+            // Assign role and license based on account type
             if ($accountType === 'referee') {
                 $user->setRoles(['ROLE_REFEREE']);
+                
+                // Get and assign the license
+                $licenseCode = $form->get('licenseId')->getData();
+                if ($licenseCode) {
+                    $license = $licenseRepository->findAvailableByCode($licenseCode);
+                    if ($license) {
+                        $license->assignToUser($user);
+                        $user->setLicense($license);
+                        $entityManager->persist($license);
+                    }
+                }
             }
 
             // Create empty profile
