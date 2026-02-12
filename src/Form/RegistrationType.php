@@ -51,9 +51,21 @@ class RegistrationType extends AbstractType
             ->add('licenseId', TextType::class, [
                 'label' => 'Numéro de licence',
                 'required' => false,
+                'mapped' => false, // We'll handle this manually
                 'attr' => [
                     'placeholder' => 'Ex: ARB-2026-001',
                     'class' => $inputClass,
+                ],
+                'constraints' => [
+                    new Assert\When([
+                        'expression' => 'this.getParent().get("accountType").getData() === "referee"',
+                        'constraints' => [
+                            new Assert\NotBlank([
+                                'message' => 'Le numéro de licence est obligatoire pour les arbitres.',
+                            ]),
+                            new \App\Validator\Constraints\ValidLicense(),
+                        ],
+                    ]),
                 ],
             ])
             ->add('plainPassword', RepeatedType::class, [
@@ -65,6 +77,13 @@ class RegistrationType extends AbstractType
                         'placeholder' => '••••••••',
                         'class' => $inputClass,
                     ],
+                    'constraints' => [
+                        new Assert\NotBlank(['message' => 'Le mot de passe est obligatoire.']),
+                        new Assert\Length([
+                            'min' => 6,
+                            'minMessage' => 'Le mot de passe doit contenir au moins {{ limit }} caractères.',
+                        ]),
+                    ],
                 ],
                 'second_options' => [
                     'label' => 'Confirmer le mot de passe',
@@ -74,13 +93,6 @@ class RegistrationType extends AbstractType
                     ],
                 ],
                 'invalid_message' => 'Les mots de passe ne correspondent pas.',
-                'constraints' => [
-                    new Assert\NotBlank(['message' => 'Le mot de passe est obligatoire.']),
-                    new Assert\Length([
-                        'min' => 6,
-                        'minMessage' => 'Le mot de passe doit contenir au moins {{ limit }} caractères.',
-                    ]),
-                ],
             ]);
     }
 

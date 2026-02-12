@@ -69,9 +69,8 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(type: 'integer')]
     private int $balance = 0;
 
-    #[ORM\Column(length: 100, nullable: true)]
-    #[Assert\Length(max: 100, maxMessage: 'Le numéro de licence ne peut pas dépasser {{ limit }} caractères.')]
-    private ?string $licenseId = null;
+    #[ORM\OneToOne(mappedBy: 'assignedTo', cascade: ['persist'])]
+    private ?License $license = null;
 
     #[ORM\OneToOne(mappedBy: 'user', cascade: ['persist', 'remove'])]
     private ?Profile $profile = null;
@@ -204,15 +203,28 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
-    public function getLicenseId(): ?string
+    public function getLicense(): ?License
     {
-        return $this->licenseId;
+        return $this->license;
     }
 
-    public function setLicenseId(?string $licenseId): static
+    public function setLicense(?License $license): static
     {
-        $this->licenseId = $licenseId;
+        // Set the owning side of the relation if necessary
+        if ($license !== null && $license->getAssignedTo() !== $this) {
+            $license->setAssignedTo($this);
+        }
+
+        $this->license = $license;
         return $this;
+    }
+
+    /**
+     * Helper method to get license code as string
+     */
+    public function getLicenseCode(): ?string
+    {
+        return $this->license?->getLicenseCode();
     }
 
     public function getProfile(): ?Profile
