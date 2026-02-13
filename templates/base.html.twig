@@ -68,6 +68,22 @@
         border: 1px solid rgba(255, 255, 255, 0.05);
       }
 
+      /* Fix dropdown select menus - clean dark background with white text */
+      select {
+        background: rgba(30, 30, 30, 0.9) !important;
+        color: white !important;
+      }
+
+      select option {
+        background: #1a1a1a !important;
+        color: white !important;
+      }
+      
+      select option:hover,
+      select option:checked {
+        background: rgba(230, 0, 19, 0.4) !important;
+      }
+
       /* Focus indicators for accessibility */
       a:focus-visible,
       button:focus-visible {

@@ -6,15 +6,14 @@
 <div class="min-h-screen bg-background-dark text-white p-8">
     <div class="max-w-7xl mx-auto">
         {# Header #}
-        <div class="flex items-center justify-between mb-8">
-            <div>
+        <div class="mb-8 flex items-center gap-4">
+            <a href="{{ path('app_dashboard') }}" class="p-3 rounded-lg bg-white/5 hover:bg-white/10 text-white hover:text-primary transition-all">
+                <span class="material-symbols-outlined text-[24px]">arrow_back</span>
+            </a>
+            <div class="flex-1">
                 <h1 class="text-3xl font-bold text-white mb-2">Gestion des Licences d'Arbitre</h1>
                 <p class="text-gray-400">Générez et gérez les licences d'arbitre</p>
             </div>
-            <a href="{{ path('app_dashboard') }}" class="text-primary hover:text-red-400 transition-colors flex items-center gap-2">
-                <span class="material-symbols-outlined">arrow_back</span>
-                Retour au dashboard
-            </a>
         </div>
 
         {# Flash messages #}
