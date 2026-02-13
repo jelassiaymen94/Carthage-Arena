@@ -12,13 +12,17 @@
         <main class="flex-1 ml-64 overflow-y-auto h-screen">
             {# Sticky Header #}
             <header class="sticky top-0 z-30 bg-background-dark/80 backdrop-blur-xl border-b border-white/5">
-                <div class="flex items-center justify-between px-8 py-4">
-                    <div>
-                        <h1 class="text-2xl font-bold text-white">Rapports & Analyses</h1>
-                        <p class="text-sm text-white/40 mt-0.5">Statistiques de revenus et performances</p>
-                    </div>
-                    <div class="flex items-center gap-3">
-                        <select class="bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white/70 outline-none focus:border-primary/50 w-44">
+                <div class="flex items-center gap-4 px-8 py-4">
+                    <a href="{{ path('app_dashboard') }}" class="p-3 rounded-lg bg-white/5 hover:bg-white/10 text-white hover:text-primary transition-all">
+                        <span class="material-symbols-outlined text-[24px]">arrow_back</span>
+                    </a>
+                    <div class="flex-1 flex items-center justify-between">
+                        <div>
+                            <h1 class="text-2xl font-bold text-white">Rapports & Analyses</h1>
+                            <p class="text-sm text-white/40 mt-0.5">Statistiques de revenus et performances</p>
+                        </div>
+                        <div class="flex items-center gap-3">
+                            <select class="bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white/70 outline-none focus:border-primary/50 w-44">
                             <option>Ce mois</option>
                             <option>Cette semaine</option>
                             <option>Aujourd'hui</option>
