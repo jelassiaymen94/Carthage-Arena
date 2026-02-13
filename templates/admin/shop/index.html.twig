@@ -12,25 +12,30 @@
         <main class="flex-1 ml-64 overflow-y-auto h-screen">
             {# Sticky Header #}
             <header class="sticky top-0 z-30 bg-background-dark/80 backdrop-blur-xl border-b border-white/5">
-                <div class="flex items-center justify-between px-8 py-4">
-                    <div>
-                        <h1 class="text-2xl font-bold text-white">Gestion de la Boutique</h1>
-                        <p class="text-sm text-white/40 mt-0.5">Gérer les articles et les ventes de la boutique</p>
-                    </div>
-                    <div class="relative group">
-                        <button class="inline-flex items-center gap-2 px-5 py-2.5 bg-primary hover:bg-primary/90 text-white text-sm font-semibold rounded-xl transition-all">
-                            <span class="material-symbols-outlined text-[18px]">add</span>
-                            + Ajouter
-                        </button>
-                        <div class="absolute right-0 top-full mt-2 w-48 bg-surface-dark border border-white/10 rounded-xl shadow-xl overflow-hidden hidden group-hover:block z-50">
-                            <a href="{{ path('admin_shop_skin_add') }}" class="block px-4 py-3 text-sm text-white/70 hover:text-white hover:bg-white/5 transition-colors flex items-center gap-2">
-                                <span class="material-symbols-outlined text-[18px] text-purple-400">palette</span>
-                                Nouveau Skin
-                            </a>
-                            <a href="{{ path('admin_shop_merch_add') }}" class="block px-4 py-3 text-sm text-white/70 hover:text-white hover:bg-white/5 transition-colors flex items-center gap-2">
-                                <span class="material-symbols-outlined text-[18px] text-secondary">checkroom</span>
-                                Nouvel Article
-                            </a>
+                <div class="flex items-center gap-4 px-8 py-4">
+                    <a href="{{ path('app_dashboard') }}" class="p-3 rounded-lg bg-white/5 hover:bg-white/10 text-white hover:text-primary transition-all">
+                        <span class="material-symbols-outlined text-[24px]">arrow_back</span>
+                    </a>
+                    <div class="flex-1 flex items-center justify-between">
+                        <div>
+                            <h1 class="text-2xl font-bold text-white">Gestion de la Boutique</h1>
+                            <p class="text-sm text-white/40 mt-0.5">Gérer les articles et les ventes de la boutique</p>
+                        </div>
+                        <div class="relative group">
+                            <button class="inline-flex items-center gap-2 px-5 py-2.5 bg-primary hover:bg-primary/90 text-white text-sm font-semibold rounded-xl transition-all">
+                                <span class="material-symbols-outlined text-[18px]">add</span>
+                                + Ajouter
+                            </button>
+                            <div class="absolute right-0 top-full mt-2 w-48 bg-surface-dark/60 backdrop-blur-xl border border-white/10 rounded-xl shadow-xl overflow-hidden hidden group-hover:block z-50">
+                                <a href="{{ path('admin_shop_skin_add') }}" class="block px-4 py-3 text-sm text-white hover:text-white hover:bg-white/10 transition-colors flex items-center gap-2">
+                                    <span class="material-symbols-outlined text-[18px] text-purple-400">palette</span>
+                                    Nouveau Skin
+                                </a>
+                                <a href="{{ path('admin_shop_merch_add') }}" class="block px-4 py-3 text-sm text-white hover:text-white hover:bg-white/10 transition-colors flex items-center gap-2">
+                                    <span class="material-symbols-outlined text-[18px] text-secondary">checkroom</span>
+                                    Nouvel Article
+                                </a>
+                            </div>
                         </div>
                     </div>
                 </div>

@@ -8,21 +8,25 @@ use App\Entity\Merch;
 use App\Entity\Skin;
 use App\Entity\Tournoi;
 use App\Entity\User;
+use App\Form\AdminNewUserType;
 use App\Form\AdminUserType;
 use App\Form\GameType;
 use App\Form\MerchType;
 use App\Form\SkinType;
 use App\Form\TournoiType;
 use App\Repository\GameRepository;
+use App\Repository\LicenseRepository;
 use App\Repository\MerchRepository;
 use App\Repository\SkinRepository;
 use App\Repository\TournoiRepository;
 use App\Repository\UserRepository;
 use App\Repository\TeamRepository;
+use App\Entity\Profile;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Routing\Attribute\Route;
 
 #[Route('/admin')]
@@ -35,6 +39,7 @@ class AdminDashboardController extends AbstractController
         private readonly GameRepository $gameRepository,
         private readonly SkinRepository $skinRepository,
         private readonly MerchRepository $merchRepository,
+        private readonly LicenseRepository $licenseRepository,
         private readonly EntityManagerInterface $entityManager,
     ) {
     }
@@ -77,6 +82,52 @@ class AdminDashboardController extends AbstractController
 
         return $this->render('admin/users/index.html.twig', [
             'users' => $this->userRepository->searchAndFilter($search, $status, $role),
+        ]);
+    }
+
+    #[Route('/users/add', name: 'admin_users_add', methods: ['GET', 'POST'])]
+    public function addUser(Request $request, UserPasswordHasherInterface $userPasswordHasher): Response
+    {
+        $user = new User();
+        $form = $this->createForm(AdminNewUserType::class, $user);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            // Set default password: carthage1122
+            $user->setPassword(
+                $userPasswordHasher->hashPassword($user, 'carthage1122')
+            );
+
+            // createdAt is automatically set in User constructor
+
+            // Handle license assignment if user is a referee
+            if (in_array('ROLE_REFEREE', $user->getRoles())) {
+                $licenseCode = $form->get('licenseId')->getData();
+                if ($licenseCode) {
+                    $license = $this->licenseRepository->findAvailableByCode($licenseCode);
+                    if ($license) {
+                        $license->assignToUser($user);
+                        $user->setLicense($license);
+                        $this->entityManager->persist($license);
+                    }
+                }
+            }
+
+            // Create empty profile for the user
+            $profile = new Profile();
+            $profile->setUser($user);
+            $user->setProfile($profile);
+
+            $this->entityManager->persist($user);
+            $this->entityManager->persist($profile);
+            $this->entityManager->flush();
+
+            $this->addFlash('success', 'L\'utilisateur "' . $user->getUsername() . '" a été créé avec succès.');
+            return $this->redirectToRoute('admin_users');
+        }
+
+        return $this->render('admin/users/add.html.twig', [
+            'form' => $form->createView(),
         ]);
     }
 
@@ -134,6 +185,8 @@ class AdminDashboardController extends AbstractController
         if ($license) {
             $user->setLicense(null);
             $license->setAssignedTo(null);
+            $license->setIsUsed(false);
+            $license->setUsedAt(null);
             $this->entityManager->flush();
             $this->addFlash('success', 'La licence a été révoquée pour cet utilisateur.');
         } else {
@@ -141,6 +194,64 @@ class AdminDashboardController extends AbstractController
         }
 
         return $this->redirectToRoute('admin_users');
+    }
+
+    #[Route('/users/{id}/assign-license', name: 'admin_users_assign_license', methods: ['GET', 'POST'])]
+    public function assignLicense(Request $request, User $user): Response
+    {
+        // Check if user is a referee
+        if (!in_array('ROLE_REFEREE', $user->getRoles())) {
+            $this->addFlash('error', 'Seuls les arbitres peuvent avoir une licence.');
+            return $this->redirectToRoute('admin_users');
+        }
+
+        // Check if user already has a license
+        if ($user->getLicense()) {
+            $this->addFlash('warning', 'Cet utilisateur a déjà une licence.');
+            return $this->redirectToRoute('admin_users');
+        }
+
+        if ($request->isMethod('POST')) {
+            if (!$this->isCsrfTokenValid('assign' . $user->getId(), $request->request->get('_token'))) {
+                $this->addFlash('error', 'Action non autorisée (CSRF).');
+                return $this->redirectToRoute('admin_users');
+            }
+
+            $licenseCode = $request->request->get('license_code');
+            
+            if (empty($licenseCode)) {
+                $this->addFlash('error', 'Le code de licence est obligatoire.');
+                return $this->render('admin/users/assign_license.html.twig', [
+                    'user' => $user,
+                ]);
+            }
+
+            $license = $this->licenseRepository->findAvailableByCode($licenseCode);
+            
+            if (!$license) {
+                // Check if it exists but is used
+                $existingLicense = $this->licenseRepository->findOneBy(['licenseCode' => $licenseCode]);
+                if ($existingLicense && $existingLicense->isUsed()) {
+                    $this->addFlash('error', 'Cette licence est déjà utilisée.');
+                } else {
+                    $this->addFlash('error', 'Cette licence n\'existe pas.');
+                }
+                return $this->render('admin/users/assign_license.html.twig', [
+                    'user' => $user,
+                ]);
+            }
+
+            $license->assignToUser($user);
+            $user->setLicense($license);
+            $this->entityManager->flush();
+
+            $this->addFlash('success', 'La licence a été attribuée à ' . $user->getUsername() . '.');
+            return $this->redirectToRoute('admin_users');
+        }
+
+        return $this->render('admin/users/assign_license.html.twig', [
+            'user' => $user,
+        ]);
     }
 
     #[Route('/tournaments', name: 'admin_tournaments', methods: ['GET', 'POST'])]
