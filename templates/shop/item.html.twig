@@ -156,26 +156,7 @@
             </div>
           </section>
         </div>
-
-        <!-- Mobile Bottom Nav -->
-        <div class="lg:hidden fixed bottom-0 w-full bg-[#161616] border-t border-white/10 px-6 py-3 flex justify-between items-center z-50" role="navigation" aria-label="Navigation mobile">
-          <a class="flex flex-col items-center gap-1 text-gray-500" href="{{ path('app_dashboard') }}">
-            <span class="material-symbols-outlined">home</span>
-            <span class="text-[10px]">Accueil</span>
-          </a>
-          <a class="flex flex-col items-center gap-1 text-gray-500" href="{{ path('app_tournaments') }}">
-            <span class="material-symbols-outlined">trophy</span>
-            <span class="text-[10px]">Tournois</span>
-          </a>
-          <a class="flex flex-col items-center gap-1 text-primary" href="{{ path('app_shop') }}">
-            <span class="material-symbols-outlined">shopping_bag</span>
-            <span class="text-[10px]">Boutique</span>
-          </a>
-          <a class="flex flex-col items-center gap-1 text-gray-500" href="{{ path('app_profile') }}">
-            <span class="material-symbols-outlined">person</span>
-            <span class="text-[10px]">Profil</span>
-          </a>
-        </div>
-      </main>
+        {% include 'components/_mobile_nav.html.twig' %}
+</main>
     </div>
 {% endblock %}

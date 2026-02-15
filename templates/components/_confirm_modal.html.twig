@@ -1,0 +1,92 @@
+{# Confirmation Modal — shared component
+   Usage:
+   {% include 'components/_confirm_modal.html.twig' with {
+       id: 'delete-team',
+       title: 'Supprimer l\'équipe',
+       message: 'Cette action est irréversible. Voulez-vous continuer ?',
+       confirmText: 'Supprimer',
+       cancelText: 'Annuler',
+       danger: true,
+       action: path('app_team_delete', {id: team.id}),
+       method: 'POST'
+   } %}
+
+   Trigger with: <button onclick="document.getElementById('modal-delete-team').classList.remove('hidden')">
+#}
+{% set modalId = 'modal-' ~ id %}
+{% set isDanger = danger|default(false) %}
+{% set confirmLabel = confirmText|default('Confirmer') %}
+{% set cancelLabel = cancelText|default('Annuler') %}
+{% set formMethod = method|default('POST') %}
+
+<div
+  id="{{ modalId }}"
+  class="hidden fixed inset-0 z-[100] flex items-center justify-center p-4"
+  role="dialog"
+  aria-modal="true"
+  aria-labelledby="{{ modalId }}-title"
+>
+  {# Backdrop #}
+  <div
+    class="absolute inset-0 bg-black/70 backdrop-blur-sm"
+    onclick="document.getElementById('{{ modalId }}').classList.add('hidden')"
+  ></div>
+
+  {# Modal Content #}
+  <div class="relative w-full max-w-md rounded-2xl border border-white/10 bg-[#1a1a1a] p-6 shadow-2xl">
+    {# Icon #}
+    <div class="mb-4 flex justify-center">
+      <div class="flex h-14 w-14 items-center justify-center rounded-full {{ isDanger ? 'bg-red-500/10' : 'bg-primary/10' }}">
+        <span class="material-symbols-outlined text-[28px] {{ isDanger ? 'text-red-400' : 'text-primary' }}">
+          {{ isDanger ? 'warning' : 'help' }}
+        </span>
+      </div>
+    </div>
+
+    {# Title & Message #}
+    <h3 id="{{ modalId }}-title" class="text-center text-lg font-bold text-white mb-2">{{ title }}</h3>
+    <p class="text-center text-sm text-white/50 mb-6">{{ message }}</p>
+
+    {# Actions #}
+    {% if action is defined %}
+    <form action="{{ action }}" method="{{ formMethod }}">
+      {% if formMethod|upper != 'GET' %}
+        <input type="hidden" name="_token" value="{{ csrf_token(id) }}" />
+      {% endif %}
+      <div class="flex gap-3">
+        <button
+          type="button"
+          class="flex-1 rounded-xl border border-white/10 bg-white/5 px-4 py-2.5 text-sm font-semibold text-white/70 hover:bg-white/10 transition-all"
+          onclick="document.getElementById('{{ modalId }}').classList.add('hidden')"
+        >
+          {{ cancelLabel }}
+        </button>
+        <button
+          type="submit"
+          class="flex-1 rounded-xl px-4 py-2.5 text-sm font-bold text-white transition-all {{ isDanger ? 'bg-red-600 hover:bg-red-700' : 'bg-primary hover:brightness-110' }}"
+          data-loading-btn
+        >
+          {{ confirmLabel }}
+        </button>
+      </div>
+    </form>
+    {% else %}
+    <div class="flex gap-3">
+      <button
+        type="button"
+        class="flex-1 rounded-xl border border-white/10 bg-white/5 px-4 py-2.5 text-sm font-semibold text-white/70 hover:bg-white/10 transition-all"
+        onclick="document.getElementById('{{ modalId }}').classList.add('hidden')"
+      >
+        {{ cancelLabel }}
+      </button>
+      <button
+        type="button"
+        class="flex-1 rounded-xl px-4 py-2.5 text-sm font-bold text-white transition-all {{ isDanger ? 'bg-red-600 hover:bg-red-700' : 'bg-primary hover:brightness-110' }}"
+        id="{{ modalId }}-confirm"
+      >
+        {{ confirmLabel }}
+      </button>
+    </div>
+    {% endif %}
+  </div>
+</div>
