@@ -1,62 +1,72 @@
-{% extends 'base_admin.html.twig' %}
+{% extends 'base.html.twig' %}
 
-{% block title %}Gestion des Réclamations{% endblock %}
+{% block title %}Gestion des Réclamations - Admin - Carthage Arena{% endblock %}
 
 {% block body %}
-<div class="space-y-6">
-    {# Header & Stats #}
-    <div class="flex items-center gap-4">
-        <a href="{{ path('app_dashboard') }}" class="p-3 rounded-lg bg-white/5 hover:bg-white/10 text-white hover:text-primary transition-all">
-            <span class="material-symbols-outlined text-[24px]">arrow_back</span>
-        </a>
-        <div class="flex-1 flex items-center justify-between">
-            <div>
-                <h1 class="text-3xl font-black text-white">Gestion des <span class="text-primary">Réclamations</span></h1>
-                <p class="text-gray-400">Gérez les tickets de support et les signalements des utilisateurs</p>
-            </div>
-            <div class="flex gap-4">
-            <div class="px-4 py-2 bg-white/5 border border-white/10 rounded-xl">
-                <span class="block text-xs text-gray-400 uppercase font-bold">Total</span>
-                <span class="text-2xl font-black text-white">{{ stats.total }}</span>
-            </div>
-            <div class="px-4 py-2 bg-blue-500/10 border border-blue-500/20 rounded-xl">
-                <span class="block text-xs text-blue-400 uppercase font-bold">En Attente</span>
-                <span class="text-2xl font-black text-blue-400">{{ stats.pending }}</span>
-            </div>
-            <div class="px-4 py-2 bg-red-500/10 border border-red-500/20 rounded-xl">
-                <span class="block text-xs text-red-400 uppercase font-bold">Urgent</span>
-                <span class="text-2xl font-black text-red-400">{{ stats.urgent }}</span>
-            </div>
-        </div>
-    </div>
+<div class="flex min-h-screen bg-background-dark">
+    {# Sidebar #}
+    {% include 'admin/_sidebar.html.twig' %}
 
-    {# Filters #}
-    <div class="flex gap-2 pb-4 overflow-x-auto">
-        <a href="{{ path('app_admin_reclamation_index') }}" 
-           class="px-4 py-2 rounded-lg text-sm font-bold transition-colors whitespace-nowrap {{ current_status is null and current_priority is null ? 'bg-primary text-white' : 'bg-white/5 text-gray-400 hover:bg-white/10' }}">
-           Tout voir
-        </a>
-        <a href="{{ path('app_admin_reclamation_index', {'status': 'pending'}) }}" 
-           class="px-4 py-2 rounded-lg text-sm font-bold transition-colors whitespace-nowrap {{ current_status == 'pending' ? 'bg-gray-500 text-white' : 'bg-white/5 text-gray-400 hover:bg-white/10' }}">
-           En Attente
-        </a>
-        <a href="{{ path('app_admin_reclamation_index', {'status': 'in_progress'}) }}" 
-           class="px-4 py-2 rounded-lg text-sm font-bold transition-colors whitespace-nowrap {{ current_status == 'in_progress' ? 'bg-blue-500 text-white' : 'bg-white/5 text-gray-400 hover:bg-white/10' }}">
-           En Cours
-        </a>
-        <a href="{{ path('app_admin_reclamation_index', {'status': 'resolved'}) }}" 
-           class="px-4 py-2 rounded-lg text-sm font-bold transition-colors whitespace-nowrap {{ current_status == 'resolved' ? 'bg-green-500 text-white' : 'bg-white/5 text-gray-400 hover:bg-white/10' }}">
-           Résolu
-        </a>
-        <div class="w-px h-8 bg-white/10 mx-2"></div>
-        <a href="{{ path('app_admin_reclamation_index', {'priority': 'urgent'}) }}" 
-           class="px-4 py-2 rounded-lg text-sm font-bold transition-colors whitespace-nowrap {{ current_priority == 'urgent' ? 'bg-red-500 text-white' : 'bg-white/5 text-gray-400 hover:bg-white/10' }}">
-           Urgent
-        </a>
-    </div>
+    {# Main Content Area #}
+    <main class="flex-1 ml-72 overflow-y-auto h-screen">
+        {# Sticky Header #}
+        <header class="sticky top-0 z-30 bg-background-dark/80 backdrop-blur-xl border-b border-white/5">
+            <div class="flex items-center gap-4 px-8 py-4">
+                <a href="{{ path('app_dashboard') }}" class="p-3 rounded-lg bg-white/5 hover:bg-white/10 text-white hover:text-primary transition-all">
+                    <span class="material-symbols-outlined text-[24px]">arrow_back</span>
+                </a>
+                <div class="flex-1 flex items-center justify-between">
+                    <div>
+                        <h1 class="text-2xl font-bold text-white">Gestion des <span class="text-primary">Réclamations</span></h1>
+                        <p class="text-sm text-white/40 mt-0.5">Gérez les tickets de support et les signalements des utilisateurs</p>
+                    </div>
+                    <div class="flex gap-4">
+                        <div class="px-4 py-2 bg-white/5 border border-white/10 rounded-xl">
+                            <span class="block text-xs text-gray-400 uppercase font-bold">Total</span>
+                            <span class="text-2xl font-black text-white">{{ stats.total }}</span>
+                        </div>
+                        <div class="px-4 py-2 bg-blue-500/10 border border-blue-500/20 rounded-xl">
+                            <span class="block text-xs text-blue-400 uppercase font-bold">En Attente</span>
+                            <span class="text-2xl font-black text-blue-400">{{ stats.pending }}</span>
+                        </div>
+                        <div class="px-4 py-2 bg-red-500/10 border border-red-500/20 rounded-xl">
+                            <span class="block text-xs text-red-400 uppercase font-bold">Urgent</span>
+                            <span class="text-2xl font-black text-red-400">{{ stats.urgent }}</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </header>
 
-    {# Table #}
-    {% embed 'components/_table.html.twig' with {
+        {# Page Content #}
+        <div class="p-8 space-y-6">
+            {# Filters #}
+            <div class="flex gap-2 pb-4 overflow-x-auto">
+                <a href="{{ path('app_admin_reclamation_index') }}" 
+                   class="px-4 py-2 rounded-lg text-sm font-bold transition-colors whitespace-nowrap {{ current_status is null and current_priority is null ? 'bg-primary text-white' : 'bg-white/5 text-gray-400 hover:bg-white/10' }}">
+                   Tout voir
+                </a>
+                <a href="{{ path('app_admin_reclamation_index', {'status': 'pending'}) }}" 
+                   class="px-4 py-2 rounded-lg text-sm font-bold transition-colors whitespace-nowrap {{ current_status == 'pending' ? 'bg-gray-500 text-white' : 'bg-white/5 text-gray-400 hover:bg-white/10' }}">
+                   En Attente
+                </a>
+                <a href="{{ path('app_admin_reclamation_index', {'status': 'in_progress'}) }}" 
+                   class="px-4 py-2 rounded-lg text-sm font-bold transition-colors whitespace-nowrap {{ current_status == 'in_progress' ? 'bg-blue-500 text-white' : 'bg-white/5 text-gray-400 hover:bg-white/10' }}">
+                   En Cours
+                </a>
+                <a href="{{ path('app_admin_reclamation_index', {'status': 'resolved'}) }}" 
+                   class="px-4 py-2 rounded-lg text-sm font-bold transition-colors whitespace-nowrap {{ current_status == 'resolved' ? 'bg-green-500 text-white' : 'bg-white/5 text-gray-400 hover:bg-white/10' }}">
+                   Résolu
+                </a>
+                <div class="w-px h-8 bg-white/10 mx-2"></div>
+                <a href="{{ path('app_admin_reclamation_index', {'priority': 'urgent'}) }}" 
+                   class="px-4 py-2 rounded-lg text-sm font-bold transition-colors whitespace-nowrap {{ current_priority == 'urgent' ? 'bg-red-500 text-white' : 'bg-white/5 text-gray-400 hover:bg-white/10' }}">
+                   Urgent
+                </a>
+            </div>
+
+            {# Table #}
+            {% embed 'components/_table.html.twig' with {
         headers: ['Sujet / Auteur', 'Catégorie', 'Priorité', 'Statut', 'Date', 'Actions'],
         emptyMessage: 'Aucune réclamation trouvée.',
         emptyIcon: 'inbox'
@@ -116,5 +126,7 @@
             {% endfor %}
         {% endblock %}
     {% endembed %}
+        </div>
+    </main>
 </div>
 {% endblock %}
