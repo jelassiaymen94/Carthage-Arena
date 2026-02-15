@@ -33,96 +33,56 @@
             <div class="p-8 space-y-8">
                 {# Stats Grid #}
                 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-                    {# Total Users #}
-                    <div class="bg-surface-dark border border-white/5 rounded-2xl p-6 hover:border-white/10 transition-all">
-                        <div class="flex items-center justify-between mb-4">
-                            <div class="w-12 h-12 rounded-xl bg-blue-500/10 flex items-center justify-center">
-                                <span class="material-symbols-outlined text-blue-400">group</span>
-                            </div>
-                            <span class="material-symbols-outlined text-green-400 text-[18px]">trending_up</span>
-                        </div>
-                        <p class="text-sm text-white/40 mb-1">Total Utilisateurs</p>
-                        <p class="text-3xl font-bold text-white">{{ stats.totalUsers }}</p>
-                    </div>
-
-                    {# Active Users #}
-                    <div class="bg-surface-dark border border-white/5 rounded-2xl p-6 hover:border-white/10 transition-all">
-                        <div class="flex items-center justify-between mb-4">
-                            <div class="w-12 h-12 rounded-xl bg-green-500/10 flex items-center justify-center">
-                                <span class="material-symbols-outlined text-green-400">person_check</span>
-                            </div>
-                            <span class="material-symbols-outlined text-green-400 text-[18px]">trending_up</span>
-                        </div>
-                        <p class="text-sm text-white/40 mb-1">Utilisateurs Actifs</p>
-                        <p class="text-3xl font-bold text-white">{{ stats.activeUsers }}</p>
-                    </div>
-
-                    {# Active Tournaments #}
-                    <div class="bg-surface-dark border border-white/5 rounded-2xl p-6 hover:border-white/10 transition-all">
-                        <div class="flex items-center justify-between mb-4">
-                            <div class="w-12 h-12 rounded-xl bg-secondary/10 flex items-center justify-center">
-                                <span class="material-symbols-outlined text-secondary">trophy</span>
-                            </div>
-                            <span class="material-symbols-outlined text-secondary text-[18px]">emoji_events</span>
-                        </div>
-                        <p class="text-sm text-white/40 mb-1">Tournois Actifs</p>
-                        <p class="text-3xl font-bold text-white">{{ stats.activeTournaments }}</p>
-                    </div>
-
-                    {# Today Matches #}
-                    <div class="bg-surface-dark border border-white/5 rounded-2xl p-6 hover:border-white/10 transition-all">
-                        <div class="flex items-center justify-between mb-4">
-                            <div class="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center">
-                                <span class="material-symbols-outlined text-primary">sports_esports</span>
-                            </div>
-                            <span class="material-symbols-outlined text-white/30 text-[18px]">today</span>
-                        </div>
-                        <p class="text-sm text-white/40 mb-1">Matchs Aujourd'hui</p>
-                        <p class="text-3xl font-bold text-white">{{ stats.todayMatches }}</p>
-                    </div>
+                    {% include 'components/_stat_card.html.twig' with {
+                        label: 'Total Utilisateurs', value: stats.totalUsers,
+                        icon: 'group', iconColor: 'blue',
+                        trendIcon: 'trending_up', trendColor: 'green'
+                    } %}
+                    {% include 'components/_stat_card.html.twig' with {
+                        label: 'Utilisateurs Actifs', value: stats.activeUsers,
+                        icon: 'person_check', iconColor: 'green',
+                        trendIcon: 'trending_up', trendColor: 'green'
+                    } %}
+                    {% include 'components/_stat_card.html.twig' with {
+                        label: 'Tournois Actifs', value: stats.activeTournaments,
+                        icon: 'trophy', iconColor: 'secondary',
+                        trendIcon: 'emoji_events', trendColor: 'secondary'
+                    } %}
+                    {% include 'components/_stat_card.html.twig' with {
+                        label: "Matchs Aujourd'hui", value: stats.todayMatches,
+                        icon: 'sports_esports', iconColor: 'primary',
+                        trendIcon: 'today', trendColor: 'white'
+                    } %}
                 </div>
 
                 {# Main Grid: Recent Users + System Health #}
                 <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
                     {# Recent Users Table #}
-                    <div class="lg:col-span-2 bg-surface-dark border border-white/5 rounded-2xl overflow-hidden">
-                        <div class="flex items-center justify-between px-6 py-4 border-b border-white/5">
-                            <h2 class="text-lg font-bold text-white">Nouveaux Utilisateurs</h2>
-                            <a href="{{ path('admin_users') }}" class="text-sm font-semibold text-primary hover:text-primary/80 transition-colors">Voir tout</a>
-                        </div>
-                        <div class="overflow-x-auto">
-                            <table class="w-full text-sm">
-                                <thead>
-                                    <tr class="border-b border-white/5">
-                                        <th class="text-left px-6 py-3 text-xs font-semibold text-white/30 uppercase tracking-wider">Nom</th>
-                                        <th class="text-left px-6 py-3 text-xs font-semibold text-white/30 uppercase tracking-wider">Email</th>
-                                        <th class="text-left px-6 py-3 text-xs font-semibold text-white/30 uppercase tracking-wider">Inscrit</th>
-                                        <th class="text-left px-6 py-3 text-xs font-semibold text-white/30 uppercase tracking-wider">Statut</th>
-                                    </tr>
-                                </thead>
-                                <tbody class="divide-y divide-white/5">
-                                    {% for user in recentUsers %}
-                                    <tr class="hover:bg-surface-hover transition-colors">
-                                        <td class="px-6 py-4 font-semibold text-white">{{ user.username }}</td>
-                                        <td class="px-6 py-4 text-white/50">{{ user.email }}</td>
-                                        <td class="px-6 py-4 text-white/50">{{ user.id|slice(0, 8) }}</td>
-                                        <td class="px-6 py-4">
-                                            {% if 'ROLE_ADMIN' in user.roles %}
-                                                <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold bg-primary/20 text-primary">
-                                                    Admin
-                                                </span>
-                                            {% else %}
-                                                <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold bg-green-500/20 text-green-400">
-                                                    User
-                                                </span>
-                                            {% endif %}
-                                        </td>
-                                    </tr>
-                                    {% endfor %}
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
+                    {% embed 'components/_table.html.twig' with {
+                        title: 'Nouveaux Utilisateurs',
+                        titleLink: path('admin_users'),
+                        headers: ['Nom', 'Email', 'Inscrit', 'Statut'],
+                        emptyMessage: 'Aucun utilisateur récent.',
+                        emptyIcon: 'group_off',
+                        class: 'lg:col-span-2'
+                    } %}
+                        {% block rows %}
+                            {% for user in recentUsers %}
+                            <tr class="hover:bg-surface-hover transition-colors">
+                                <td class="px-6 py-4 font-semibold text-white">{{ user.username }}</td>
+                                <td class="px-6 py-4 text-white/50">{{ user.email }}</td>
+                                <td class="px-6 py-4 text-white/50">{{ user.id|slice(0, 8) }}</td>
+                                <td class="px-6 py-4">
+                                    {% if 'ROLE_ADMIN' in user.roles %}
+                                        <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold bg-primary/20 text-primary">Admin</span>
+                                    {% else %}
+                                        <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold bg-green-500/20 text-green-400">User</span>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        {% endblock %}
+                    {% endembed %}
 
                     {# System Health #}
                     <div class="bg-surface-dark border border-white/5 rounded-2xl p-6">
@@ -177,57 +137,46 @@
                 </div>
 
                 {# Recent Tournaments #}
-                <div class="bg-surface-dark border border-white/5 rounded-2xl overflow-hidden">
-                    <div class="flex items-center justify-between px-6 py-4 border-b border-white/5">
-                        <h2 class="text-lg font-bold text-white">Tournois Récents</h2>
-                        <a href="{{ path('admin_tournaments') }}" class="text-sm font-semibold text-primary hover:text-primary/80 transition-colors">Voir tout</a>
-                    </div>
-                    <div class="overflow-x-auto">
-                        <table class="w-full text-sm">
-                            <thead>
-                                <tr class="border-b border-white/5">
-                                    <th class="text-left px-6 py-3 text-xs font-semibold text-white/30 uppercase tracking-wider">Nom</th>
-                                    <th class="text-left px-6 py-3 text-xs font-semibold text-white/30 uppercase tracking-wider">Jeu</th>
-                                    <th class="text-left px-6 py-3 text-xs font-semibold text-white/30 uppercase tracking-wider">Équipes</th>
-                                    <th class="text-left px-6 py-3 text-xs font-semibold text-white/30 uppercase tracking-wider">Statut</th>
-                                    <th class="text-left px-6 py-3 text-xs font-semibold text-white/30 uppercase tracking-wider">Cagnotte</th>
-                                </tr>
-                            </thead>
-                            <tbody class="divide-y divide-white/5">
-                                {% for tournament in recentTournaments %}
-                                <tr class="hover:bg-surface-hover transition-colors">
-                                    <td class="px-6 py-4 font-semibold text-white">{{ tournament.nom }}</td>
-                                    <td class="px-6 py-4">
-                                        <span class="inline-flex px-2.5 py-1 rounded-full text-xs font-semibold bg-blue-500/20 text-blue-400">
-                                            {{ tournament.game ? tournament.game.name : (tournament.type ? tournament.type.label : 'N/A') }}
-                                        </span>
-                                    </td>
-                                    <td class="px-6 py-4 text-white/60">{{ tournament.teams|length }} / {{ tournament.nbEquipesMax }} équipes</td>
-                                    <td class="px-6 py-4">
-                                        {% if tournament.status.value == 'ongoing' %}
-                                            <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold bg-green-500/20 text-green-400">
-                                                <span class="w-1.5 h-1.5 rounded-full bg-green-400"></span>
-                                                Actif
-                                            </span>
-                                        {% elseif tournament.status.value == 'upcoming' %}
-                                            <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold bg-yellow-500/20 text-yellow-400">
-                                                En attente
-                                            </span>
-                                        {% else %}
-                                            <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold bg-white/10 text-white/50">
-                                                {{ tournament.status.label }}
-                                            </span>
-                                        {% endif %}
-                                    </td>
-                                    <td class="px-6 py-4">
-                                        <span class="text-secondary font-bold">{{ tournament.prizePool|number_format }} DT</span>
-                                    </td>
-                                </tr>
-                                {% endfor %}
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
+                {% embed 'components/_table.html.twig' with {
+                    title: 'Tournois Récents',
+                    titleLink: path('admin_tournaments'),
+                    headers: ['Nom', 'Jeu', 'Équipes', 'Statut', 'Cagnotte'],
+                    emptyMessage: 'Aucun tournoi récent.',
+                    emptyIcon: 'trophy'
+                } %}
+                    {% block rows %}
+                        {% for tournament in recentTournaments %}
+                        <tr class="hover:bg-surface-hover transition-colors">
+                            <td class="px-6 py-4 font-semibold text-white">{{ tournament.nom }}</td>
+                            <td class="px-6 py-4">
+                                <span class="inline-flex px-2.5 py-1 rounded-full text-xs font-semibold bg-blue-500/20 text-blue-400">
+                                    {{ tournament.game ? tournament.game.name : (tournament.type ? tournament.type.label : 'N/A') }}
+                                </span>
+                            </td>
+                            <td class="px-6 py-4 text-white/60">{{ tournament.teams|length }} / {{ tournament.nbEquipesMax }} équipes</td>
+                            <td class="px-6 py-4">
+                                {% if tournament.status.value == 'ongoing' %}
+                                    <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold bg-green-500/20 text-green-400">
+                                        <span class="w-1.5 h-1.5 rounded-full bg-green-400"></span>
+                                        Actif
+                                    </span>
+                                {% elseif tournament.status.value == 'upcoming' %}
+                                    <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold bg-yellow-500/20 text-yellow-400">
+                                        En attente
+                                    </span>
+                                {% else %}
+                                    <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold bg-white/10 text-white/50">
+                                        {{ tournament.status.label }}
+                                    </span>
+                                {% endif %}
+                            </td>
+                            <td class="px-6 py-4">
+                                <span class="text-secondary font-bold">{{ tournament.prizePool|number_format }} DT</span>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    {% endblock %}
+                {% endembed %}
             </div>
         </main>
     </div>
