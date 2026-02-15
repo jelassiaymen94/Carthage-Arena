@@ -104,6 +104,128 @@
         box-shadow: 0 0 0 2px rgba(230, 0, 19, 0.3);
       }
 
+      /* ===================================
+         CARTHAGE VISUAL SIGNATURE
+         Inspired by: Carthaginian mosaics, amphitheater arches,
+         Mediterranean terracotta, and ancient Punic geometry.
+         =================================== */
+
+      /* Mosaic grid pattern — subtle background texture for section headers */
+      .carthage-mosaic {
+        background-image:
+          linear-gradient(45deg, rgba(230, 0, 19, 0.03) 25%, transparent 25%),
+          linear-gradient(-45deg, rgba(230, 0, 19, 0.03) 25%, transparent 25%),
+          linear-gradient(45deg, transparent 75%, rgba(230, 0, 19, 0.03) 75%),
+          linear-gradient(-45deg, transparent 75%, rgba(230, 0, 19, 0.03) 75%);
+        background-size: 20px 20px;
+        background-position: 0 0, 0 10px, 10px -10px, -10px 0;
+      }
+
+      /* Amphitheater arch — curved top accent for hero cards & headers */
+      .carthage-arch {
+        position: relative;
+        overflow: hidden;
+      }
+      .carthage-arch::before {
+        content: "";
+        position: absolute;
+        top: -60%;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 140%;
+        height: 80%;
+        border-radius: 0 0 50% 50%;
+        background: radial-gradient(
+          ellipse at center bottom,
+          rgba(230, 0, 19, 0.08) 0%,
+          transparent 70%
+        );
+        pointer-events: none;
+      }
+
+      /* Punic border — geometric top-edge accent for cards */
+      .carthage-border-top {
+        position: relative;
+      }
+      .carthage-border-top::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 3px;
+        background: repeating-linear-gradient(
+          90deg,
+          #e60013 0px,
+          #e60013 8px,
+          transparent 8px,
+          transparent 12px,
+          #e60013 12px,
+          #e60013 14px,
+          transparent 14px,
+          transparent 24px
+        );
+      }
+
+      /* Mediterranean gold shimmer — for rarity badges & special items */
+      .carthage-gold {
+        background: linear-gradient(135deg, #c8a455 0%, #f5d88e 40%, #c8a455 60%, #f5d88e 100%);
+        background-size: 200% 200%;
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        animation: gold-shimmer 3s ease-in-out infinite;
+      }
+
+      @keyframes gold-shimmer {
+        0%, 100% { background-position: 0% 50%; }
+        50% { background-position: 100% 50%; }
+      }
+
+      /* Arena glow — pulsing red accent for live/active elements */
+      .carthage-glow {
+        box-shadow: 0 0 15px rgba(230, 0, 19, 0.2),
+                    0 0 30px rgba(230, 0, 19, 0.1);
+        animation: arena-pulse 2.5s ease-in-out infinite;
+      }
+
+      @keyframes arena-pulse {
+        0%, 100% {
+          box-shadow: 0 0 15px rgba(230, 0, 19, 0.2),
+                      0 0 30px rgba(230, 0, 19, 0.1);
+        }
+        50% {
+          box-shadow: 0 0 20px rgba(230, 0, 19, 0.35),
+                      0 0 40px rgba(230, 0, 19, 0.15);
+        }
+      }
+
+      /* Terracotta divider — Mediterranean-inspired section separator */
+      .carthage-divider {
+        height: 1px;
+        background: linear-gradient(
+          90deg,
+          transparent 0%,
+          rgba(200, 164, 85, 0.3) 20%,
+          rgba(230, 0, 19, 0.4) 50%,
+          rgba(200, 164, 85, 0.3) 80%,
+          transparent 100%
+        );
+        border: none;
+        margin: 1.5rem 0;
+      }
+
+      /* Colosseum columns — subtle vertical line accents for sidebars */
+      .carthage-columns {
+        background-image: repeating-linear-gradient(
+          90deg,
+          transparent,
+          transparent 71px,
+          rgba(255, 255, 255, 0.02) 71px,
+          rgba(255, 255, 255, 0.02) 72px
+        );
+      }
+
       /* Loading Screen Styles - MonsterPlay Inspired */
       .loading-screen {
         position: fixed;
@@ -450,6 +572,43 @@
           progressBar.style.width = progress + "%";
           percentageText.textContent = Math.floor(progress) + "%";
         }, interval);
+      });
+    </script>
+    {# Button loading state handler #}
+    <script>
+      document.addEventListener("DOMContentLoaded", function () {
+        // Button loading states
+        document.querySelectorAll("[data-loading-btn]").forEach(function (btn) {
+          btn.addEventListener("click", function () {
+            const form = btn.closest("form");
+            if (form && !form.checkValidity()) return;
+
+            const defaultState = btn.querySelector(".btn-default-state");
+            const loadingState = btn.querySelector(".btn-loading-state");
+
+            if (defaultState && loadingState) {
+              defaultState.classList.add("hidden");
+              loadingState.classList.remove("hidden");
+            }
+            btn.disabled = true;
+          });
+        });
+
+        // Form submit loading (for forms with data-loading-btn buttons)
+        document.querySelectorAll("form").forEach(function (form) {
+          form.addEventListener("submit", function () {
+            const btn = form.querySelector("[data-loading-btn]");
+            if (btn) {
+              const defaultState = btn.querySelector(".btn-default-state");
+              const loadingState = btn.querySelector(".btn-loading-state");
+              if (defaultState && loadingState) {
+                defaultState.classList.add("hidden");
+                loadingState.classList.remove("hidden");
+              }
+              btn.disabled = true;
+            }
+          });
+        });
       });
     </script>
     {% block javascripts %}{% endblock %}
