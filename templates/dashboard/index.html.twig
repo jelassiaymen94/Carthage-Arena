@@ -5,41 +5,15 @@
 {% block body %}
     <div
       id="mainContent"
-      class="flex h-screen w-full opacity-0 transition-opacity duration-500"
+      class="flex min-h-screen w-full opacity-0 transition-opacity duration-500"
     >
       <!-- Sidebar -->
       {% embed 'components/_sidebar.html.twig' %}
-        {% block sidebar_bottom %}
-        <!-- Bottom Ad/Recommendation (Sidebar Widget) -->
-        <!-- Bottom Ad/Recommendation (Sidebar Widget) -->
-        {% if featuredSkin is defined and featuredSkin %}
-        <div class="relative overflow-hidden rounded-2xl bg-gradient-to-br from-gray-900 to-black p-4 border border-white/10">
-          <div class="absolute -right-6 -top-6 h-24 w-24 rounded-full bg-primary/20 blur-2xl"></div>
-          <div class="relative z-10 flex flex-col gap-3">
-            <div class="flex items-center justify-between">
-              <p class="text-[10px] font-bold uppercase tracking-widest text-primary">Recommandation IA</p>
-              <span class="material-symbols-outlined text-primary text-sm">auto_awesome</span>
-            </div>
-            <div class="h-24 w-full rounded-lg bg-cover bg-center shadow-inner"
-              style="background-image: url('{{ featuredSkin.imageUrl }}');"
-            ></div>
-            <div>
-              <h4 class="text-sm font-bold text-white line-clamp-1">{{ featuredSkin.name }}</h4>
-              <p class="text-xs text-gray-400 mt-1">
-                Recommandé pour vous ({{ featuredSkin.game.name|default('Jeu') }})
-              </p>
-            </div>
-            <a href="{{ path('app_shop_item', {'id': featuredSkin.id}) }}" class="mt-1 w-full flex items-center justify-center rounded-full bg-white/5 py-2 px-4 text-xs font-bold text-white hover:bg-white/10 transition-colors">
-              Voir en Boutique
-            </a>
-          </div>
-        </div>
-        {% endif %}
-        {% endblock %}
+        {% block sidebar_bottom %}{% endblock %}
       {% endembed %}
       <!-- Main Content -->
       <main
-        class="flex flex-1 flex-col overflow-y-auto bg-background-dark relative"
+        class="flex flex-1 flex-col ml-72 bg-background-dark relative"
       >
         <!-- Header -->
         <header
@@ -59,7 +33,7 @@
           >
             <!-- Rank Card -->
             <div
-              class="group relative overflow-hidden rounded-2xl bg-surface-dark p-6 transition-transform hover:-translate-y-1 hover:shadow-lg border border-white/5 carthage-border-top"
+              class="group relative overflow-hidden rounded-2xl bg-surface-dark p-6 transition-transform hover:-translate-y-1 hover:shadow-lg border border-white/5"
             >
               <div
                 class="absolute -right-4 -top-4 h-24 w-24 rounded-full bg-secondary/10 blur-xl transition-all group-hover:bg-secondary/20"
@@ -94,7 +68,7 @@
             </div>
             <!-- Matches Card -->
             <div
-              class="group relative overflow-hidden rounded-2xl bg-surface-dark p-6 transition-transform hover:-translate-y-1 hover:shadow-lg border border-white/5 carthage-border-top"
+              class="group relative overflow-hidden rounded-2xl bg-surface-dark p-6 transition-transform hover:-translate-y-1 hover:shadow-lg border border-white/5"
             >
               <div
                 class="absolute -right-4 -top-4 h-24 w-24 rounded-full bg-primary/10 blur-xl transition-all group-hover:bg-primary/20"
@@ -123,7 +97,7 @@
             </div>
             <!-- Winrate Card -->
             <div
-              class="group relative overflow-hidden rounded-2xl bg-surface-dark p-6 transition-transform hover:-translate-y-1 hover:shadow-lg border border-white/5 carthage-border-top"
+              class="group relative overflow-hidden rounded-2xl bg-surface-dark p-6 transition-transform hover:-translate-y-1 hover:shadow-lg border border-white/5"
             >
               <div
                 class="absolute -right-4 -top-4 h-24 w-24 rounded-full bg-blue-500/10 blur-xl transition-all group-hover:bg-blue-500/20"
@@ -255,6 +229,46 @@
           </section>
         </div>
         {% include 'components/_mobile_nav.html.twig' %}
+
+        <!-- AI Recommendation Widget (Bottom Right - Collapsible) -->
+        <div class="fixed bottom-6 right-6 z-40" id="ai-widget">
+          <!-- Toggle Button -->
+          <button
+            onclick="document.getElementById('ai-panel').classList.toggle('hidden'); document.getElementById('ai-btn').classList.toggle('hidden');"
+            id="ai-btn"
+            class="w-12 h-12 rounded-full bg-primary/20 border border-primary/30 flex items-center justify-center text-primary hover:bg-primary/30 hover:scale-110 transition-all duration-200 shadow-lg shadow-primary/10"
+            title="Recommandation IA"
+          >
+            <span class="material-symbols-outlined text-[22px]">auto_awesome</span>
+          </button>
+          <!-- Expandable Panel -->
+          <div id="ai-panel" class="hidden w-72 absolute bottom-0 right-0">
+            <div class="relative overflow-hidden rounded-2xl bg-surface-dark border border-white/10 p-5 shadow-2xl shadow-black/40">
+              <div class="absolute -right-6 -top-6 h-24 w-24 rounded-full bg-primary/10 blur-2xl"></div>
+              <div class="relative z-10 flex flex-col gap-3">
+                <div class="flex items-center justify-between">
+                  <div class="flex items-center gap-2">
+                    <span class="material-symbols-outlined text-primary text-lg">auto_awesome</span>
+                    <p class="text-xs font-bold uppercase tracking-widest text-primary">Recommandation IA</p>
+                  </div>
+                  <button
+                    onclick="document.getElementById('ai-panel').classList.toggle('hidden'); document.getElementById('ai-btn').classList.toggle('hidden');"
+                    class="text-white/30 hover:text-white transition-colors"
+                  >
+                    <span class="material-symbols-outlined text-[18px]">close</span>
+                  </button>
+                </div>
+                <p class="text-sm text-white/50">
+                  Les recommandations personnalisées arrivent bientôt.
+                </p>
+                <div class="flex items-center gap-2 mt-1 px-3 py-2 rounded-xl bg-white/5 border border-white/5">
+                  <span class="material-symbols-outlined text-white/30 text-[18px]">schedule</span>
+                  <span class="text-xs font-semibold text-white/30">Bientôt disponible</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
 </main>
     </div>
 {% endblock %}
