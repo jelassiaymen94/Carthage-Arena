@@ -1,5 +1,5 @@
 <aside
-  class="flex w-72 flex-col border-r border-white/5 bg-[#161616] p-6 hidden lg:flex overflow-y-auto carthage-columns"
+  class="fixed top-0 left-0 h-screen w-72 flex-col border-r border-white/5 bg-[#161616] p-6 hidden lg:flex overflow-y-auto carthage-columns z-40"
   role="navigation"
   aria-label="Navigation principale"
 >
@@ -65,28 +65,19 @@
         <span class="text-sm font-medium tracking-wide">Réclamations</span>
       </a>
       <a
-        class="group flex items-center gap-4 rounded-full px-4 py-3 transition-all hover:bg-surface-hover hover:text-white mt-4 {{ app.request.get('_route') starts with 'app_settings' ? 'bg-primary/10 text-primary' : 'text-gray-400' }}"
+        class="group flex items-center gap-4 rounded-full px-4 py-3 transition-all hover:bg-surface-hover hover:text-white {{ app.request.get('_route') starts with 'app_settings' ? 'bg-primary/10 text-primary' : 'text-gray-400' }}"
         href="{{ path('app_settings') }}"
       >
         <span class="material-symbols-outlined text-[24px]" {{ app.request.get('_route') starts with 'app_settings' ? 'data-weight="fill"' : '' }}>settings</span>
         <span class="text-sm font-medium tracking-wide">Param&egrave;tres</span>
       </a>
-      {% if app.user %}
-      <a
-        class="group flex items-center gap-4 rounded-full px-4 py-3 text-gray-400 transition-all hover:bg-red-500/10 hover:text-red-400 mt-2"
-        href="{{ path('app_logout') }}"
-      >
-        <span class="material-symbols-outlined text-[24px]">logout</span>
-        <span class="text-sm font-medium tracking-wide">Déconnexion</span>
-      </a>
-      {% endif %}
     </nav>
   </div>
 
   <!-- Bottom Widget Block -->
   {% block sidebar_bottom %}
   <div
-    class="relative overflow-hidden rounded-2xl bg-gradient-to-br from-gray-900 to-black p-4 border border-white/10"
+    class="relative overflow-hidden rounded-2xl bg-gradient-to-br from-gray-900 to-black p-4 border border-white/10 mx-3 mb-3"
   >
     <div
       class="absolute -right-6 -top-6 h-24 w-24 rounded-full bg-primary/20 blur-2xl"
@@ -107,4 +98,26 @@
     </div>
   </div>
   {% endblock %}
+
+  {# Admin View Link #}
+  {% if is_granted('ROLE_ADMIN') %}
+  <div class="px-3 pb-2">
+    <a href="{{ path('admin_dashboard') }}"
+       class="flex items-center justify-center gap-2 w-full py-2.5 rounded-xl border border-white/10 text-sm font-semibold text-white/70 hover:text-white hover:bg-white/5 transition-all duration-200">
+      <span class="material-symbols-outlined text-[18px]">admin_panel_settings</span>
+      Vue Administrateur
+    </a>
+  </div>
+  {% endif %}
+
+  {# Logout #}
+  {% if app.user %}
+  <div class="px-3 pb-4">
+    <a href="{{ path('app_logout') }}"
+       class="flex items-center justify-center gap-2 w-full py-2.5 rounded-xl border border-red-500/20 text-sm font-semibold text-red-400/70 hover:text-red-400 hover:bg-red-500/10 transition-all duration-200">
+      <span class="material-symbols-outlined text-[18px]">logout</span>
+      Déconnexion
+    </a>
+  </div>
+  {% endif %}
 </aside>

@@ -5,7 +5,7 @@
 {% block body %}
     <div
       id="mainContent"
-      class="flex h-screen w-full opacity-0 transition-opacity duration-500"
+      class="flex min-h-screen w-full opacity-0 transition-opacity duration-500"
     >
       <!-- Sidebar -->
       {% embed 'components/_sidebar.html.twig' %}
@@ -60,7 +60,7 @@
         {% endblock %}
       {% endembed %}
       <main
-        class="flex flex-1 flex-col overflow-y-auto bg-background-dark relative"
+        class="flex flex-1 flex-col ml-72 bg-background-dark relative"
       >
         <header
           class="sticky top-0 z-50 flex h-20 items-center justify-between border-b border-white/5 bg-background-dark/80 backdrop-blur-md px-8 py-4"

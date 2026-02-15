@@ -3,7 +3,7 @@
 {% block title %}Modifier l'équipe - Carthage Arena{% endblock %}
 
 {% block body %}
-    <div id="mainContent" class="flex h-screen w-full opacity-0 transition-opacity duration-500">
+    <div id="mainContent" class="flex min-h-screen w-full opacity-0 transition-opacity duration-500">
       <!-- Sidebar -->
       {% embed 'components/_sidebar.html.twig' %}
         {% block sidebar_bottom %}
@@ -24,7 +24,7 @@
       {% endembed %}
 
       <!-- Main Content -->
-      <main class="flex flex-1 flex-col overflow-y-auto bg-background-dark relative">
+      <main class="flex flex-1 flex-col ml-72 bg-background-dark relative">
         <!-- Header -->
         <header class="sticky top-0 z-50 flex h-20 items-center justify-between border-b border-white/5 bg-background-dark/80 backdrop-blur-md px-8 py-4">
           <div class="flex flex-col">

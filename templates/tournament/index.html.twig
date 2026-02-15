@@ -5,7 +5,7 @@
 {% block body %}
     <div
       id="mainContent"
-      class="flex h-screen w-full opacity-0 transition-opacity duration-500"
+      class="flex min-h-screen w-full opacity-0 transition-opacity duration-500"
     >
       <!-- Sidebar -->
       {% embed 'components/_sidebar.html.twig' %}
@@ -32,7 +32,7 @@
 
       <!-- Main Content -->
       <main
-        class="flex flex-1 flex-col overflow-y-auto bg-background-dark relative"
+        class="flex flex-1 flex-col ml-72 bg-background-dark relative"
       >
         <!-- Header -->
         <header
