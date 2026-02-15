@@ -77,109 +77,89 @@
                 </div>
 
                 {# Shop Items Table #}
-                <div class="bg-surface-dark border border-white/5 rounded-2xl overflow-hidden">
-                    <div class="overflow-x-auto">
-                        <table class="w-full text-sm">
-                            <thead>
-                                <tr class="border-b border-white/10">
-                                    <th class="text-left px-6 py-4 text-xs font-semibold text-white/30 uppercase tracking-wider">Image</th>
-                                    <th class="text-left px-6 py-4 text-xs font-semibold text-white/30 uppercase tracking-wider">Nom</th>
-                                    <th class="text-left px-6 py-4 text-xs font-semibold text-white/30 uppercase tracking-wider">Jeu</th>
-                                    <th class="text-left px-6 py-4 text-xs font-semibold text-white/30 uppercase tracking-wider">Prix</th>
-                                    <th class="text-left px-6 py-4 text-xs font-semibold text-white/30 uppercase tracking-wider">Ventes</th>
-                                    <th class="text-left px-6 py-4 text-xs font-semibold text-white/30 uppercase tracking-wider">Revenus</th>
-                                    <th class="text-left px-6 py-4 text-xs font-semibold text-white/30 uppercase tracking-wider">Stock</th>
-                                    <th class="text-left px-6 py-4 text-xs font-semibold text-white/30 uppercase tracking-wider">Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody class="divide-y divide-white/5">
-                                {% for item in items %}
-                                <tr class="hover:bg-surface-hover transition-colors">
-                                    <td class="px-6 py-4">
-                                        <div class="h-12 w-12 rounded-lg bg-surface-dark border border-white/5 overflow-hidden flex items-center justify-center">
-                                            {% if item.imageUrl %}
-                                                <img src="{{ item.imageUrl }}" alt="{{ item.name }}" class="h-full w-full object-cover">
-                                            {% else %}
-                                                <span class="material-symbols-outlined text-white/20">image_not_supported</span>
-                                            {% endif %}
-                                        </div>
-                                    </td>
-                                    <td class="px-6 py-4">
-                                        <div class="flex items-center gap-3">
-                                            <div class="w-8 h-8 rounded-lg {% if item.type == 'Skin' %}bg-purple-500/20{% else %}bg-secondary/20{% endif %} flex items-center justify-center">
-                                                <span class="material-symbols-outlined {% if item.type == 'Skin' %}text-purple-400{% else %}text-secondary{% endif %} text-[18px]">
-                                                    {% if item.type == 'Skin' %}palette{% else %}checkroom{% endif %}
-                                                </span>
-                                            </div>
-                                            <div>
-                                                <span class="block font-semibold text-white">{{ item.name }}</span>
-                                                <span class="text-[10px] uppercase font-bold tracking-wider text-white/30">{{ item.type }}</span>
-                                            </div>
-                                        </div>
-                                    </td>
-                                    <td class="px-6 py-4">
-                                        <span class="inline-flex px-2.5 py-1 rounded-full text-xs font-semibold bg-blue-500/20 text-blue-400">
-                                            {{ item.game }}
+                {% embed 'components/_table.html.twig' with {
+                    headers: ['Image', 'Nom', 'Jeu', 'Prix', 'Ventes', 'Revenus', 'Stock', 'Actions'],
+                    emptyMessage: 'Aucun article trouvé.',
+                    emptyIcon: 'shopping_bag'
+                } %}
+                    {% block rows %}
+                        {% for item in items %}
+                        <tr class="hover:bg-surface-hover transition-colors">
+                            <td class="px-6 py-4">
+                                <div class="h-12 w-12 rounded-lg bg-surface-dark border border-white/5 overflow-hidden flex items-center justify-center">
+                                    {% if item.imageUrl %}
+                                        <img src="{{ item.imageUrl }}" alt="{{ item.name }}" class="h-full w-full object-cover">
+                                    {% else %}
+                                        <span class="material-symbols-outlined text-white/20">image_not_supported</span>
+                                    {% endif %}
+                                </div>
+                            </td>
+                            <td class="px-6 py-4">
+                                <div class="flex items-center gap-3">
+                                    <div class="w-8 h-8 rounded-lg {% if item.type == 'Skin' %}bg-purple-500/20{% else %}bg-secondary/20{% endif %} flex items-center justify-center">
+                                        <span class="material-symbols-outlined {% if item.type == 'Skin' %}text-purple-400{% else %}text-secondary{% endif %} text-[18px]">
+                                            {% if item.type == 'Skin' %}palette{% else %}checkroom{% endif %}
                                         </span>
-                                    </td>
-                                    <td class="px-6 py-4">
-                                        <span class="font-bold text-secondary">{{ item.price }}</span>
-                                    </td>
-                                    <td class="px-6 py-4 font-semibold text-white">{{ item.sales }}</td>
-                                    <td class="px-6 py-4">
-                                        <span class="font-bold text-green-400">{{ item.revenue }}</span>
-                                    </td>
-                                    <td class="px-6 py-4">
-                                        {% if item.stock == 'Illimité' %}
-                                            <span class="inline-flex px-2.5 py-1 rounded-full text-xs font-semibold bg-blue-500/20 text-blue-400 border border-blue-500/20">
-                                                Illimité
-                                            </span>
-                                        {% elseif item.stock > 10 %}
-                                            <span class="inline-flex px-2.5 py-1 rounded-full text-xs font-semibold bg-green-500/20 text-green-400 border border-green-500/20">
-                                                {{ item.stock }}
-                                            </span>
-                                        {% elseif item.stock > 0 %}
-                                            <span class="inline-flex px-2.5 py-1 rounded-full text-xs font-semibold bg-yellow-500/20 text-yellow-400 border border-yellow-500/20">
-                                                {{ item.stock }} (Faible)
-                                            </span>
-                                        {% else %}
-                                            <span class="inline-flex px-2.5 py-1 rounded-full text-xs font-semibold bg-red-500/20 text-red-400 border border-red-500/20">
-                                                Rupture
-                                            </span>
-                                        {% endif %}
-                                    </td>
-                                    <td class="px-6 py-4">
-                                        <div class="flex items-center gap-2">
-                                            <a href="#" class="p-2 rounded-lg bg-white/5 hover:bg-white/10 text-white/50 hover:text-white transition-all" title="Voir">
-                                                <span class="material-symbols-outlined text-[18px]">visibility</span>
-                                            </a>
-                                            {% if item.type == 'Skin' %}
-                                                <a href="{{ path('admin_shop_skin_edit', {'id': item.id}) }}" class="p-2 rounded-lg bg-white/5 hover:bg-white/10 text-white/50 hover:text-white transition-all" title="Modifier">
-                                                    <span class="material-symbols-outlined text-[18px]">edit</span>
-                                                </a>
-                                                <form method="post" action="{{ path('admin_shop_skin_delete', {'id': item.id}) }}" onsubmit="return confirm('Supprimer ce skin ?');" class="inline">
-                                                    <button type="submit" class="p-2 rounded-lg bg-red-500/10 hover:bg-red-500/20 text-red-400 transition-all" title="Supprimer">
-                                                        <span class="material-symbols-outlined text-[18px]">delete</span>
-                                                    </button>
-                                                </form>
-                                            {% else %}
-                                                <a href="{{ path('admin_shop_merch_edit', {'id': item.id}) }}" class="p-2 rounded-lg bg-white/5 hover:bg-white/10 text-white/50 hover:text-white transition-all" title="Modifier">
-                                                    <span class="material-symbols-outlined text-[18px]">edit</span>
-                                                </a>
-                                                <form method="post" action="{{ path('admin_shop_merch_delete', {'id': item.id}) }}" onsubmit="return confirm('Supprimer cet article ?');" class="inline">
-                                                    <button type="submit" class="p-2 rounded-lg bg-red-500/10 hover:bg-red-500/20 text-red-400 transition-all" title="Supprimer">
-                                                        <span class="material-symbols-outlined text-[18px]">delete</span>
-                                                    </button>
-                                                </form>
-                                            {% endif %}
-                                        </div>
-                                    </td>
-                                </tr>
-                                {% endfor %}
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
+                                    </div>
+                                    <div>
+                                        <span class="block font-semibold text-white">{{ item.name }}</span>
+                                        <span class="text-[10px] uppercase font-bold tracking-wider text-white/30">{{ item.type }}</span>
+                                    </div>
+                                </div>
+                            </td>
+                            <td class="px-6 py-4">
+                                <span class="inline-flex px-2.5 py-1 rounded-full text-xs font-semibold bg-blue-500/20 text-blue-400">
+                                    {{ item.game }}
+                                </span>
+                            </td>
+                            <td class="px-6 py-4">
+                                <span class="font-bold text-secondary">{{ item.price }}</span>
+                            </td>
+                            <td class="px-6 py-4 font-semibold text-white">{{ item.sales }}</td>
+                            <td class="px-6 py-4">
+                                <span class="font-bold text-green-400">{{ item.revenue }}</span>
+                            </td>
+                            <td class="px-6 py-4">
+                                {% if item.stock == 'Illimité' %}
+                                    <span class="inline-flex px-2.5 py-1 rounded-full text-xs font-semibold bg-blue-500/20 text-blue-400 border border-blue-500/20">Illimité</span>
+                                {% elseif item.stock > 10 %}
+                                    <span class="inline-flex px-2.5 py-1 rounded-full text-xs font-semibold bg-green-500/20 text-green-400 border border-green-500/20">{{ item.stock }}</span>
+                                {% elseif item.stock > 0 %}
+                                    <span class="inline-flex px-2.5 py-1 rounded-full text-xs font-semibold bg-yellow-500/20 text-yellow-400 border border-yellow-500/20">{{ item.stock }} (Faible)</span>
+                                {% else %}
+                                    <span class="inline-flex px-2.5 py-1 rounded-full text-xs font-semibold bg-red-500/20 text-red-400 border border-red-500/20">Rupture</span>
+                                {% endif %}
+                            </td>
+                            <td class="px-6 py-4">
+                                <div class="flex items-center gap-2">
+                                    <a href="#" class="p-2 rounded-lg bg-white/5 hover:bg-white/10 text-white/50 hover:text-white transition-all" title="Voir">
+                                        <span class="material-symbols-outlined text-[18px]">visibility</span>
+                                    </a>
+                                    {% if item.type == 'Skin' %}
+                                        <a href="{{ path('admin_shop_skin_edit', {'id': item.id}) }}" class="p-2 rounded-lg bg-white/5 hover:bg-white/10 text-white/50 hover:text-white transition-all" title="Modifier">
+                                            <span class="material-symbols-outlined text-[18px]">edit</span>
+                                        </a>
+                                        <form method="post" action="{{ path('admin_shop_skin_delete', {'id': item.id}) }}" onsubmit="return confirm('Supprimer ce skin ?');" class="inline">
+                                            <button type="submit" class="p-2 rounded-lg bg-red-500/10 hover:bg-red-500/20 text-red-400 transition-all" title="Supprimer">
+                                                <span class="material-symbols-outlined text-[18px]">delete</span>
+                                            </button>
+                                        </form>
+                                    {% else %}
+                                        <a href="{{ path('admin_shop_merch_edit', {'id': item.id}) }}" class="p-2 rounded-lg bg-white/5 hover:bg-white/10 text-white/50 hover:text-white transition-all" title="Modifier">
+                                            <span class="material-symbols-outlined text-[18px]">edit</span>
+                                        </a>
+                                        <form method="post" action="{{ path('admin_shop_merch_delete', {'id': item.id}) }}" onsubmit="return confirm('Supprimer cet article ?');" class="inline">
+                                            <button type="submit" class="p-2 rounded-lg bg-red-500/10 hover:bg-red-500/20 text-red-400 transition-all" title="Supprimer">
+                                                <span class="material-symbols-outlined text-[18px]">delete</span>
+                                            </button>
+                                        </form>
+                                    {% endif %}
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    {% endblock %}
+                {% endembed %}
             </div>
         </main>
     </div>
