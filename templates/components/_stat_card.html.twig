@@ -1,0 +1,60 @@
+{# Shared Stat Card Component
+   Usage:
+
+   {% include 'components/_stat_card.html.twig' with {
+       label: 'Total Utilisateurs',
+       value: stats.totalUsers,
+       icon: 'group',
+       iconColor: 'blue',
+       trendIcon: 'trending_up',
+       trendColor: 'green',
+       subtitle: '+12 cette semaine',
+       subtitleColor: 'green'
+   } %}
+
+   Available iconColor values: blue, green, red, primary, secondary, purple, yellow, white
+   Leave trendIcon empty to hide the trend indicator.
+   Leave subtitle empty to hide the subtitle line.
+#}
+
+{% set cardLabel = label|default('—') %}
+{% set cardValue = value|default(0) %}
+{% set cardIcon = icon|default('analytics') %}
+{% set cardIconColor = iconColor|default('primary') %}
+{% set cardTrendIcon = trendIcon|default(null) %}
+{% set cardTrendColor = trendColor|default('green') %}
+{% set cardSubtitle = subtitle|default(null) %}
+{% set cardSubtitleColor = subtitleColor|default('gray') %}
+{% set extraClass = class|default('') %}
+
+{# Color mapping for icon backgrounds and text #}
+{% set colorMap = {
+    'blue': { bg: 'bg-blue-500/10', text: 'text-blue-400' },
+    'green': { bg: 'bg-green-500/10', text: 'text-green-400' },
+    'red': { bg: 'bg-red-500/10', text: 'text-red-400' },
+    'primary': { bg: 'bg-primary/10', text: 'text-primary' },
+    'secondary': { bg: 'bg-secondary/10', text: 'text-secondary' },
+    'purple': { bg: 'bg-purple-500/10', text: 'text-purple-400' },
+    'yellow': { bg: 'bg-yellow-500/10', text: 'text-yellow-400' },
+    'white': { bg: 'bg-white/10', text: 'text-white/60' }
+} %}
+
+{% set iconBg = colorMap[cardIconColor].bg|default('bg-primary/10') %}
+{% set iconText = colorMap[cardIconColor].text|default('text-primary') %}
+{% set trendText = colorMap[cardTrendColor].text|default('text-green-400') %}
+
+<div class="bg-surface-dark border border-white/5 rounded-2xl p-6 hover:border-white/10 transition-all carthage-border-top {{ extraClass }}">
+    <div class="flex items-center justify-between mb-4">
+        <div class="w-12 h-12 rounded-xl {{ iconBg }} flex items-center justify-center">
+            <span class="material-symbols-outlined {{ iconText }}">{{ cardIcon }}</span>
+        </div>
+        {% if cardTrendIcon %}
+        <span class="material-symbols-outlined {{ trendText }} text-[18px]">{{ cardTrendIcon }}</span>
+        {% endif %}
+    </div>
+    <p class="text-sm text-white/40 mb-1">{{ cardLabel }}</p>
+    <p class="text-3xl font-bold text-white">{{ cardValue }}</p>
+    {% if cardSubtitle %}
+    <p class="mt-1 text-xs {{ colorMap[cardSubtitleColor].text|default('text-gray-400') }}">{{ cardSubtitle }}</p>
+    {% endif %}
+</div>

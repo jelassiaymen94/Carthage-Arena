@@ -33,41 +33,18 @@
 
         {# Statistics Cards #}
         <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-            <div class="bg-surface-dark border border-white/5 rounded-2xl p-6">
-                <div class="flex items-center justify-between">
-                    <div>
-                        <p class="text-gray-400 text-sm mb-1">Total</p>
-                        <p class="text-3xl font-bold text-white">{{ stats.total }}</p>
-                    </div>
-                    <div class="w-12 h-12 rounded-xl bg-blue-500/10 flex items-center justify-center">
-                        <span class="material-symbols-outlined text-blue-400 text-[28px]">badge</span>
-                    </div>
-                </div>
-            </div>
-
-            <div class="bg-surface-dark border border-white/5 rounded-2xl p-6">
-                <div class="flex items-center justify-between">
-                    <div>
-                        <p class="text-gray-400 text-sm mb-1">Utilisées</p>
-                        <p class="text-3xl font-bold text-white">{{ stats.used }}</p>
-                    </div>
-                    <div class="w-12 h-12 rounded-xl bg-green-500/10 flex items-center justify-center">
-                        <span class="material-symbols-outlined text-green-400 text-[28px]">check_circle</span>
-                    </div>
-                </div>
-            </div>
-
-            <div class="bg-surface-dark border border-white/5 rounded-2xl p-6">
-                <div class="flex items-center justify-between">
-                    <div>
-                        <p class="text-gray-400 text-sm mb-1">Disponibles</p>
-                        <p class="text-3xl font-bold text-white">{{ stats.available }}</p>
-                    </div>
-                    <div class="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center">
-                        <span class="material-symbols-outlined text-primary text-[28px]">schedule</span>
-                    </div>
-                </div>
-            </div>
+            {% include 'components/_stat_card.html.twig' with {
+                label: 'Total', value: stats.total,
+                icon: 'badge', iconColor: 'blue'
+            } %}
+            {% include 'components/_stat_card.html.twig' with {
+                label: 'Utilisées', value: stats.used,
+                icon: 'check_circle', iconColor: 'green'
+            } %}
+            {% include 'components/_stat_card.html.twig' with {
+                label: 'Disponibles', value: stats.available,
+                icon: 'schedule', iconColor: 'primary'
+            } %}
         </div>
 
         {# Generate Licenses Form #}
@@ -97,77 +74,64 @@
         </div>
 
         {# Licenses Table #}
-        <div class="bg-surface-dark border border-white/5 rounded-2xl overflow-hidden">
-            <div class="p-6 border-b border-white/5">
-                <h2 class="text-xl font-bold text-white">Liste des licences</h2>
-            </div>
-            
-            <div class="overflow-x-auto">
-                <table class="w-full">
-                    <thead class="bg-black/20">
-                        <tr>
-                            <th class="text-left py-4 px-6 text-sm font-medium text-gray-400">Code de licence</th>
-                            <th class="text-left py-4 px-6 text-sm font-medium text-gray-400">Statut</th>
-                            <th class="text-left py-4 px-6 text-sm font-medium text-gray-400">Assigné à</th>
-                            <th class="text-left py-4 px-6 text-sm font-medium text-gray-400">Créée le</th>
-                            <th class="text-left py-4 px-6 text-sm font-medium text-gray-400">Utilisée le</th>
-                        </tr>
-                    </thead>
-                    <tbody class="divide-y divide-white/5">
-                        {% for license in licenses %}
-                            <tr class="hover:bg-white/5 transition-colors">
-                                <td class="py-4 px-6">
-                                    <span class="font-mono text-sm text-white">{{ license.licenseCode }}</span>
-                                </td>
-                                <td class="py-4 px-6">
-                                    {% if license.isUsed %}
-                                        <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium bg-green-500/10 text-green-400 border border-green-500/20">
-                                            <span class="w-1.5 h-1.5 rounded-full bg-green-400"></span>
-                                            Utilisée
-                                        </span>
-                                    {% else %}
-                                        <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium bg-primary/10 text-primary border border-primary/20">
-                                            <span class="w-1.5 h-1.5 rounded-full bg-primary"></span>
-                                            Disponible
-                                        </span>
-                                    {% endif %}
-                                </td>
-                                <td class="py-4 px-6">
-                                    {% if license.assignedTo %}
-                                        <div class="flex items-center gap-2">
-                                            <span class="material-symbols-outlined text-gray-400 text-[18px]">person</span>
-                                            <span class="text-sm text-white">{{ license.assignedTo.username }}</span>
-                                        </div>
-                                    {% else %}
-                                        <span class="text-sm text-gray-500">—</span>
-                                    {% endif %}
-                                </td>
-                                <td class="py-4 px-6">
-                                    <span class="text-sm text-gray-400">{{ license.createdAt|date('d/m/Y H:i') }}</span>
-                                </td>
-                                <td class="py-4 px-6">
-                                    {% if license.usedAt %}
-                                        <span class="text-sm text-gray-400">{{ license.usedAt|date('d/m/Y H:i') }}</span>
-                                    {% else %}
-                                        <span class="text-sm text-gray-500">—</span>
-                                    {% endif %}
-                                </td>
-                            </tr>
+        {% embed 'components/_table.html.twig' with {
+            title: 'Liste des licences',
+            headers: ['Code de licence', 'Statut', 'Assigné à', 'Créée le', 'Utilisée le'],
+            emptyMessage: 'Aucune licence générée pour le moment.',
+            emptyIcon: 'badge'
+        } %}
+            {% block rows %}
+                {% for license in licenses %}
+                <tr class="hover:bg-surface-hover transition-colors">
+                    <td class="px-6 py-4">
+                        <span class="font-mono text-sm text-white">{{ license.licenseCode }}</span>
+                    </td>
+                    <td class="px-6 py-4">
+                        {% if license.isUsed %}
+                            <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium bg-green-500/10 text-green-400 border border-green-500/20">
+                                <span class="w-1.5 h-1.5 rounded-full bg-green-400"></span>
+                                Utilisée
+                            </span>
                         {% else %}
-                            <tr>
-                                <td colspan="5" class="py-12 text-center">
-                                    <div class="flex flex-col items-center gap-3">
-                                        <span class="material-symbols-outlined text-gray-600 text-[48px]">badge</span>
-                                        <p class="text-gray-500">Aucune licence générée pour le moment</p>
-                                        <p class="text-sm text-gray-600">Utilisez le formulaire ci-dessus pour générer des licences</p>
-                                    </div>
-                                </td>
-                            </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
-            </div>
-        </div>
+                            <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium bg-primary/10 text-primary border border-primary/20">
+                                <span class="w-1.5 h-1.5 rounded-full bg-primary"></span>
+                                Disponible
+                            </span>
+                        {% endif %}
+                    </td>
+                    <td class="px-6 py-4">
+                        {% if license.assignedTo %}
+                            <div class="flex items-center gap-2">
+                                <span class="material-symbols-outlined text-gray-400 text-[18px]">person</span>
+                                <span class="text-sm text-white">{{ license.assignedTo.username }}</span>
+                            </div>
+                        {% else %}
+                            <span class="text-sm text-gray-500">—</span>
+                        {% endif %}
+                    </td>
+                    <td class="px-6 py-4">
+                        <span class="text-sm text-gray-400">{{ license.createdAt|date('d/m/Y H:i') }}</span>
+                    </td>
+                    <td class="px-6 py-4">
+                        {% if license.usedAt %}
+                            <span class="text-sm text-gray-400">{{ license.usedAt|date('d/m/Y H:i') }}</span>
+                        {% else %}
+                            <span class="text-sm text-gray-500">—</span>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% else %}
+                <tr>
+                    <td colspan="5" class="px-6 py-12 text-center">
+                        <div class="flex flex-col items-center gap-3">
+                            <span class="material-symbols-outlined text-[40px] text-white/10">badge</span>
+                            <p class="text-sm text-white/30">Aucune licence générée pour le moment</p>
+                        </div>
+                    </td>
+                </tr>
+                {% endfor %}
+            {% endblock %}
+        {% endembed %}
     </div>
 </div>
 {% endblock %}
