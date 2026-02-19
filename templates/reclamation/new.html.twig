@@ -1,21 +1,19 @@
-{% extends 'base.html.twig' %}
+{% extends 'base_dashboard.html.twig' %}
 
 {% block title %}Nouvelle Réclamation - Carthage Arena{% endblock %}
 
-{% block body %}
-<div class="min-h-screen bg-background-dark pt-24 pb-12">
-    <div class="container mx-auto px-4 max-w-3xl">
-        <div class="mb-8 flex items-center gap-4">
-            <a href="{{ path('app_reclamation_index') }}" class="p-2 rounded-lg bg-white/5 hover:bg-white/10 text-white/60 hover:text-white transition-all">
+{% block dashboard_title %}Nouvelle Réclamation{% endblock %}
+{% block dashboard_subtitle %}Signalez un problème ou posez une question à notre équipe support.{% endblock %}
+
+{% block dashboard_content %}
+        <div class="mb-8">
+            <a href="{{ path('app_reclamation_index') }}" class="inline-flex items-center gap-2 text-gray-400 hover:text-white transition-colors">
                 <span class="material-symbols-outlined">arrow_back</span>
+                Retour à mes demandes
             </a>
-            <div>
-                <h1 class="text-3xl font-black text-white tracking-tight">Nouvelle <span class="text-primary">Réclamation</span></h1>
-                <p class="text-gray-400">Signalez un problème ou posez une question à notre équipe support.</p>
-            </div>
         </div>
 
-        <div class="bg-surface-dark border border-white/5 rounded-3xl p-8 shadow-2xl relative overflow-hidden">
+        <div class="bg-surface-dark border border-white/5 rounded-3xl p-8 shadow-2xl relative overflow-hidden max-w-3xl mx-auto">
             {# Background decoration #}
             <div class="absolute top-0 right-0 p-32 bg-primary/5 rounded-full blur-3xl -mr-16 -mt-16 pointer-events-none"></div>
 
@@ -59,6 +57,4 @@
 
             {{ form_end(form) }}
         </div>
-    </div>
-</div>
 {% endblock %}

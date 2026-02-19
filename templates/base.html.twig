@@ -458,10 +458,11 @@
   </head>
   <body class="{% block body_class %}bg-background-dark text-white font-display overflow-hidden{% endblock %}">
     <!-- Loading Screen - MonsterPlay Style -->
-    <div id="loadingScreen" class="loading-screen">
+    {% set skip_loading = app.request.query.has('q') or app.request.query.has('game') or app.request.query.has('sort') %}
+    <div id="loadingScreen" class="loading-screen {{ skip_loading ? 'hidden' : '' }}">
       <div class="preloader-content">
         <img
-          src="{{ asset('assets/logo.webp') }}"
+          src="{{ asset('assets/logo.jpg') }}"
           alt="Carthage Arena"
           class="preloader-logo"
         />
@@ -524,12 +525,20 @@
       window.addEventListener("load", function () {
         const loadingScreen = document.getElementById("loadingScreen");
         const mainContent = document.getElementById("mainContent");
+        if (loadingScreen.classList.contains('hidden')) {
+            mainContent.classList.remove("opacity-0");
+            mainContent.classList.add("opacity-100");
+            return;
+        }
         const progressBar = document.getElementById("progressBar");
         const percentageText = document.getElementById("percentageText");
 
+        const urlParams = new URLSearchParams(window.location.search);
+        const skipLoading = urlParams.has('q') || urlParams.has('game') || urlParams.has('sort');
+
         let progress = 0;
-        const duration = 2500; // 2.5 seconds total
-        const interval = 25; // Update every 25ms
+        const duration = skipLoading ? 100 : 2500; // Much faster if skipLoading
+        const interval = 25; 
         const increment = 100 / (duration / interval);
 
         const progressInterval = setInterval(function () {
@@ -543,7 +552,7 @@
               loadingScreen.classList.add("hidden");
               mainContent.classList.remove("opacity-0");
               mainContent.classList.add("opacity-100");
-            }, 200);
+            }, skipLoading ? 0 : 200);
           }
 
           progressBar.style.width = progress + "%";

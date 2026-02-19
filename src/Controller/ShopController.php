@@ -12,24 +12,23 @@ use Symfony\Component\Routing\Attribute\Route;
 class ShopController extends AbstractController
 {
     #[Route('/boutique', name: 'app_shop')]
-    public function index(SkinRepository $skinRepository, MerchRepository $merchRepository): Response
-    {
+    public function index(
+        SkinRepository $skinRepository,
+        MerchRepository $merchRepository,
+        \Symfony\Component\HttpFoundation\Request $request
+    ): Response {
         /** @var User $user */
         $user = $this->getUser();
         $userBalance = $user ? $user->getBalance() : 0;
 
-        $skins = $skinRepository->findAll();
-        $merch = $merchRepository->findAll();
+        $searchTerm = $request->query->get('q');
+        $gameFilter = $request->query->get('game');
+        $sort = $request->query->get('sort');
+
+        $skins = $skinRepository->search($searchTerm, $gameFilter, $sort);
+        $merch = $merchRepository->search($searchTerm, $gameFilter, $sort);
 
         $items = [];
-        $featuredItem = null;
-
-        // Combine for featured item selection
-        $allItems = array_merge($skins, $merch);
-        if (!empty($allItems)) {
-            $featuredItem = $allItems[array_rand($allItems)];
-        }
-
         foreach ($skins as $skin) {
             $items[] = [
                 'id' => $skin->getId(),
@@ -48,7 +47,7 @@ class ShopController extends AbstractController
                 'id' => $m->getId(),
                 'name' => $m->getName(),
                 'game' => $m->getGame() ? $m->getGame()->getName() : 'Autre',
-                'rarity' => 'MERCH', // Pseudo-rarity for display
+                'rarity' => 'MERCH',
                 'price' => $m->getPrice(),
                 'imageUrl' => $m->getImageUrl(),
                 'type' => 'merch',
@@ -56,9 +55,24 @@ class ShopController extends AbstractController
             ];
         }
 
+        // Apply global sorting if requested
+        if ($sort === 'price_asc') {
+            usort($items, fn($a, $b) => $a['price'] <=> $b['price']);
+        } elseif ($sort === 'price_desc') {
+            usort($items, fn($a, $b) => $b['price'] <=> $a['price']);
+        }
+
+        $featuredItem = null;
+        if (!empty($items)) {
+            $featuredItem = $items[array_rand($items)];
+        }
+
         return $this->render('shop/index.html.twig', [
             'items' => $items,
             'featuredItem' => $featuredItem,
+            'currentSearch' => $searchTerm,
+            'currentGame' => $gameFilter,
+            'currentSort' => $sort,
         ]);
     }
 
