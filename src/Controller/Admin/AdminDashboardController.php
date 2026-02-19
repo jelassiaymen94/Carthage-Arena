@@ -20,6 +20,8 @@ use App\Repository\MerchRepository;
 use App\Repository\SkinRepository;
 use App\Repository\TournoiRepository;
 use App\Repository\UserRepository;
+use App\Repository\ReclamationRepository;
+use App\Enum\ReclamationStatus;
 use App\Repository\TeamRepository;
 use App\Entity\Profile;
 use Doctrine\ORM\EntityManagerInterface;
@@ -36,6 +38,7 @@ class AdminDashboardController extends AbstractController
         private readonly TournoiRepository $tournoiRepository,
         private readonly UserRepository $userRepository,
         private readonly TeamRepository $teamRepository,
+        private readonly ReclamationRepository $reclamationRepository,
         private readonly GameRepository $gameRepository,
         private readonly SkinRepository $skinRepository,
         private readonly MerchRepository $merchRepository,
@@ -50,6 +53,12 @@ class AdminDashboardController extends AbstractController
         $totalUsers = $this->userRepository->count([]);
         $totalTournaments = $this->tournoiRepository->count([]);
 
+        $recentReclamations = $this->reclamationRepository->findBy(
+            ['status' => ReclamationStatus::PENDING],
+            ['createdAt' => 'DESC'],
+            5
+        );
+
         return $this->render('admin/dashboard/index.html.twig', [
             'stats' => [
                 'totalUsers' => $totalUsers,
@@ -57,11 +66,13 @@ class AdminDashboardController extends AbstractController
                 'totalTournaments' => $totalTournaments,
                 'activeTournaments' => count($this->tournoiRepository->findBy(['status' => 'ongoing'])),
                 'totalRevenue' => '125,450 DT',
+                'pendingReclamations' => count($recentReclamations),
                 'monthlyRevenue' => '18,200 DT',
                 'totalMatches' => 3421,
                 'todayMatches' => 28,
             ],
             'recentUsers' => $this->userRepository->findBy([], ['id' => 'DESC'], 5),
+            'recentReclamations' => $recentReclamations,
             'recentTournaments' => $tournois,
             'systemHealth' => [
                 'serverStatus' => 'online',

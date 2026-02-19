@@ -60,7 +60,7 @@
         {% endblock %}
       {% endembed %}
       <main
-        class="flex flex-1 flex-col ml-72 bg-background-dark relative"
+        class="flex flex-1 flex-col ml-72 bg-background-dark relative h-screen overflow-y-auto"
       >
         <header
           class="sticky top-0 z-50 flex h-20 items-center justify-between border-b border-white/5 bg-background-dark/80 backdrop-blur-md px-8 py-4"
@@ -373,12 +373,12 @@
                   ></div>
                 </div>
                 <div class="space-y-3 pt-2">
-                  <div class="flex items-center gap-2 text-sm text-gray-300">
+                  <div class="flex items-center gap-2 text-sm {% if isTeamComplete %}text-gray-300{% else %}text-gray-500{% endif %}">
                     <span
-                      class="material-symbols-outlined text-green-500 text-lg"
-                      >check_circle</span
+                      class="material-symbols-outlined {% if isTeamComplete %}text-green-500{% else %}text-gray-600{% endif %} text-lg"
+                      >{% if isTeamComplete %}check_circle{% else %}cancel{% endif %}</span
                     >
-                    <span>Equipe complète requise</span>
+                    <span>Equipe complète {% if userTeam %}({{ userTeam.getMembers().count() }}/5){% endif %}</span>
                   </div>
                   <div class="flex items-center gap-2 text-sm text-gray-300">
                     <span
