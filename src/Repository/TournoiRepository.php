@@ -15,4 +15,24 @@ class TournoiRepository extends ServiceEntityRepository
     {
         parent::__construct($registry, Tournoi::class);
     }
+
+    /**
+     * @return Tournoi[]
+     */
+    public function findByFilter(?string $filter, ?\App\Entity\User $user): array
+    {
+        $qb = $this->createQueryBuilder('t');
+
+        if ($filter === 'inscribed' && $user) {
+            $qb->innerJoin('t.teams', 'team')
+                ->innerJoin('team.members', 'membership')
+                ->andWhere('membership.player = :user')
+                ->setParameter('user', $user);
+        } elseif ($filter === 'completed') {
+            $qb->andWhere('t.status = :status')
+                ->setParameter('status', \App\Enum\TournamentStatus::COMPLETED);
+        }
+
+        return $qb->getQuery()->getResult();
+    }
 }

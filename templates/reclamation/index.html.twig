@@ -1,24 +1,16 @@
-{% extends 'base.html.twig' %}
+{% extends 'base_dashboard.html.twig' %}
 
 {% block title %}Mes Réclamations - Carthage Arena{% endblock %}
 
-{% block body %}
-<div class="min-h-screen bg-background-dark pt-24 pb-12">
-    <div class="container mx-auto px-4 max-w-5xl">
-        <div class="mb-8 flex items-center gap-4">
-            <a href="{{ path('app_dashboard') }}" class="p-3 rounded-lg bg-white/5 hover:bg-white/10 text-white hover:text-primary transition-all">
-                <span class="material-symbols-outlined text-[24px]">arrow_back</span>
+{% block dashboard_title %}Mes Réclamations{% endblock %}
+{% block dashboard_subtitle %}Suivez l'état de vos demandes et échangez avec le support.{% endblock %}
+
+{% block dashboard_content %}
+        <div class="flex items-center justify-end mb-8">
+            <a href="{{ path('app_reclamation_new') }}" class="px-6 py-3 rounded-xl bg-primary text-white font-bold hover:bg-primary/90 hover:scale-105 transition-all shadow-lg shadow-primary/20 flex items-center gap-2">
+                <span class="material-symbols-outlined">add</span>
+                Nouvelle demande
             </a>
-            <div class="flex-1 flex items-center justify-between">
-                <div>
-                    <h1 class="text-3xl font-black text-white tracking-tight">Mes <span class="text-primary">Réclamations</span></h1>
-                    <p class="text-gray-400">Suivez l'état de vos demandes et échangez avec le support.</p>
-                </div>
-                <a href="{{ path('app_reclamation_new') }}" class="px-6 py-3 rounded-xl bg-primary text-white font-bold hover:bg-primary/90 hover:scale-105 transition-all shadow-lg shadow-primary/20 flex items-center gap-2">
-                    <span class="material-symbols-outlined">add</span>
-                    Nouvelle demande
-                </a>
-            </div>
         </div>
 
         {% if reclamations is empty %}
@@ -86,6 +78,4 @@
                 {% endfor %}
             </div>
         {% endif %}
-    </div>
-</div>
 {% endblock %}
