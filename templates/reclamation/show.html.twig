@@ -1,10 +1,11 @@
-{% extends 'base.html.twig' %}
+{% extends 'base_dashboard.html.twig' %}
 
 {% block title %}Détails Réclamation - Carthage Arena{% endblock %}
 
-{% block body %}
-<div class="min-h-screen bg-background-dark pt-24 pb-12">
-    <div class="container mx-auto px-4 max-w-4xl">
+{% block dashboard_title %}Détails Réclamation{% endblock %}
+{% block dashboard_subtitle %}Consultez et répondez à votre demande.{% endblock %}
+
+{% block dashboard_content %}
         <div class="mb-6 flex items-center justify-between">
             <a href="{{ path('app_reclamation_index') }}" class="flex items-center gap-2 text-gray-400 hover:text-white transition-colors">
                 <span class="material-symbols-outlined">arrow_back</span>
@@ -135,6 +136,4 @@
                 </div>
             </div>
         </div>
-    </div>
-</div>
 {% endblock %}
