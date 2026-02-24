@@ -91,9 +91,9 @@ class ShopController extends AbstractController
 
         if ($type === 'skin') {
             $viewItem['rarity'] = $item->getRarity() ? $item->getRarity()->value : 'COMMON';
-        } else {
+        } 
             $viewItem['rarity'] = 'MERCH';
-        }
+        
 
         return $this->render('shop/item.html.twig', [
             'item' => $viewItem,
