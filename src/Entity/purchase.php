@@ -21,7 +21,7 @@ class Purchase
     #[ORM\ManyToOne(inversedBy: 'purchases')]
     #[ORM\JoinColumn(nullable: false)]
     private ?Merch $merch = null;
-    #[ORM\ManyToOne(inversedBy: 'purchases')]
+
     #[ORM\ManyToOne]
     #[ORM\JoinColumn(nullable: false)]
     private ?User $user = null;
@@ -73,11 +73,12 @@ class Purchase
     public function getPurchaseDate(): ?\DateTimeImmutable {
         return $this->purchaseDate;
     }
+
     public function calculateTotalPrice(): static
-{
-    if ($this->merch && $this->quantity !== null) {
-        $this->totalPrice = $this->merch->getPrice() * $this->quantity;
+    {
+        if ($this->merch && $this->quantity !== null) {
+            $this->totalPrice = $this->merch->getPrice() * $this->quantity;
+        }
+        return $this;
     }
-    return $this;
-}
 }
