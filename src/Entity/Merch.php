@@ -3,12 +3,14 @@
 namespace App\Entity;
 
 use App\Repository\MerchRepository;
+use DateTimeImmutable;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\Types\UuidType;
 use Symfony\Component\Uid\Uuid;
 use Symfony\Component\Validator\Constraints as Assert;
-
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 #[ORM\Entity(repositoryClass: MerchRepository::class)]
 class Merch
 {
@@ -29,7 +31,8 @@ class Merch
     #[Assert\NotBlank(message: "Le prix est obligatoire")]
     #[Assert\PositiveOrZero(message: "Le prix doit être positif ou zéro")]
     private ?int $price = null;
-
+   #[ORM\OneToMany(mappedBy: 'merch', targetEntity: Purchase::class)]
+    private Collection $purchases;
     #[ORM\Column]
     #[Assert\NotBlank(message: "Le stock est obligatoire")]
     #[Assert\PositiveOrZero(message: "Le stock doit être positif ou zéro")]
@@ -47,11 +50,12 @@ class Merch
 
     #[ORM\ManyToOne]
     private ?Game $game = null;
+ public function __construct()
+{
+    $this->createdAt = new DateTimeImmutable();
+    $this->purchases = new ArrayCollection();
+} 
 
-    public function __construct()
-    {
-        $this->createdAt = new \DateTimeImmutable();
-    }
 
     public function getId(): ?Uuid
     {
@@ -145,4 +149,8 @@ class Merch
         $this->game = $game;
         return $this;
     }
+    public function getPurchases(): Collection
+{
+    return $this->purchases;
+}
 }
