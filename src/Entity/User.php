@@ -337,6 +337,20 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
+    #[ORM\Column(length: 64, nullable: true, unique: true)]
+    private ?string $discordId = null;
+
+    public function getDiscordId(): ?string
+    {
+        return $this->discordId;
+    }
+
+    public function setDiscordId(?string $discordId): static
+    {
+        $this->discordId = $discordId;
+        return $this;
+    }
+
     /**
      * Used by templates that reference user.name
      */
