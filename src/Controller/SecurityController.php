@@ -3,13 +3,16 @@
 namespace App\Controller;
 
 use App\Email\PasswordResetEmail;
+use App\Email\VerificationEmail;
 use App\Entity\PasswordResetToken;
 use App\Entity\Profile;
 use App\Entity\User;
 use App\Enum\AccountStatus;
 use App\Form\RegistrationType;
+use App\Repository\LicenseRepository;
 use App\Repository\PasswordResetTokenRepository;
 use App\Repository\UserRepository;
+use App\Service\EmailVerificationService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -19,7 +22,7 @@ use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Security\Http\Authentication\AuthenticationUtils;
-use App\Repository\LicenseRepository;
+use SymfonyCasts\Bundle\VerifyEmail\Exception\VerifyEmailExceptionInterface;
 
 class SecurityController extends AbstractController
 {
@@ -46,7 +49,9 @@ class SecurityController extends AbstractController
         Request $request,
         UserPasswordHasherInterface $userPasswordHasher,
         EntityManagerInterface $entityManager,
-        LicenseRepository $licenseRepository
+        LicenseRepository $licenseRepository,
+        MailerInterface $mailer,
+        EmailVerificationService $emailVerificationService,
     ): Response {
         if ($this->getUser()) {
             return $this->redirectToRoute('app_dashboard');
@@ -61,6 +66,7 @@ class SecurityController extends AbstractController
             $accountType = $form->get('accountType')->getData();
 
             $user->setStatus(AccountStatus::ACTIVE);
+            $user->setIsVerified(false);
             $user->setPassword(
                 $userPasswordHasher->hashPassword(
                     $user,
@@ -71,7 +77,7 @@ class SecurityController extends AbstractController
             // Assign role and license based on account type
             if ($accountType === 'referee') {
                 $user->setRoles(['ROLE_REFEREE']);
-                
+
                 // Get and assign the license
                 $licenseCode = $form->get('licenseId')->getData();
                 if ($licenseCode) {
@@ -93,13 +99,92 @@ class SecurityController extends AbstractController
             $entityManager->persist($profile);
             $entityManager->flush();
 
-            // Auto login would be nice here, but for simplicity let's redirect to login
-            $this->addFlash('success', 'Compte créé avec succès ! Connectez-vous.');
-            return $this->redirectToRoute('app_login');
+            // Generate signed verification URL and send the email
+            $signatureComponents = $emailVerificationService->generateSignature(
+                $user,
+                $this->generateUrl('app_verify_email', [], UrlGeneratorInterface::ABSOLUTE_URL)
+            );
+
+            $mailer->send(new VerificationEmail($user, $signatureComponents->getSignedUrl()));
+
+            $signedUrl = $signatureComponents->getSignedUrl();
+
+            return $this->render('security/verify_email_pending.html.twig', [
+                'email' => $user->getEmail(),
+                'signedUrl' => $signedUrl,
+            ]);
         }
 
         return $this->render('security/register.html.twig', [
             'registrationForm' => $form->createView(),
+        ]);
+    }
+
+    #[Route('/verifier-email', name: 'app_verify_email')]
+    public function verifyEmail(
+        Request $request,
+        UserRepository $userRepository,
+        EntityManagerInterface $entityManager,
+        EmailVerificationService $emailVerificationService,
+    ): Response {
+        $id = $request->query->get('id');
+
+        if (!$id) {
+            return $this->redirectToRoute('app_register');
+        }
+
+        $user = $userRepository->find($id);
+
+        if (!$user) {
+            return $this->redirectToRoute('app_register');
+        }
+
+        if ($user->isVerified()) {
+            $this->addFlash('success', 'Votre adresse e-mail est déjà vérifiée. Connectez-vous.');
+            return $this->redirectToRoute('app_login');
+        }
+
+        try {
+            $emailVerificationService->validateRequest($user, $request);
+        } catch (VerifyEmailExceptionInterface $e) {
+            $this->addFlash('error', 'Le lien de vérification est invalide ou a expiré. Veuillez vous réinscrire ou demander un nouveau lien.');
+            return $this->redirectToRoute('app_register');
+        }
+
+        $user->setIsVerified(true);
+        $entityManager->flush();
+
+        $this->addFlash('success', 'Votre adresse e-mail a été vérifiée avec succès ! Vous pouvez maintenant vous connecter.');
+        return $this->redirectToRoute('app_login');
+    }
+
+    #[Route('/renvoyer-verification', name: 'app_resend_verification', methods: ['POST'])]
+    public function resendVerification(
+        Request $request,
+        UserRepository $userRepository,
+        MailerInterface $mailer,
+        EmailVerificationService $emailVerificationService,
+    ): Response {
+        if (!$this->isCsrfTokenValid('resend_verification', $request->request->get('_token'))) {
+            $this->addFlash('error', 'Token de sécurité invalide. Veuillez réessayer.');
+            return $this->redirectToRoute('app_register');
+        }
+
+        $email = $request->request->get('email', '');
+        $user = $userRepository->findOneBy(['email' => $email]);
+
+        // Always show a generic message to prevent user enumeration
+        if ($user && !$user->isVerified()) {
+            $signatureComponents = $emailVerificationService->generateSignature(
+                $user,
+                $this->generateUrl('app_verify_email', [], UrlGeneratorInterface::ABSOLUTE_URL)
+            );
+            $mailer->send(new VerificationEmail($user, $signatureComponents->getSignedUrl()));
+        }
+
+        return $this->render('security/verify_email_pending.html.twig', [
+            'email' => $email,
+            'signedUrl' => null,
         ]);
     }
 

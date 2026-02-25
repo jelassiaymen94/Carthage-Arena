@@ -88,6 +88,9 @@ class DiscordAuthenticator extends OAuth2Authenticator
                     // Password not needed for OAuth users — set a random unusable one
                     $user->setPassword(bin2hex(random_bytes(32)));
 
+                    // Discord users are considered verified (authenticated via Discord)
+                    $user->setIsVerified(true);
+
                     // Create linked Profile
                     $profile = new Profile();
                     $profile->setUser($user);
