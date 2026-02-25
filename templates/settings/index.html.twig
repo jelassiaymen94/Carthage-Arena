@@ -32,7 +32,7 @@
 
       <!-- Main Content -->
       <main
-        class="flex flex-1 flex-col ml-72 bg-background-dark relative"
+        class="flex flex-1 flex-col ml-72 bg-background-dark relative h-screen overflow-y-auto"
       >
         <!-- Header -->
         <header
@@ -162,9 +162,19 @@
               </div>
 
               <div>
-                <label for="{{ profileForm.bio.vars.id }}" class="block text-sm font-medium text-gray-400 mb-2">
-                  Biographie
-                </label>
+                <div class="flex items-center justify-between mb-2">
+                  <label for="{{ profileForm.bio.vars.id }}" class="block text-sm font-medium text-gray-400">
+                    Biographie
+                  </label>
+                  <button
+                    id="aiBioBtnSettings"
+                    type="button"
+                    class="flex items-center gap-1.5 rounded-full border border-primary/40 bg-primary/10 px-3 py-1.5 text-xs font-bold text-primary hover:bg-primary/20 hover:border-primary transition-all"
+                  >
+                    <span id="aiBioSettingsIcon" class="material-symbols-outlined text-[14px]">auto_awesome</span>
+                    <span id="aiBioSettingsLabel">Générer avec IA</span>
+                  </button>
+                </div>
                 {{ form_widget(profileForm.bio) }}
                 {% for error in profileForm.bio.vars.errors %}
                   <p class="text-xs text-red-400 mt-1">{{ error.message }}</p>
@@ -307,6 +317,7 @@
 
 {% block javascripts %}
     <script>
+      // Avatar preview
       const avatarInput = document.getElementById('{{ profileForm.avatar.vars.id }}');
       if (avatarInput) {
         avatarInput.addEventListener('change', function(e) {
@@ -320,6 +331,56 @@
           }
         });
       }
+
+      // AI Bio Generator
+      (function () {
+        const btn      = document.getElementById('aiBioBtnSettings');
+        const icon     = document.getElementById('aiBioSettingsIcon');
+        const label    = document.getElementById('aiBioSettingsLabel');
+        const bioField = document.getElementById('{{ profileForm.bio.vars.id }}');
+
+        // If the user arrived from the profile page with a generated bio, pre-fill
+        const storedBio = sessionStorage.getItem('aiBioGenerated');
+        if (storedBio && bioField && !bioField.value.trim()) {
+          bioField.value = storedBio;
+          sessionStorage.removeItem('aiBioGenerated');
+        }
+
+        if (!btn || !bioField) return;
+
+        btn.addEventListener('click', async function () {
+          btn.disabled = true;
+          icon.classList.add('animate-spin');
+          label.textContent = 'Génération…';
+
+          try {
+            const resp = await fetch('{{ path('app_ai_generate_bio') }}', {
+              method: 'POST',
+              headers: { 'X-Requested-With': 'XMLHttpRequest' },
+            });
+            const data = await resp.json();
+
+            if (data.bio) {
+              bioField.value = data.bio;
+              // Flash the field green briefly to signal success
+              bioField.style.borderColor = '#22c55e';
+              bioField.style.boxShadow = '0 0 0 2px rgba(34,197,94,0.3)';
+              setTimeout(function () {
+                bioField.style.borderColor = '';
+                bioField.style.boxShadow = '';
+              }, 2000);
+            } else {
+              alert(data.error || "Une erreur inattendue s'est produite.");
+            }
+          } catch (e) {
+            alert("Impossible de joindre le serveur. Veuillez réessayer.");
+          } finally {
+            btn.disabled = false;
+            icon.classList.remove('animate-spin');
+            label.textContent = 'Générer avec IA';
+          }
+        });
+      })();
     </script>
 {% endblock %}
 
