@@ -37,23 +37,23 @@
                 </a>
                 <ul class="ml-6 mt-1 flex flex-col gap-1">
                     <li>
-                        <a href="{{ path('admin_merch_list') }}"
+                        <a href="{{ path('admin_merch_index') }}"
                            class="text-white/60 hover:text-white transition-all duration-200
-                                  {{ app.request.get('_route') == 'admin_merch_list' ? 'text-primary font-semibold' : '' }}">
+                                  {{ app.request.get('_route') == 'admin_merch_index' ? 'text-primary font-semibold' : '' }}">
                             Liste Merch
                         </a>
                     </li>
                     <li>
-                        <a href="{{ path('admin_merch_new') }}"
+                        <a href="{{ path('admin_merch_index') }}"
                            class="text-white/60 hover:text-white transition-all duration-200
-                                  {{ app.request.get('_route') == 'admin_merch_new' ? 'text-primary font-semibold' : '' }}">
+                                  {{ app.request.get('_route') == 'admin_merch_index' ? 'text-primary font-semibold' : '' }}">
                             Ajouter Merch
                         </a>
                     </li>
                     <li>
-                        <a href="{{ path('admin_merch_stats') }}"
+                        <a href="{{ path('api_stats_top_merch') }}"
                            class="text-white/60 hover:text-white transition-all duration-200
-                                  {{ app.request.get('_route') == 'admin_merch_stats' ? 'text-primary font-semibold' : '' }}">
+                                  {{ app.request.get('_route') == 'api_stats_top_merch' ? 'text-primary font-semibold' : '' }}">
                             Top 3 Merch
                         </a>
                     </li>
