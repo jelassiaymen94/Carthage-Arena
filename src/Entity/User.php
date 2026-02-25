@@ -337,6 +337,9 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
+    #[ORM\Column]
+    private bool $isVerified = false;
+
     #[ORM\Column(length: 64, nullable: true, unique: true)]
     private ?string $discordId = null;
 
@@ -357,5 +360,16 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function getName(): string
     {
         return $this->nickname ?? $this->username ?? '';
+    }
+
+    public function isVerified(): bool
+    {
+        return $this->isVerified;
+    }
+
+    public function setIsVerified(bool $isVerified): static
+    {
+        $this->isVerified = $isVerified;
+        return $this;
     }
 }
