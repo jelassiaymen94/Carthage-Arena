@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Entity\User;
+use App\Repository\UserSkinRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
@@ -46,6 +47,27 @@ class ProfileController extends AbstractController
             ],
             'recentMatches' => [],
             'achievements' => [],
+        ]);
+    }
+
+    #[Route('/historique-achat', name: 'app_profile_historique_achat')]
+    public function historiqueAchat(UserSkinRepository $userSkinRepository, EntityManagerInterface $entityManager): Response
+    {
+        /** @var User $user */
+        $user = $this->getUser();
+        if (!$user) {
+            return $this->redirectToRoute('app_login');
+        }
+
+        // Refresh user to ensure fresh data
+        $entityManager->refresh($user);
+
+        // Get user-specific skins
+        $userSkins = $userSkinRepository->findByUser($user, null);
+
+        return $this->render('profile/historique_achat.html.twig', [
+            'userSkins' => $userSkins,
+            'totalSkins' => count($userSkins),
         ]);
     }
 }

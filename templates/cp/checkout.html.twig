@@ -1,0 +1,223 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Paiement - Carthage Arena{% endblock %}
+
+{% block body %}
+<div
+  id="mainContent"
+  class="flex min-h-screen w-full opacity-0 transition-opacity duration-500"
+>
+  <!-- Sidebar -->
+  {% embed 'components/_sidebar.html.twig' %}
+    {% block sidebar_bottom %}
+    <div class="relative overflow-hidden rounded-2xl bg-gradient-to-br from-gray-900 to-black p-4 border border-white/10">
+      <div class="absolute -right-6 -top-6 h-24 w-24 rounded-full bg-secondary/20 blur-2xl"></div>
+      <div class="relative z-10 flex flex-col gap-3">
+        <div class="flex items-center justify-between">
+          <p class="text-[10px] font-bold uppercase tracking-widest text-secondary">Paiement</p>
+          <span class="material-symbols-outlined text-secondary text-sm">credit_card</span>
+        </div>
+        <div>
+          <h4 class="text-sm font-bold text-white">Sécurisé par Stripe</h4>
+          <p class="text-xs text-gray-400 mt-1">Vos informations de paiement sont protégées.</p>
+        </div>
+      </div>
+    </div>
+    {% endblock %}
+  {% endembed %}
+
+  <!-- Main Content -->
+  <main class="flex flex-1 flex-col ml-72 bg-background-dark relative">
+    <div class="flex-1 p-8">
+      <div class="max-w-2xl mx-auto">
+            <!-- Header -->
+            <div class="mb-8">
+                <a href="{{ path('app_cp_shop') }}" class="text-primary hover:text-primary/80 flex items-center gap-2 mb-4">
+                    <span class="material-symbols-outlined">arrow_back</span>
+                    Retour
+                </a>
+                <h1 class="text-3xl font-black">Confirmer votre Achat</h1>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                <!-- Order Summary -->
+                <div class="lg:col-span-2">
+                    <!-- Package Info -->
+                    <div class="bg-white/5 rounded-2xl border border-white/10 p-8 mb-6">
+                        <h2 class="text-lg font-bold mb-6">Commande</h2>
+                        
+                        <div class="flex items-center justify-between mb-6 pb-6 border-b border-white/10">
+                            <div>
+                                <p class="text-white/60 text-sm mb-1">Package</p>
+                                <p class="text-xl font-bold">{{ packageData.label }}</p>
+                            </div>
+                            <div class="text-right">
+                                <p class="text-white/60 text-sm mb-1">Quantité</p>
+                                <p class="text-2xl font-bold text-secondary">1x</p>
+                            </div>
+                        </div>
+
+                        <div class="space-y-3 mb-6 pb-6 border-b border-white/10">
+                            <div class="flex justify-between">
+                                <span class="text-white/60">Sous-total</span>
+                                <span>${{ packageData.price }}</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-white/60">Frais de traitement</span>
+                                <span>$0.00</span>
+                            </div>
+                        </div>
+
+                        <div class="flex justify-between text-lg font-bold">
+                            <span>Total</span>
+                            <span class="text-secondary">${{ packageData.price }}</span>
+                        </div>
+                    </div>
+
+                    <!-- Payment Form -->
+                    <div class="bg-white/5 rounded-2xl border border-white/10 p-8">
+                        <h2 class="text-lg font-bold mb-6">Informations de Paiement</h2>
+
+                        <form id="payment-form" action="{{ path('app_cp_webhook_success') }}" method="POST">
+                            <!-- Cardholder Name -->
+                            <div class="mb-6">
+                                <label class="block text-sm font-medium text-white/60 mb-2">
+                                    Nom sur la carte
+                                </label>
+                                <input type="text" placeholder="Jean Dupont" class="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-3 text-white placeholder-white/20 focus:border-primary focus:ring-1 focus:ring-primary/20 outline-none transition-all" required>
+                            </div>
+
+                            <!-- Card Element will be inserted here -->
+                            <div class="mb-6">
+                                <label class="block text-sm font-medium text-white/60 mb-2">
+                                    Informations Carte
+                                </label>
+                                <div id="card-element" class="bg-white/5 border border-white/10 rounded-lg px-4 py-3"></div>
+                                <div id="card-errors" class="text-red-400 text-sm mt-2" role="alert"></div>
+                            </div>
+
+                            <!-- Hidden metadata -->
+                            <input type="hidden" id="user_id" value="{{ user.id }}">
+                            <input type="hidden" id="cp_amount" value="{{ packageData.amount }}">
+                            <input type="hidden" id="package_type" value="{{ package }}">
+
+                            <!-- Terms Agreement -->
+                            <div class="mb-6">
+                                <label class="flex items-center gap-3">
+                                    <input type="checkbox" required class="w-4 h-4 rounded">
+                                    <span class="text-sm text-white/60">
+                                        J'accepte les <a href="#" class="text-primary hover:text-primary/80">conditions d'utilisation</a>
+                                    </span>
+                                </label>
+                            </div>
+
+                            <!-- Submit Button -->
+                            <button type="submit" class="w-full bg-primary hover:bg-primary/80 text-white font-bold py-3 px-4 rounded-lg transition-all flex items-center justify-center gap-2">
+                                <span class="material-symbols-outlined">lock</span>
+                                Payer ${{ packageData.price }}
+                            </button>
+
+                            <p class="text-xs text-white/40 text-center mt-4">
+                                Paiement sécurisé par Stripe
+                            </p>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- Order Summary Sidebar (Mobile) -->
+                <div class="lg:col-span-1">
+                    <div class="sticky top-24 bg-white/5 rounded-2xl border border-white/10 p-6">
+                        <h3 class="font-bold mb-6">Résumé</h3>
+
+                        <div class="bg-gradient-to-br from-secondary/20 to-secondary/10 rounded-xl p-4 mb-6 border border-secondary/20">
+                            <p class="text-white/60 text-sm mb-1">Vous allez recevoir</p>
+                            <p class="text-3xl font-black text-secondary">{{ packageData.amount }}<span class="text-lg"> CP</span></p>
+                        </div>
+
+                        <div class="space-y-3 pb-6 border-b border-white/10 mb-6">
+                            <div class="flex justify-between">
+                                <span class="text-white/60 text-sm">Montant</span>
+                                <span>${{ packageData.price }}</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-white/60 text-sm">Devise</span>
+                                <span>USD</span>
+                            </div>
+                        </div>
+
+                        <div class="space-y-2 text-xs text-white/40">
+                            <p>✓ Instantané</p>
+                            <p>✓ Sécurisé</p>
+                            <p>✓ Pas de frais cachés</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% include 'components/_mobile_nav.html.twig' %}
+  </main>
+</div>
+
+<script src="https://js.stripe.com/v3/"></script>
+<script>
+const stripe = Stripe('{{ stripe_publishable ?: "pk_test_YOUR_PUBLISHABLE_KEY" }}'); // Replace with your publishable key if empty
+const elements = stripe.elements();
+const cardElement = elements.create('card');
+cardElement.mount('#card-element');
+
+const form = document.getElementById('payment-form');
+const cardErrors = document.getElementById('card-errors');
+
+cardElement.on('change', function(event) {
+    if (event.error) {
+        cardErrors.textContent = event.error.message;
+    } else {
+        cardErrors.textContent = '';
+    }
+});
+
+form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+
+    const clientSecret = '{{ client_secret|default('') }}';
+    if (!clientSecret) {
+        cardErrors.textContent = 'Paiement non configuré (clé manquante).';
+        return;
+    }
+
+    const name = document.querySelector('input[placeholder="Jean Dupont"]').value || '';
+
+    const { error, paymentIntent } = await stripe.confirmCardPayment(clientSecret, {
+        payment_method: {
+            card: cardElement,
+            billing_details: { name }
+        }
+    });
+
+    if (error) {
+        cardErrors.textContent = error.message;
+    } else if (paymentIntent && paymentIntent.status === 'succeeded') {
+        // Payment succeeded.
+        // If webhook secret is not set (local/dev), post a simulated event to the webhook endpoint
+        const webhookSet = {{ webhook_secret_set ? 'true' : 'false' }};
+        if (!webhookSet) {
+            try {
+                await fetch('{{ path("app_cp_webhook_success") }}', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ type: 'payment_intent.succeeded', data: { object: paymentIntent } })
+                });
+            } catch (err) {
+                // ignore errors from simulated webhook
+            }
+        }
+
+        // Redirect to shop with success.
+        window.location.href = '{{ path("app_cp_shop") }}?success=true';
+    } else {
+        cardErrors.textContent = 'Échec du paiement, réessayez.';
+    }
+});
+</script>
+{% endblock %}

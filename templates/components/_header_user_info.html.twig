@@ -25,6 +25,11 @@
       <span class="material-symbols-outlined text-[16px] font-bold">payments</span>
       <span class="text-xs font-black">{{ app.user.balance|number_format(0, ',', ' ') }} CP</span>
     </div>
+
+    <a href="{{ path('app_cp_shop') }}" class="flex items-center gap-1 rounded-full bg-primary/20 hover:bg-primary/30 px-3 py-1 text-primary border border-primary/30 hover:border-primary/50 transition-all text-xs font-bold" title="Recharger">
+      <span class="material-symbols-outlined text-[14px]">add</span>
+      Recharger
+    </a>
     
     <div class="h-9 w-9 overflow-hidden rounded-full border-2 border-primary bg-gray-800"
          style="background-image: url('{{ app.user.avatar ?: 'https://api.dicebear.com/7.x/avataaars/svg?seed=' ~ app.user.username }}'); background-size: cover; background-position: center;">

@@ -1,0 +1,128 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Recharger CP - Carthage Arena{% endblock %}
+
+{% block body %}
+<div
+  id="mainContent"
+  class="flex min-h-screen w-full opacity-0 transition-opacity duration-500"
+>
+  <!-- Sidebar -->
+  {% embed 'components/_sidebar.html.twig' %}
+    {% block sidebar_bottom %}
+    <div class="relative overflow-hidden rounded-2xl bg-gradient-to-br from-gray-900 to-black p-4 border border-white/10">
+      <div class="absolute -right-6 -top-6 h-24 w-24 rounded-full bg-secondary/20 blur-2xl"></div>
+      <div class="relative z-10 flex flex-col gap-3">
+        <div class="flex items-center justify-between">
+          <p class="text-[10px] font-bold uppercase tracking-widest text-secondary">Recharge</p>
+          <span class="material-symbols-outlined text-secondary text-sm">wallet</span>
+        </div>
+        <div>
+          <h4 class="text-sm font-bold text-white">Augmentez votre solde</h4>
+          <p class="text-xs text-gray-400 mt-1">Achetez des CP pour accéder à la boutique.</p>
+        </div>
+      </div>
+    </div>
+    {% endblock %}
+  {% endembed %}
+
+  <!-- Main Content -->
+  <main class="flex flex-1 flex-col ml-72 bg-background-dark relative">
+    <div class="flex-1 p-8">
+      <div class="max-w-6xl mx-auto">
+        <!-- Header -->
+        <div class="mb-12">
+          <h1 class="text-4xl font-black mb-2">Recharger votre Solde</h1>
+          <p class="text-white/60">Achetez des Carthage Points pour débloquer l'accès à notre boutique exclusive.</p>
+        </div>
+
+        <!-- CP Packages Grid -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
+          {% for packageKey, package in packages %}
+          <div class="group relative overflow-hidden rounded-2xl bg-gradient-to-br from-surface-dark to-background-dark border border-white/5 hover:border-primary/30 transition-all duration-300">
+            <!-- Bonus Badge -->
+            {% if 'Bonus' in package.label %}
+            <div class="absolute top-3 right-3 bg-secondary text-black text-xs font-bold px-3 py-1 rounded-full">
+              BONUS
+            </div>
+            {% endif %}
+
+            <form method="post" action="{{ path('app_cp_checkout', {'package': packageKey}) }}" class="p-6 h-full flex flex-col justify-between">
+              <!-- Amount Display -->
+              <div class="mb-8">
+                <div class="text-5xl font-black text-secondary mb-2">
+                  {{ package.amount }}
+                </div>
+                <p class="text-white/60 text-sm">Carthage Points</p>
+              </div>
+
+              <!-- Price -->
+              <div class="border-t border-white/10 pt-6 mb-6">
+                <p class="text-white/60 text-sm mb-2">Prix</p>
+                <div class="text-3xl font-bold">
+                  ${{ package.price }}
+                </div>
+              </div>
+
+              <!-- Button -->
+              <button type="submit" class="w-full bg-primary hover:bg-primary/80 text-white font-bold py-3 px-4 rounded-2xl transition-all transform hover:scale-105">
+                Acheter
+                <span class="material-symbols-outlined align-middle ml-2">shopping_cart</span>
+              </button>
+            </form>
+          </div>
+          {% endfor %}
+        </div>
+
+        <!-- Info Section -->
+        <div class="bg-white/5 rounded-2xl border border-white/10 p-8">
+          <h2 class="text-xl font-bold mb-4">Pourquoi acheter des CP?</h2>
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div>
+              <div class="w-12 h-12 rounded-full bg-secondary/20 flex items-center justify-center mb-4">
+                <span class="material-symbols-outlined text-secondary">shopping_bag</span>
+              </div>
+              <h3 class="font-bold mb-2">Accès Boutique</h3>
+              <p class="text-sm text-white/60">Accédez à des skins exclusifs et des articles premium.</p>
+            </div>
+            <div>
+              <div class="w-12 h-12 rounded-full bg-secondary/20 flex items-center justify-center mb-4">
+                <span class="material-symbols-outlined text-secondary">card_giftcard</span>
+              </div>
+              <h3 class="font-bold mb-2">Bonus de Rechargement</h3>
+              <p class="text-sm text-white/60">Recevez des points bonus sur les achats de packages.</p>
+            </div>
+            <div>
+              <div class="w-12 h-12 rounded-full bg-secondary/20 flex items-center justify-center mb-4">
+                <span class="material-symbols-outlined text-secondary">security</span>
+              </div>
+              <h3 class="font-bold mb-2">Paiement Sécurisé</h3>
+              <p class="text-sm text-white/60">Vos transactions sont protégées par Stripe.</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- FAQ -->
+        <div class="mt-12">
+          <h2 class="text-2xl font-bold mb-6">Questions Fréquentes</h2>
+          <div class="space-y-4">
+            <div class="bg-white/5 rounded-2xl border border-white/10 p-6">
+              <h3 class="font-bold mb-2">Les CP expirent-ils?</h3>
+              <p class="text-white/60 text-sm">Non, vos Carthage Points n'expirent jamais et restent disponibles sur votre compte.</p>
+            </div>
+            <div class="bg-white/5 rounded-2xl border border-white/10 p-6">
+              <h3 class="font-bold mb-2">Puis-je les transférer?</h3>
+              <p class="text-white/60 text-sm">Les CP sont personnels à votre compte et ne peuvent pas être transférés à d'autres joueurs.</p>
+            </div>
+            <div class="bg-white/5 rounded-2xl border border-white/10 p-6">
+              <h3 class="font-bold mb-2">Puis-je obtenir un remboursement?</h3>
+              <p class="text-white/60 text-sm">Les achats de CP ne peuvent pas être remboursés. Consultez notre politique de remboursement pour plus d'informations.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    {% include 'components/_mobile_nav.html.twig' %}
+  </main>
+</div>
+{% endblock %}

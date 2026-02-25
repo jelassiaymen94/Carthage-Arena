@@ -3,10 +3,16 @@
 namespace App\Controller;
 
 use App\Entity\User;
+use App\Entity\Skin;
+use App\Entity\UserSkin;
 use App\Repository\MerchRepository;
 use App\Repository\SkinRepository;
+use App\Service\InventoryService;
+use App\Service\PaymentService;
+use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Attribute\Route;
 
 class ShopController extends AbstractController
@@ -15,7 +21,7 @@ class ShopController extends AbstractController
     public function index(
         SkinRepository $skinRepository,
         MerchRepository $merchRepository,
-        \Symfony\Component\HttpFoundation\Request $request
+        Request $request
     ): Response {
         /** @var User $user */
         $user = $this->getUser();
@@ -111,6 +117,71 @@ class ShopController extends AbstractController
 
         return $this->render('shop/item.html.twig', [
             'item' => $viewItem,
+        ]);
+    }
+
+    #[Route('/boutique/acheter/{id}', name: 'app_shop_buy', methods: ['POST'])]
+    public function buy(
+        string $id,
+        SkinRepository $skinRepository,
+        EntityManagerInterface $entityManager,
+        PaymentService $paymentService,
+        InventoryService $inventoryService
+    ): Response
+    {
+        /** @var User $user */
+        $user = $this->getUser();
+        if (!$user) {
+            return $this->redirectToRoute('app_login');
+        }
+
+        $skin = $skinRepository->find($id);
+        if (!$skin) {
+            throw $this->createNotFoundException('Skin non trouvé');
+        }
+
+        if (!$inventoryService->checkStock($skin)) {
+            $this->addFlash('error', 'Stock épuisé');
+            return $this->redirectToRoute('app_shop_item', ['id' => $id]);
+        }
+
+        // Vérifier si l'utilisateur a suffisamment de CP
+        if ($user->getBalance() >= $skin->getPrice()) {
+            // Déduire du solde et valider l'achat
+            $user->setBalance($user->getBalance() - $skin->getPrice());
+            
+            // Créer un enregistrement de propriété du skin
+            $userSkin = new UserSkin();
+            $userSkin->setUser($user);
+            $userSkin->setSkin($skin);
+            $userSkin->setStatus('active');
+            $entityManager->persist($userSkin);
+            $entityManager->flush();
+            
+            // Réserver le stock
+            $inventoryService->reserveStock($skin);
+            
+            $this->addFlash('success', 'Skin acheté avec succès! Vérifiez votre historique d\'achat.');
+            return $this->redirectToRoute('app_profile_historique_achat');
+        }
+
+        // Solde insuffisant - proposer un paiement par carte
+        return $this->render('shop/payment.html.twig', [
+            'skin' => $skin,
+        ]);
+    }
+
+    #[Route('/api/shop/stock/{id}', name: 'app_shop_stock', methods: ['GET'])]
+    public function getStock(string $id, SkinRepository $skinRepository, InventoryService $inventoryService): Response
+    {
+        $skin = $skinRepository->find($id);
+        if (!$skin) {
+            return $this->json(['error' => 'Skin not found'], 404);
+        }
+
+        return $this->json([
+            'available' => $inventoryService->checkStock($skin),
+            'stock' => $skin->getStock(),
         ]);
     }
 }

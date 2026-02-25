@@ -456,13 +456,13 @@
       {% block stylesheets %}{% endblock %}
     </style>
   </head>
-  <body class="{% block body_class %}bg-background-dark text-white font-display overflow-hidden{% endblock %}">
+  <body class="{% block body_class %}bg-background-dark text-white font-display{% endblock %}">
     <!-- Loading Screen - MonsterPlay Style -->
     {% set skip_loading = app.request.query.has('q') or app.request.query.has('game') or app.request.query.has('sort') %}
     <div id="loadingScreen" class="loading-screen {{ skip_loading ? 'hidden' : '' }}">
       <div class="preloader-content">
         <img
-          src="{{ asset('assets/logo.jpg') }}"
+          src="{{ asset('logo.png') }}"
           alt="Carthage Arena"
           class="preloader-logo"
         />
