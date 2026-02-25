@@ -1,0 +1,49 @@
+{% extends 'base.html.twig' %}
+{% block title %}Modifier {{ merch.name }}{% endblock %}
+
+{% block body %}
+<h1 class="text-2xl font-bold mb-4">Modifier Merch: {{ merch.name }}</h1>
+
+<form method="post" class="flex flex-col gap-4 max-w-md" novalidate>
+    {# Name Field #}
+    <input type="text" name="name" value="{{ merch.name }}" placeholder="Nom du produit" class="border p-2 rounded">
+    {% for error in errors.name ?? [] %}
+        <span class="text-red-500 text-sm">{{ error.message }}</span>
+    {% endfor %}
+
+    {# Price Field #}
+    <input type="number" name="price" value="{{ merch.price }}" placeholder="Prix" class="border p-2 rounded">
+    {% for error in errors.price ?? [] %}
+        <span class="text-red-500 text-sm">{{ error.message }}</span>
+    {% endfor %}
+
+    {# Stock Field #}
+    <input type="number" name="stock" value="{{ merch.stock }}" placeholder="Stock" class="border p-2 rounded">
+    {% for error in errors.stock ?? [] %}
+        <span class="text-red-500 text-sm">{{ error.message }}</span>
+    {% endfor %}
+
+    {# Type Field #}
+    <input type="text" name="type" value="{{ merch.type }}" placeholder="Type" class="border p-2 rounded">
+    {% for error in errors.type ?? [] %}
+        <span class="text-red-500 text-sm">{{ error.message }}</span>
+    {% endfor %}
+
+    {# Description Field #}
+    <textarea name="description" placeholder="Description" class="border p-2 rounded">{{ merch.description }}</textarea>
+    {% for error in errors.description ?? [] %}
+        <span class="text-red-500 text-sm">{{ error.message }}</span>
+    {% endfor %}
+
+    {# Image URL Field #}
+    <input type="text" name="imageUrl" value="{{ merch.imageUrl }}" placeholder="Image URL" class="border p-2 rounded">
+    {% for error in errors.imageUrl ?? [] %}
+        <span class="text-red-500 text-sm">{{ error.message }}</span>
+    {% endfor %}
+
+    <div class="flex gap-2">
+        <button type="submit" class="bg-primary text-white px-4 py-2 rounded">Enregistrer</button>
+        <a href="{{ path('admin_merch_list') }}" class="bg-gray-500 text-white px-4 py-2 rounded">Annuler</a>
+    </div>
+</form>
+{% endblock %}

@@ -1,14 +1,10 @@
 <?php
-
 namespace App\Repository;
 
 use App\Entity\Merch;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
-/**
- * @extends ServiceEntityRepository<Merch>
- */
 class MerchRepository extends ServiceEntityRepository
 {
     public function __construct(ManagerRegistry $registry)
@@ -25,7 +21,7 @@ class MerchRepository extends ServiceEntityRepository
             ->leftJoin('m.game', 'g');
 
         if ($term) {
-            $qb->andWhere('m.name LIKE :term')
+            $qb->andWhere('m.name LIKE :term OR m.type LIKE :term')
                 ->setParameter('term', '%' . $term . '%');
         }
 
