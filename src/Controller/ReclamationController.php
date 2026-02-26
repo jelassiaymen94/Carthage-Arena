@@ -13,6 +13,9 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
+use App\Service\SpeechToTextService;
+use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\File\UploadedFile;
 
 #[Route('/reclamations')]
 #[IsGranted('ROLE_USER')]
@@ -87,5 +90,28 @@ class ReclamationController extends AbstractController
         return $this->render('reclamation/show.html.twig', [
             'reclamation' => $reclamation,
         ]);
+    }
+    #[Route('/voice-to-text', name: 'app_reclamation_stt', methods: ['POST'])]
+    public function voiceToText(Request $request, SpeechToTextService $sttService): JsonResponse
+    {
+        /** @var UploadedFile $audioFile */
+        $audioFile = $request->files->get('audio');
+
+        if (!$audioFile) {
+            return new JsonResponse(['error' => 'Aucun fichier audio reçu.'], Response::HTTP_BAD_REQUEST);
+        }
+
+        // Temporary save for transcription
+        $tempPath = sys_get_temp_dir() . DIRECTORY_SEPARATOR . uniqid('reclamation_') . '.' . $audioFile->guessExtension();
+        $audioFile->move(sys_get_temp_dir(), basename($tempPath));
+
+        $transcription = $sttService->transcribe($tempPath);
+
+        // Cleanup
+        if (file_exists($tempPath)) {
+            unlink($tempPath);
+        }
+
+        return new JsonResponse(['text' => $transcription]);
     }
 }

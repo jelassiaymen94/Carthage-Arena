@@ -33,6 +33,7 @@
             <div class="p-8 space-y-8">
                 {# Stats Grid #}
                 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                    {# ... (stats cards) #}
                     {% include 'components/_stat_card.html.twig' with {
                         label: 'Total Utilisateurs', value: stats.totalUsers,
                         icon: 'group', iconColor: 'blue',
@@ -53,15 +54,33 @@
                         icon: 'sports_esports', iconColor: 'primary',
                         trendIcon: 'today', trendColor: 'white'
                     } %}
-                    {% include 'components/_stat_card.html.twig' with {
-                        label: 'Revenu Total (Simulation)', value: stats.totalRevenue,
-                        icon: 'payments', iconColor: 'green'
-                    } %}
-                    {% include 'components/_stat_card.html.twig' with {
-                        label: 'Revenu Mensuel (Simulation)', value: stats.monthlyRevenue,
-                        icon: 'calendar_today', iconColor: 'purple'
-                    } %}
                 </div>
+
+                {# AI Insights Card #}
+                {% if aiSummary %}
+                <div class="bg-gradient-to-r from-primary/20 via-surface-dark to-surface-dark border border-primary/20 rounded-2xl p-6 relative overflow-hidden group">
+                    <div class="absolute top-0 right-0 p-8 opacity-5 group-hover:opacity-10 transition-opacity">
+                        <span class="material-symbols-outlined text-[100px] text-primary">psychology</span>
+                    </div>
+                    <div class="relative z-10 flex flex-col md:flex-row items-center gap-6">
+                        <div class="flex-shrink-0 w-16 h-16 rounded-2xl bg-primary flex items-center justify-center text-white shadow-xl shadow-primary/20">
+                            <span class="material-symbols-outlined text-3xl">smart_toy</span>
+                        </div>
+                        <div class="flex-1 text-center md:text-left">
+                            <h3 class="text-xl font-black text-white uppercase tracking-tighter mb-1">Carthage AI <span class="text-primary">Insights</span></h3>
+                            <p class="text-gray-300 italic font-medium leading-relaxed">
+                                "{{ aiSummary }}"
+                            </p>
+                        </div>
+                        <div class="flex-shrink-0">
+                            <a href="{{ path('app_admin_reclamation_index') }}" class="px-6 py-3 rounded-xl bg-white/5 border border-white/10 text-white font-bold hover:bg-white/10 transition-all flex items-center gap-2">
+                                <span class="material-symbols-outlined text-sm">analytics</span>
+                                Détails Analystiques
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
 
                 {# Main Grid: Pending Reclamations + Recent Users + System Health #}
                 <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">

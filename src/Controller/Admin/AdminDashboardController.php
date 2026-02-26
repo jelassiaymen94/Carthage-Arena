@@ -22,6 +22,8 @@ use App\Repository\TournoiRepository;
 use App\Repository\UserRepository;
 use App\Repository\ReclamationRepository;
 use App\Enum\ReclamationStatus;
+use App\Enum\TournamentStatus;
+use App\Service\ReclamationAiService;
 use App\Repository\TeamRepository;
 use App\Repository\MatchRepository;
 use App\Entity\Profile;
@@ -48,8 +50,9 @@ class AdminDashboardController extends AbstractController
         private readonly EntityManagerInterface $entityManager,
     ) {
     }
+
     #[Route('/', name: 'admin_dashboard')]
-    public function index(): Response
+    public function index(ReclamationAiService $aiService): Response
     {
         $tournois = $this->tournoiRepository->findBy([], ['dateDebut' => 'DESC'], 5);
         $totalUsers = $this->userRepository->count([]);
@@ -61,12 +64,15 @@ class AdminDashboardController extends AbstractController
             5
         );
 
+        // Fetch AI Summary for the main dashboard
+        $aiSummary = $aiService->getSummary($recentReclamations);
+
         return $this->render('admin/dashboard/index.html.twig', [
             'stats' => [
                 'totalUsers' => $totalUsers,
                 'activeUsers' => $this->userRepository->count(['status' => AccountStatus::ACTIVE]),
                 'totalTournaments' => $totalTournaments,
-                'activeTournaments' => $this->tournoiRepository->count(['status' => \App\Enum\TournamentStatus::ONGOING]),
+                'activeTournaments' => $this->tournoiRepository->count(['status' => TournamentStatus::ONGOING]),
                 'totalRevenue' => '125,450 DT', // Simulation
                 'pendingReclamations' => count($recentReclamations),
                 'monthlyRevenue' => '18,200 DT', // Simulation
@@ -76,6 +82,7 @@ class AdminDashboardController extends AbstractController
             'recentUsers' => $this->userRepository->findBy([], ['id' => 'DESC'], 5),
             'recentReclamations' => $recentReclamations,
             'recentTournaments' => $tournois,
+            'aiSummary' => $aiSummary,
             'systemHealth' => [
                 'serverStatus' => 'online',
                 'cpuUsage' => 45,
