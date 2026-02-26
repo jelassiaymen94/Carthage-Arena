@@ -204,12 +204,6 @@
                 </div>
                 {% endif %}
 
-                {% if is_granted('ROLE_ADMIN') %}
-                <div class="flex gap-2 pt-2 border-t border-white/5">
-                    <a href="{{ path('admin_merch_edit', {id: item.id}) }}" class="flex-1 text-center bg-yellow-500/10 text-yellow-400 border border-yellow-500/20 px-2 py-1 rounded-full text-xs font-bold hover:bg-yellow-500/20 transition-colors">Modifier</a>
-                    <button onclick="deleteMerch('{{ item.id }}')" class="flex-1 bg-red-500/10 text-red-400 border border-red-500/20 px-2 py-1 rounded-full text-xs font-bold hover:bg-red-500/20 transition-colors">Supprimer</button>
-                </div>
-                {% endif %}
               </div>
             </div>
             {% endfor %}
@@ -231,11 +225,5 @@ function buyMerch(id) {
     .catch(err => console.error(err));
 }
 
-function deleteMerch(id) {
-    if (!confirm('Supprimer ce merch ?')) return;
-    fetch(`/admin/merch/delete/${id}`, { method: 'POST' })
-        .then(() => location.reload())
-        .catch(err => console.error(err));
-}
 </script>
 {% endblock %}

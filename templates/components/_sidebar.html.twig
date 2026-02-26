@@ -41,15 +41,6 @@
         <span class="text-sm font-medium tracking-wide">Boutique</span>
       </a>
 
-      <!-- Merch Link -->
-      <a
-        class="group flex items-center gap-4 rounded-full px-4 py-3 transition-all hover:bg-surface-hover hover:text-white {{ app.request.get('_route') starts with 'app_shop' ? 'bg-primary/10 text-primary' : 'text-gray-400' }}"
-        href="{{ path('app_shop') }}?type=merch"
-      >
-        <span class="material-symbols-outlined text-[24px]" {{ app.request.get('_route') starts with 'app_shop' ? 'data-weight="fill"' : '' }}>card_giftcard</span>
-        <span class="text-sm font-medium tracking-wide">Merch</span>
-      </a>
-
       <!-- Team Link -->
       <a
         class="group flex items-center gap-4 rounded-full px-4 py-3 transition-all hover:bg-surface-hover hover:text-white {{ app.request.get('_route') starts with 'app_team' ? 'bg-primary/10 text-primary' : 'text-gray-400' }}"
@@ -85,39 +76,6 @@
 
   <!-- Bottom Widget Block -->
   {% block sidebar_bottom %}
-  <!-- Merch Recommendation Widget -->
-  {% if featuredMerch is defined and featuredMerch %}
-  <div
-    class="relative overflow-hidden rounded-2xl bg-gradient-to-br from-orange-900/30 to-orange-950 p-4 border border-orange-500/20 mx-3 mb-3"
-  >
-    <div
-      class="absolute -right-6 -top-6 h-24 w-24 rounded-full bg-orange-500/20 blur-2xl"
-    ></div>
-    <div class="relative z-10 flex flex-col gap-3">
-      <div class="flex items-center justify-between">
-        <p class="text-[10px] font-bold uppercase tracking-widest text-orange-400">
-          🛍️ Merch IA
-        </p>
-        <span class="material-symbols-outlined text-orange-400 text-sm">auto_awesome</span>
-      </div>
-      {% if featuredMerch.imageUrl %}
-      <div class="h-24 w-full rounded-lg bg-cover bg-center shadow-inner"
-        style="background-image: url('{{ asset('uploads/merch/' ~ featuredMerch.imageUrl) }}');"
-      ></div>
-      {% endif %}
-      <div>
-        <h4 class="text-sm font-bold text-white line-clamp-1">{{ featuredMerch.name }}</h4>
-        <p class="text-xs text-gray-400 mt-1">
-          {{ featuredMerch.type|upper }} • {{ featuredMerch.price }} CP
-        </p>
-      </div>
-      <a href="{{ path('app_shop') }}?type=merch" class="mt-1 w-full flex items-center justify-center rounded-full bg-gradient-to-r from-orange-600 to-orange-500 py-2 px-4 text-xs font-bold text-white hover:from-orange-500 hover:to-orange-400 transition-all">
-        Voir le Merch
-      </a>
-    </div>
-  </div>
-  {% endif %}
-
   <!-- Default Welcome Widget -->
   <div
     class="relative overflow-hidden rounded-2xl bg-gradient-to-br from-gray-900 to-black p-4 border border-white/10 mx-3 mb-3"
