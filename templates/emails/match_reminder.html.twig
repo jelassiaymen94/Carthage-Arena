@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rappel de Match — Carthage Arena</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            background-color: #0f0f0f;
+            color: #e2e8f0;
+            padding: 40px 20px;
+        }
+        .wrapper {
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        .header {
+            text-align: center;
+            padding: 40px 30px 30px;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+            border-radius: 16px 16px 0 0;
+            border: 1px solid rgba(139,92,246,0.3);
+            border-bottom: none;
+        }
+        .logo-text {
+            font-size: 13px;
+            font-weight: 700;
+            letter-spacing: 6px;
+            color: rgba(255,255,255,0.4);
+            text-transform: uppercase;
+            margin-bottom: 8px;
+        }
+        .brand {
+            font-size: 28px;
+            font-weight: 900;
+            color: #a855f7;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+        }
+        .hero {
+            background: linear-gradient(135deg, #1e1b4b, #1a1a2e);
+            border: 1px solid rgba(139,92,246,0.3);
+            border-top: none;
+            border-bottom: none;
+            padding: 40px 40px 20px;
+            text-align: center;
+        }
+        .countdown-badge {
+            display: inline-block;
+            background: linear-gradient(135deg, #7c3aed, #a855f7);
+            color: #fff;
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            padding: 8px 20px;
+            border-radius: 999px;
+            margin-bottom: 24px;
+        }
+        .hero h1 {
+            font-size: 32px;
+            font-weight: 900;
+            color: #fff;
+            line-height: 1.2;
+            margin-bottom: 10px;
+        }
+        .hero h1 span { color: #a855f7; }
+        .hero p {
+            font-size: 15px;
+            color: rgba(255,255,255,0.5);
+        }
+        .card {
+            background: #161616;
+            border: 1px solid rgba(139,92,246,0.2);
+            border-top: none;
+            padding: 30px 40px;
+        }
+        .match-box {
+            background: linear-gradient(135deg, rgba(124,58,237,0.15), rgba(168,85,247,0.05));
+            border: 1px solid rgba(139,92,246,0.4);
+            border-radius: 12px;
+            padding: 28px;
+            text-align: center;
+            margin: 24px 0;
+        }
+        .teams-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+        }
+        .team-block { flex: 1; }
+        .team-tag {
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 2px;
+            color: rgba(168,85,247,0.8);
+            text-transform: uppercase;
+            margin-bottom: 6px;
+        }
+        .team-tag.opponent-tag {
+            color: rgba(251,146,60,0.8);
+        }
+        .team-name {
+            font-size: 20px;
+            font-weight: 800;
+            color: #fff;
+        }
+        .vs-divider {
+            font-size: 22px;
+            font-weight: 900;
+            color: rgba(255,255,255,0.2);
+            padding: 0 8px;
+        }
+        .info-grid {
+            display: flex;
+            gap: 12px;
+            margin-top: 20px;
+        }
+        .info-cell {
+            flex: 1;
+            background: rgba(255,255,255,0.04);
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 8px;
+            padding: 14px;
+            text-align: center;
+        }
+        .info-label {
+            font-size: 10px;
+            font-weight: 600;
+            letter-spacing: 2px;
+            color: rgba(255,255,255,0.35);
+            text-transform: uppercase;
+            margin-bottom: 6px;
+        }
+        .info-value {
+            font-size: 14px;
+            font-weight: 700;
+            color: #e2e8f0;
+        }
+        .section-title {
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 3px;
+            color: rgba(255,255,255,0.3);
+            text-transform: uppercase;
+            margin: 28px 0 14px;
+        }
+        .tip-box {
+            background: rgba(168,85,247,0.08);
+            border-left: 3px solid #a855f7;
+            border-radius: 0 8px 8px 0;
+            padding: 14px 18px;
+            margin-bottom: 10px;
+        }
+        .tip-box p {
+            font-size: 14px;
+            color: rgba(255,255,255,0.65);
+            line-height: 1.6;
+        }
+        .footer {
+            background: #0a0a0a;
+            border: 1px solid rgba(139,92,246,0.2);
+            border-top: 1px solid rgba(255,255,255,0.05);
+            border-radius: 0 0 16px 16px;
+            padding: 30px 40px;
+            text-align: center;
+        }
+        .footer p {
+            font-size: 12px;
+            color: rgba(255,255,255,0.25);
+            line-height: 1.8;
+        }
+        .footer a { color: #a855f7; text-decoration: none; }
+        .greeting {
+            font-size: 16px;
+            color: rgba(255,255,255,0.7);
+            line-height: 1.7;
+            margin-bottom: 8px;
+        }
+        .greeting strong { color: #fff; }
+    </style>
+</head>
+<body>
+<div class="wrapper">
+
+    {# Header #}
+    <div class="header">
+        <div class="logo-text">Admin Panel</div>
+        <div class="brand">⚔ Carthage Arena</div>
+    </div>
+
+    {# Hero #}
+    <div class="hero">
+        <div class="countdown-badge">⏰ Match dans 24 heures</div>
+        <h1>Préparez-vous pour <span>demain !</span></h1>
+        <p>Votre match est confirmé pour le lendemain. Bonne chance !</p>
+    </div>
+
+    {# Body Card #}
+    <div class="card">
+        <p class="greeting">
+            Bonjour <strong>{{ player.username }}</strong>,<br>
+            vous avez un match prévu <strong>demain</strong> dans le cadre du tournoi
+            <strong>{{ match.tournoi.nom }}</strong>.
+        </p>
+
+        {# Match Box #}
+        <div class="match-box">
+            <div class="teams-row">
+                <div class="team-block">
+                    <div class="team-tag">Votre équipe</div>
+                    <div class="team-name">{{ playerTeam.name }}</div>
+                </div>
+                <div class="vs-divider">VS</div>
+                <div class="team-block">
+                    <div class="team-tag opponent-tag">Adversaires</div>
+                    <div class="team-name">{{ opponentTeam.name }}</div>
+                </div>
+            </div>
+
+            <div class="info-grid">
+                <div class="info-cell">
+                    <div class="info-label">Tournoi</div>
+                    <div class="info-value">{{ match.tournoi.nom }}</div>
+                </div>
+                <div class="info-cell">
+                    <div class="info-label">Round</div>
+                    <div class="info-value">#{{ match.round }}</div>
+                </div>
+                {% if match.scheduledAt %}
+                <div class="info-cell">
+                    <div class="info-label">Heure</div>
+                    <div class="info-value">{{ match.scheduledAt|date('H:i') }}</div>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+
+        {# Tips #}
+        <div class="section-title">Conseils avant le match</div>
+        <div class="tip-box">
+            <p>✅ Connectez-vous à la plateforme au moins <strong>30 minutes</strong> avant l'heure du match.</p>
+        </div>
+        <div class="tip-box">
+            <p>🎮 Vérifiez votre configuration et votre connexion internet.</p>
+        </div>
+        <div class="tip-box">
+            <p>🏆 En cas de problème, contactez votre arbitre ou l'administration.</p>
+        </div>
+    </div>
+
+    {# Footer #}
+    <div class="footer">
+        <p>
+            Cet email a été envoyé automatiquement par <strong>Carthage Arena</strong>.<br>
+            © {{ "now"|date("Y") }} Carthage Arena. Tous droits réservés.
+        </p>
+    </div>
+
+</div>
+</body>
+</html>

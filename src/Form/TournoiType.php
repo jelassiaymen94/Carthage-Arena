@@ -68,6 +68,18 @@ class TournoiType extends AbstractType
                 'required' => false,
                 'placeholder' => 'Sélectionner un arbitre',
                 'attr' => ['class' => 'form-select text-white [&>option]:text-black']
+            ])
+            ->add('place', \Symfony\Component\Form\Extension\Core\Type\ChoiceType::class, [
+                'choices' => [
+                    'Carthage Arena, Tunis' => 'Carthage Arena, Tunis',
+                    'El Menzah Sports Palace, Tunis' => 'El Menzah Sports Palace, Tunis',
+                    'Radès Olympic Stadium, Ben Arous' => 'Radès Olympic Stadium, Ben Arous',
+                    'Sousse Olympic Hall, Sousse' => 'Sousse Olympic Hall, Sousse',
+                    'Monastir Indoor Sports Hall, Monastir' => 'Monastir Indoor Sports Hall, Monastir',
+                ],
+                'required' => false,
+                'placeholder' => 'Sélectionner un lieu',
+                'attr' => ['class' => 'form-select text-white [&>option]:text-black']
             ]);
     }
 

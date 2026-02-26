@@ -2,6 +2,15 @@
 
 {% block title %}Carthage Arena - Détails du Tournoi{% endblock %}
 
+{% block stylesheets %}
+    {{ parent() }}
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+    <style>
+        #map { height: 300px; width: 100%; border-radius: 1.5rem; }
+        .leaflet-container { background: #0a0a0a; border: 1px solid rgba(255,255,255,0.1); }
+    </style>
+{% endblock %}
+
 {% block body %}
     <div
       id="mainContent"
@@ -232,6 +241,27 @@
                           </p>
                         </div>
                       </div>
+                      {% if tournoi.place %}
+                      <div class="flex items-start gap-3 col-span-1 md:col-span-2 mt-2 pt-4 border-t border-white/5">
+                        <div
+                          class="mt-1 h-5 w-5 rounded-full bg-white/5 flex items-center justify-center shrink-0"
+                        >
+                          <span
+                            class="material-symbols-outlined text-[14px] text-primary"
+                            >location_on</span
+                          >
+                        </div>
+                        <div class="flex-1">
+                          <p class="text-sm font-bold text-gray-200 uppercase tracking-tighter">Lieu de l'événement</p>
+                          <div class="flex items-center gap-2 mb-3">
+                            <span class="text-xs text-gray-400">{{ tournoi.place }}</span>
+                            <span class="h-1 w-1 rounded-full bg-primary/40"></span>
+                            <span class="text-[10px] text-primary font-bold uppercase">Carte Interactive</span>
+                          </div>
+                          <div id="map" class="shadow-2xl border border-white/10 overflow-hidden"></div>
+                        </div>
+                      </div>
+                      {% endif %}
                     </div>
                   </div>
                 </div>
@@ -468,4 +498,79 @@
         {% include 'components/_mobile_nav.html.twig' %}
       </main>
     </div>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    {% if tournoi.place %}
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const place = "{{ tournoi.place|e('js') }}";
+            const mapElement = document.getElementById('map');
+            if (!mapElement) {
+                console.warn('Map element not found');
+                return;
+            }
+
+            console.log('Initializing map for place:', place);
+
+            const arenaCoords = {
+                'Carthage Arena, Tunis': [36.8065, 10.1815],
+                'El Menzah Sports Palace, Tunis': [36.8322, 10.1800],
+                'Radès Olympic Stadium, Ben Arous': [36.7475, 10.2706],
+                'Sousse Olympic Hall, Sousse': [35.8277, 10.6111],
+                'Monastir Indoor Sports Hall, Monastir': [35.7645, 10.8113]
+            };
+
+            const initMap = (lat, lon) => {
+                const map = L.map('map', {
+                    center: [lat, lon],
+                    zoom: 15,
+                    zoomControl: false
+                });
+
+                L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+                    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>'
+                }).addTo(map);
+
+                const icon = L.divIcon({
+                    className: 'custom-div-icon',
+                    html: `<div style="background-color: #e60013; width: 14px; height: 14px; border-radius: 50%; border: 3px solid rgba(255,255,255,0.8); box-shadow: 0 0 15px #e60013;"></div>`,
+                    iconSize: [14, 14],
+                    iconAnchor: [7, 7]
+                });
+
+                L.marker([lat, lon], {icon: icon}).addTo(map)
+                    .bindPopup(`<div style="color: black;"><b>{{ tournoi.nom|e('js') }}</b><br>${place}</div>`)
+                    .openPopup();
+                    
+                L.control.zoom({ position: 'bottomright' }).addTo(map);
+
+                const fixMap = () => map.invalidateSize();
+                setTimeout(fixMap, 500);
+                setTimeout(fixMap, 1500);
+                setTimeout(fixMap, 3000);
+            };
+
+            if (arenaCoords[place]) {
+                initMap(...arenaCoords[place]);
+            } else {
+                fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(place)}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.length > 0) {
+                            initMap(data[0].lat, data[0].lon);
+                        } else {
+                            mapElement.innerHTML = '<div class="flex flex-col items-center justify-center h-full text-gray-500 text-xs italic gap-2 bg-white/5"><span class="material-symbols-outlined mb-2">map_off</span>Localisation précise introuvable</div>';
+                        }
+                    })
+                    .catch(err => {
+                        console.error('Map error:', err);
+                        mapElement.style.display = 'none';
+                    });
+            }
+        });
+    </script>
+    {% endif %}
 {% endblock %}

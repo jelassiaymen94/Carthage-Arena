@@ -53,6 +53,14 @@
                         icon: 'sports_esports', iconColor: 'primary',
                         trendIcon: 'today', trendColor: 'white'
                     } %}
+                    {% include 'components/_stat_card.html.twig' with {
+                        label: 'Revenu Total (Simulation)', value: stats.totalRevenue,
+                        icon: 'payments', iconColor: 'green'
+                    } %}
+                    {% include 'components/_stat_card.html.twig' with {
+                        label: 'Revenu Mensuel (Simulation)', value: stats.monthlyRevenue,
+                        icon: 'calendar_today', iconColor: 'purple'
+                    } %}
                 </div>
 
                 {# Main Grid: Pending Reclamations + Recent Users + System Health #}
