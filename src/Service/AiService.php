@@ -17,19 +17,19 @@ class AiService
     public function __construct(HttpClientInterface $client)
     {
         $this->client = $client;
-        // use GROc AI key instead of OpenAI
-        $this->apiKey = $_ENV['GROC_API_KEY'] ?? '';
+        // use Groq AI key instead of OpenAI
+        $this->apiKey = $_ENV['GROQ_API_KEY'] ?? '';
         if (empty($this->apiKey)) {
-            throw new RuntimeException('GROC_API_KEY environment variable is not set');
+            throw new RuntimeException('GROQ_API_KEY environment variable is not set');
         }
         // allow the base URL to be configured in env
-        // default to the provided Groc URL
-        $this->endpoint = rtrim($_ENV['GROC_API_URL'] ?? 'https://api.groq.com/openai', '/');
+        // default to the provided GROQ URL
+        $this->endpoint = rtrim($_ENV['GROQ_API_URL'] ?? 'https://api.groq.com/openai/v1', '/');
     }
 
     public function generateMerchDescription(string $name, string $type, int $price): string
     {
-        // endpoint changed for Groc AI service (configurable via GROC_API_URL)
+        // endpoint changed for Groq AI service (configurable via GROQ_API_URL)
         // the endpoint should include any version segment; we only append the resource path
         $url = rtrim($this->endpoint, '/') . '/chat/completions';
 
@@ -40,7 +40,7 @@ class AiService
                     'Content-Type' => 'application/json',
                 ],
                 'json' => [
-                    'model' => 'gpt-4o-mini',
+                    'model' => 'llama-3.3-70b-versatile',
                     'messages' => [
                         [
                             'role' => 'user',
@@ -51,7 +51,7 @@ class AiService
             ]);
         } catch (\Exception $e) {
             // surface DNS/resolution errors nicely
-            throw new RuntimeException('Groc API request failed: ' . $e->getMessage());
+            throw new RuntimeException('Groq API request failed: ' . $e->getMessage());
         }
 
         $data = $response->toArray();
