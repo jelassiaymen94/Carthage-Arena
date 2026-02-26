@@ -1,7 +1,7 @@
 <aside class="fixed top-0 left-0 h-screen w-72 bg-[#161616] border-r border-white/5 flex flex-col z-40 carthage-columns">
     {# Logo & Brand #}
     <div class="flex items-center gap-3 px-6 py-5 border-b border-white/5">
-        <img src="{{ asset('assets/logo.webp') }}" alt="Carthage Arena" class="h-16 w-auto" />
+        <img src="{{ asset('logo.png') }}" alt="Carthage Arena" class="h-16 w-auto" />
         <div class="flex flex-col leading-tight">
             <span class="text-xs font-bold tracking-[0.25em] text-white/40 uppercase">Admin</span>
             <span class="text-sm font-black tracking-wider text-primary uppercase">Panel</span>
@@ -11,60 +11,82 @@
     {# Navigation #}
     <nav class="flex-1 overflow-y-auto py-4 px-3">
         <ul class="flex flex-col gap-1">
-
-            {# Existing Links ... #}
             <li>
                 <a href="{{ path('admin_dashboard') }}"
                    class="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all duration-200
-                          {{ app.request.get('_route') == 'admin_dashboard' ? 'bg-primary/10 text-primary' : 'text-white/60 hover:text-white hover:bg-white/5' }}">
+                          {{ app.request.get('_route') == 'admin_dashboard'
+                              ? 'bg-primary/10 text-primary'
+                              : 'text-white/60 hover:text-white hover:bg-white/5' }}">
                     <span class="material-symbols-outlined text-[20px]">dashboard</span>
                     Tableau de Bord
                 </a>
             </li>
-
-            {# ... other links ... #}
-
-            {# Boutique / Shop with submenu #}
+            <li>
+                <a href="{{ path('admin_users') }}"
+                   class="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all duration-200
+                          {{ app.request.get('_route') == 'admin_users'
+                              ? 'bg-primary/10 text-primary'
+                              : 'text-white/60 hover:text-white hover:bg-white/5' }}">
+                    <span class="material-symbols-outlined text-[20px]">group</span>
+                    Utilisateurs
+                </a>
+            </li>
+            <li>
+                <a href="{{ path('app_admin_licenses') }}"
+                   class="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all duration-200
+                          {{ app.request.get('_route') == 'app_admin_licenses'
+                              ? 'bg-primary/10 text-primary'
+                              : 'text-white/60 hover:text-white hover:bg-white/5' }}">
+                    <span class="material-symbols-outlined text-[20px]">badge</span>
+                    Licences
+                </a>
+            </li>
+            <li>
+                <a href="{{ path('app_admin_reclamation_index') }}"
+                   class="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all duration-200
+                          {{ app.request.get('_route') starts with 'app_admin_reclamation'
+                              ? 'bg-primary/10 text-primary'
+                              : 'text-white/60 hover:text-white hover:bg-white/5' }}">
+                    <span class="material-symbols-outlined text-[20px]">support_agent</span>
+                    Réclamations
+                </a>
+            </li>
+            <li>
+                <a href="{{ path('admin_tournaments') }}"
+                   class="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all duration-200
+                          {{ app.request.get('_route') == 'admin_tournaments'
+                              ? 'bg-primary/10 text-primary'
+                              : 'text-white/60 hover:text-white hover:bg-white/5' }}">
+                    <span class="material-symbols-outlined text-[20px]">trophy</span>
+                    Tournois
+                </a>
+            </li>
+            <li>
+                <a href="{{ path('admin_games') }}"
+                   class="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all duration-200
+                          {{ app.request.get('_route') == 'admin_games'
+                              ? 'bg-primary/10 text-primary'
+                              : 'text-white/60 hover:text-white hover:bg-white/5' }}">
+                    <span class="material-symbols-outlined text-[20px]">sports_esports</span>
+                    Jeux
+                </a>
+            </li>
             <li>
                 <a href="{{ path('admin_shop') }}"
                    class="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all duration-200
-                          {{ app.request.get('_route') starts with 'admin_merch' or app.request.get('_route') == 'admin_shop'
+                          {{ app.request.get('_route') == 'admin_shop'
                               ? 'bg-primary/10 text-primary'
                               : 'text-white/60 hover:text-white hover:bg-white/5' }}">
                     <span class="material-symbols-outlined text-[20px]">shopping_bag</span>
                     Boutique
-                    <span class="material-symbols-outlined ml-auto text-[16px]">expand_more</span>
                 </a>
-                <ul class="ml-6 mt-1 flex flex-col gap-1">
-                    <li>
-                        <a href="{{ path('admin_merch_index') }}"
-                           class="text-white/60 hover:text-white transition-all duration-200
-                                  {{ app.request.get('_route') == 'admin_merch_index' ? 'text-primary font-semibold' : '' }}">
-                            Liste Merch
-                        </a>
-                    </li>
-                    <li>
-                        <a href="{{ path('admin_merch_index') }}"
-                           class="text-white/60 hover:text-white transition-all duration-200
-                                  {{ app.request.get('_route') == 'admin_merch_index' ? 'text-primary font-semibold' : '' }}">
-                            Ajouter Merch
-                        </a>
-                    </li>
-                    <li>
-                        <a href="{{ path('api_stats_top_merch') }}"
-                           class="text-white/60 hover:text-white transition-all duration-200
-                                  {{ app.request.get('_route') == 'api_stats_top_merch' ? 'text-primary font-semibold' : '' }}">
-                            Top 3 Merch
-                        </a>
-                    </li>
-                </ul>
             </li>
-
-            {# Reports, Settings ... #}
             <li>
                 <a href="{{ path('admin_reports') }}"
                    class="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all duration-200
-                          {{ app.request.get('_route') == 'admin_reports' ? 'bg-primary/10 text-primary' : 'text-white/60 hover:text-white hover:bg-white/5' }}">
+                          {{ app.request.get('_route') == 'admin_reports'
+                              ? 'bg-primary/10 text-primary'
+                              : 'text-white/60 hover:text-white hover:bg-white/5' }}">
                     <span class="material-symbols-outlined text-[20px]">assessment</span>
                     Rapports
                 </a>
@@ -72,24 +94,15 @@
             <li>
                 <a href="{{ path('admin_settings') }}"
                    class="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all duration-200
-                          {{ app.request.get('_route') == 'admin_settings' ? 'bg-primary/10 text-primary' : 'text-white/60 hover:text-white hover:bg-white/5' }}">
+                          {{ app.request.get('_route') == 'admin_settings'
+                              ? 'bg-primary/10 text-primary'
+                              : 'text-white/60 hover:text-white hover:bg-white/5' }}">
                     <span class="material-symbols-outlined text-[20px]">settings</span>
                     Paramètres
                 </a>
             </li>
         </ul>
     </nav>
-
-    {# Merch Statistics Widget #}
-    <div class="mx-3 mb-3">
-        <div class="rounded-2xl border border-primary/30 bg-primary/5 p-4">
-            <div class="text-[10px] font-semibold uppercase tracking-widest text-white/40 mb-2">Top Merch</div>
-            <div id="top-merch" class="flex flex-col gap-1 text-sm text-white">
-                {# JS will populate this #}
-                <p>Chargement...</p>
-            </div>
-        </div>
-    </div>
 
     {# System Status Widget #}
     <div class="mx-3 mb-3">
@@ -126,25 +139,3 @@
     </div>
     {% endif %}
 </aside>
-
-{# JS to fetch top 3 merch stats #}
-<script>
-fetch('/api/stats/top-merch')
-    .then(res => res.json())
-    .then(data => {
-        const container = document.getElementById('top-merch');
-        container.innerHTML = '';
-        data.forEach(item => {
-            const div = document.createElement('div');
-            div.classList.add('flex', 'items-center', 'gap-2');
-            div.innerHTML = `
-                <img src="${item.imageUrl}" alt="${item.name}" class="w-8 h-8 rounded">
-                <span>${item.name} - ${item.totalPurchased} vendus</span>
-            `;
-            container.appendChild(div);
-        });
-    })
-    .catch(err => {
-        console.error('Erreur récupération top merch:', err);
-    });
-</script>
