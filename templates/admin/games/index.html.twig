@@ -51,7 +51,7 @@
                                    class="w-full bg-white/5 border border-white/10 rounded-xl pl-10 pr-4 py-2.5 text-sm text-white placeholder-white/30 focus:border-primary/50 focus:ring-1 focus:ring-primary/30 outline-none transition-all" />
                         </div>
                         <select class="bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white/70 outline-none focus:border-primary/50 w-48">
-                            <option>Toutes les cat├®gories</option>
+                            <option>Toutes les catégories</option>
                             <option>FPS</option>
                             <option>MOBA</option>
                             <option>Battle Royale</option>
@@ -128,7 +128,7 @@
                                     <span class="material-symbols-outlined text-[16px]">edit</span>
                                     Modifier
                                 </a>
-                                <form method="post" action="{{ path('admin_games_delete', {'id': game.id}) }}" class="flex-1" onsubmit="return confirm('Supprimer ce jeu ainsi que tous ses tournois et skins associ├®s ?');">
+                                <form method="post" action="{{ path('admin_games_delete', {'id': game.id}) }}" class="flex-1" onsubmit="return confirm('Supprimer ce jeu ainsi que tous ses tournois et skins associés ?');">
                                     <button type="submit" class="w-full inline-flex items-center justify-center gap-1.5 py-2.5 rounded-xl bg-red-500/10 hover:bg-red-500/20 text-xs font-semibold text-red-400 transition-all">
                                         <span class="material-symbols-outlined text-[16px]">delete</span>
                                         Supprimer
@@ -142,7 +142,7 @@
                             <div class="w-20 h-20 bg-white/5 rounded-2xl flex items-center justify-center mx-auto mb-4 border border-white/10">
                                 <span class="material-symbols-outlined text-[40px] text-white/20">search_off</span>
                             </div>
-                            <h3 class="text-lg font-bold text-white">Aucun jeu trouv├®</h3>
+                            <h3 class="text-lg font-bold text-white">Aucun jeu trouvé</h3>
                             <p class="text-white/40 text-sm mt-1">Commencez par ajouter votre premier jeu ├á la plateforme.</p>
                         </div>
                     {% endfor %}
@@ -178,7 +178,7 @@
 
             <div class="grid grid-cols-2 gap-4">
                 <div>
-                    {{ form_label(form.type, 'Cat├®gorie', {'label_attr': {'class': 'block text-sm font-medium text-white/60 mb-1.5'}}) }}
+                    {{ form_label(form.type, 'Catégorie', {'label_attr': {'class': 'block text-sm font-medium text-white/60 mb-1.5'}}) }}
                     {{ form_widget(form.type, {'attr': {'class': 'w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white/70 outline-none focus:border-primary/50 form-select [&>option]:text-black'}}) }}
                     {{ form_errors(form.type) }}
                 </div>
