@@ -1,4 +1,4 @@
-{% extends 'base.html.twig' %}
+﻿{% extends 'base.html.twig' %}
 
 {% block body %}
     <div id="mainContent" class="flex h-screen w-full opacity-0 transition-opacity duration-500" style="opacity: 1;">
@@ -14,13 +14,19 @@
               <p class="text-[10px] font-bold uppercase tracking-widest text-primary">Recommandation IA</p>
               <span class="material-symbols-outlined text-primary text-sm">auto_awesome</span>
             </div>
+            {% if featuredSkin.imageUrl starts with 'http' or featuredSkin.imageUrl starts with 'https' %}
             <div class="h-24 w-full rounded-lg bg-cover bg-center shadow-inner"
               style="background-image: url('{{ featuredSkin.imageUrl }}');"
             ></div>
+            {% else %}
+            <div class="h-24 w-full rounded-lg bg-cover bg-center shadow-inner"
+              style="background-image: url('{{ asset('uploads/skins/' ~ featuredSkin.imageUrl) }}');"
+            ></div>
+            {% endif %}
             <div>
               <h4 class="text-sm font-bold text-white line-clamp-1">{{ featuredSkin.name }}</h4>
               <p class="text-xs text-gray-400 mt-1">
-                Recommandé pour vous ({{ featuredSkin.game.name|default('Jeu') }})
+                Recommand├® pour vous ({{ featuredSkin.game.name|default('Jeu') }})
               </p>
             </div>
             <a href="{{ path('app_shop_item', {'id': featuredSkin.id}) }}" class="mt-1 w-full flex items-center justify-center rounded-full bg-white/5 py-2 px-4 text-xs font-bold text-white hover:bg-white/10 transition-colors">

@@ -1,4 +1,4 @@
-{% extends 'base.html.twig' %}
+﻿{% extends 'base.html.twig' %}
 
 {% block title %}Gestion Boutique - Admin - Carthage Arena{% endblock %}
 
@@ -19,22 +19,24 @@
                     <div class="flex-1 flex items-center justify-between">
                         <div>
                             <h1 class="text-2xl font-bold text-white">Gestion de la Boutique</h1>
-                            <p class="text-sm text-white/40 mt-0.5">Gérer les articles et les ventes de la boutique</p>
+                            <p class="text-sm text-white/40 mt-0.5">G├®rer les articles et les ventes de la boutique</p>
                         </div>
                         <div class="relative group">
                             <button class="inline-flex items-center gap-2 px-5 py-2.5 bg-primary hover:bg-primary/90 text-white text-sm font-semibold rounded-xl transition-all">
                                 <span class="material-symbols-outlined text-[18px]">add</span>
                                 + Ajouter
                             </button>
-                            <div class="absolute right-0 top-full mt-2 w-48 bg-surface-dark/60 backdrop-blur-xl border border-white/10 rounded-xl shadow-xl overflow-hidden hidden group-hover:block z-50">
-                                <a href="{{ path('admin_shop_skin_add') }}" class="block px-4 py-3 text-sm text-white hover:text-white hover:bg-white/10 transition-colors flex items-center gap-2">
-                                    <span class="material-symbols-outlined text-[18px] text-purple-400">palette</span>
-                                    Nouveau Skin
-                                </a>
-                                <a href="{{ path('admin_shop_merch_add') }}" class="block px-4 py-3 text-sm text-white hover:text-white hover:bg-white/10 transition-colors flex items-center gap-2">
-                                    <span class="material-symbols-outlined text-[18px] text-secondary">checkroom</span>
-                                    Nouvel Article
-                                </a>
+                            <div class="absolute right-0 top-full pt-2 w-48 hidden group-hover:block z-50">
+                                <div class="bg-surface-dark/95 backdrop-blur-xl border border-white/10 rounded-xl shadow-xl overflow-hidden">
+                                    <a href="{{ path('admin_shop_skin_add') }}" class="block px-4 py-3 text-sm text-white hover:text-white hover:bg-white/10 transition-colors flex items-center gap-2">
+                                        <span class="material-symbols-outlined text-[18px] text-purple-400">palette</span>
+                                        Nouveau Skin
+                                    </a>
+                                    <a href="{{ path('admin_shop_merch_add') }}" class="block px-4 py-3 text-sm text-white hover:text-white hover:bg-white/10 transition-colors flex items-center gap-2">
+                                        <span class="material-symbols-outlined text-[18px] text-secondary">checkroom</span>
+                                        Nouvel Article
+                                    </a>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -68,9 +70,9 @@
                             <option>CS:GO 2</option>
                         </select>
                         <select class="bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white/70 outline-none focus:border-primary/50 w-48">
-                            <option>Toutes les raretés</option>
-                            <option>Légendaire</option>
-                            <option>Épique</option>
+                            <option>Toutes les raret├®s</option>
+                            <option>L├®gendaire</option>
+                            <option>├ëpique</option>
                             <option>Premium</option>
                         </select>
                     </div>
@@ -79,7 +81,7 @@
                 {# Shop Items Table #}
                 {% embed 'components/_table.html.twig' with {
                     headers: ['Image', 'Nom', 'Jeu', 'Prix', 'Ventes', 'Revenus', 'Stock', 'Actions'],
-                    emptyMessage: 'Aucun article trouvé.',
+                    emptyMessage: 'Aucun article trouv├®.',
                     emptyIcon: 'storefront'
                 } %}
                     {% block rows %}
@@ -88,7 +90,11 @@
                             <td class="px-6 py-4">
                                 <div class="h-12 w-12 rounded-lg bg-surface-dark border border-white/5 overflow-hidden flex items-center justify-center">
                                     {% if item.imageUrl %}
+                                        {% if item.imageUrl starts with 'http' or item.imageUrl starts with 'https' %}
                                         <img src="{{ item.imageUrl }}" alt="{{ item.name }}" class="h-full w-full object-cover">
+                                        {% else %}
+                                        <img src="{{ asset('uploads/skins/' ~ item.imageUrl) }}" alt="{{ item.name }}" class="h-full w-full object-cover">
+                                        {% endif %}
                                     {% else %}
                                         <span class="material-symbols-outlined text-white/20">image_not_supported</span>
                                     {% endif %}
@@ -120,9 +126,9 @@
                                 <span class="font-bold text-green-400">{{ item.revenue }}</span>
                             </td>
                             <td class="px-6 py-4">
-                                {% if item.stock == 'Illimité' %}
+                                {% if item.stock == 'Illimit├®' %}
                                     <span class="inline-flex px-2.5 py-1 rounded-full text-xs font-semibold bg-blue-500/20 text-blue-400 border border-blue-500/20">
-                                        Illimité
+                                        Illimit├®
                                     </span>
                                 {% elseif item.stock > 10 %}
                                     <span class="inline-flex px-2.5 py-1 rounded-full text-xs font-semibold bg-green-500/20 text-green-400 border border-green-500/20">

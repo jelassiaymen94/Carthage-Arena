@@ -12,8 +12,11 @@ use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\Types\UuidType;
 use Symfony\Component\Uid\Uuid;
 use Symfony\Component\Validator\Constraints as Assert;
+use Vich\UploaderBundle\Mapping\Annotation as Vich;
+use Symfony\Component\HttpFoundation\File\File;
 
 #[ORM\Entity(repositoryClass: GameRepository::class)]
+#[Vich\Uploadable]
 class Game
 {
     #[ORM\Id]
@@ -35,6 +38,9 @@ class Game
 
     #[ORM\Column(type: 'string', enumType: GameStatus::class)]
     private GameStatus $status = GameStatus::ACTIVE;
+
+    #[Vich\UploadableField(mapping: 'games', fileNameProperty: 'imageUrl')]
+    private ?File $imageFile = null;
 
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $imageUrl = null;
@@ -114,6 +120,20 @@ class Game
     {
         $this->imageUrl = $imageUrl;
         return $this;
+    }
+
+    public function setImageFile(?File $imageFile = null): void
+    {
+        $this->imageFile = $imageFile;
+
+        if (null !== $imageFile) {
+            $this->createdAt = new \DateTimeImmutable();
+        }
+    }
+
+    public function getImageFile(): ?File
+    {
+        return $this->imageFile;
     }
 
     public function getCreatedAt(): ?\DateTimeImmutable
