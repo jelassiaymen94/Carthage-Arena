@@ -37,7 +37,13 @@
                             </div>
 
                             <div>
-                                {{ form_label(form.description, 'Description', {'label_attr': {'class': 'block text-sm font-medium text-white/60 mb-2'}}) }}
+                                <label for="description" class="block text-sm font-medium text-white/60 mb-2">
+                                    Description
+                                    <button type="button" id="generateDescriptionBtn" class="ml-2 text-xs bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-500 hover:to-blue-400 text-white px-3 py-1 rounded-lg font-semibold transition-all inline-flex items-center gap-1">
+                                        <span class="material-symbols-outlined text-sm">auto_awesome</span>
+                                        Générer avec l'IA
+                                    </button>
+                                </label>
                                 {{ form_widget(form.description, {'attr': {'class': 'w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder-white/30 focus:border-primary/50 outline-none transition-all'}}) }}
                                 {{ form_errors(form.description) }}
                             </div>
@@ -57,7 +63,13 @@
 
                             <div class="grid grid-cols-2 gap-6">
                                 <div>
-                                    {{ form_label(form.price, 'Prix (DT)', {'label_attr': {'class': 'block text-sm font-medium text-white/60 mb-2'}}) }}
+                                    <label for="price" class="block text-sm font-medium text-white/60 mb-2">
+                                        Prix (DT)
+                                        <button type="button" id="calculatePriceBtn" class="ml-2 text-xs bg-gradient-to-r from-orange-600 to-orange-500 hover:from-orange-500 hover:to-orange-400 text-white px-3 py-1 rounded-lg font-semibold transition-all inline-flex items-center gap-1">
+                                            <span class="material-symbols-outlined text-sm">calculate</span>
+                                            Calculer
+                                        </button>
+                                    </label>
                                     {{ form_widget(form.price, {'attr': {'class': 'w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder-white/30 focus:border-primary/50 outline-none transition-all'}}) }}
                                     {{ form_errors(form.price) }}
                                 </div>
@@ -90,4 +102,110 @@
         </main>
     </div>
 </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const generateDescriptionBtn = document.getElementById('generateDescriptionBtn');
+    const calculatePriceBtn = document.getElementById('calculatePriceBtn');
+    
+    // Get form field IDs
+    const nameField = document.querySelector('[name="{{ form.name.vars.full_name }}"]');
+    const typeField = document.querySelector('[name="{{ form.type.vars.full_name }}"]');
+    const descriptionField = document.querySelector('[name="{{ form.description.vars.full_name }}"]');
+    const priceField = document.querySelector('[name="{{ form.price.vars.full_name }}"]');
+    const stockField = document.querySelector('[name="{{ form.stock.vars.full_name }}"]');
+
+    // Generate Description with AI
+    if (generateDescriptionBtn) {
+        generateDescriptionBtn.addEventListener('click', async function(e) {
+            e.preventDefault();
+            
+            const name = nameField.value;
+            const type = typeField.value;
+            const price = priceField.value;
+
+            if (!name || !type || !price) {
+                alert('Veuillez remplir le nom, le type et le prix avant de générer une description');
+                return;
+            }
+
+            generateDescriptionBtn.disabled = true;
+            generateDescriptionBtn.innerHTML = '<span class="material-symbols-outlined text-sm animate-spin">refresh</span> Génération...';
+
+            try {
+                const response = await fetch('{{ path("admin_api_generate_merch_description") }}', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        name: name,
+                        type: type,
+                        price: parseInt(price),
+                    }),
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    descriptionField.value = data.description;
+                    alert('Description générée avec succès!');
+                } else {
+                    alert('Erreur: ' + (data.error || 'Une erreur est survenue'));
+                }
+            } catch (error) {
+                alert('Erreur lors de la génération: ' + error.message);
+            } finally {
+                generateDescriptionBtn.disabled = false;
+                generateDescriptionBtn.innerHTML = '<span class="material-symbols-outlined text-sm">auto_awesome</span> Générer avec l\'IA';
+            }
+        });
+    }
+
+    // Calculate Dynamic Price
+    if (calculatePriceBtn) {
+        calculatePriceBtn.addEventListener('click', async function(e) {
+            e.preventDefault();
+            
+            const price = priceField.value;
+            const stock = stockField.value;
+
+            if (!price || !stock) {
+                alert('Veuillez remplir le prix de base et le stock avant de calculer');
+                return;
+            }
+
+            calculatePriceBtn.disabled = true;
+            calculatePriceBtn.innerHTML = '<span class="material-symbols-outlined text-sm animate-spin">refresh</span> Calcul...';
+
+            try {
+                const response = await fetch('{{ path("admin_api_calculate_merch_price") }}', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        basePrice: parseInt(price),
+                        stock: parseInt(stock),
+                    }),
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    priceField.value = data.dynamicPrice;
+                    alert('Prix dynamique calculé: ' + data.dynamicPrice + ' DT');
+                } else {
+                    alert('Erreur: ' + (data.error || 'Une erreur est survenue'));
+                }
+            } catch (error) {
+                alert('Erreur lors du calcul: ' + error.message);
+            } finally {
+                calculatePriceBtn.disabled = false;
+                calculatePriceBtn.innerHTML = '<span class="material-symbols-outlined text-sm">calculate</span> Calculer';
+            }
+        });
+    }
+});
+</script>
 {% endblock %}

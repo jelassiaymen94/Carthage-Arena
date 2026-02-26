@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Repository\SkinRepository;
+use App\Repository\MerchRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
@@ -10,7 +11,7 @@ use Symfony\Component\Routing\Attribute\Route;
 class DashboardController extends AbstractController
 {
     #[Route('/', name: 'app_dashboard')]
-    public function index(SkinRepository $skinRepository): Response
+    public function index(SkinRepository $skinRepository, MerchRepository $merchRepository): Response
     {
         $user = $this->getUser();
 
@@ -19,6 +20,13 @@ class DashboardController extends AbstractController
         $featuredSkin = null;
         if (!empty($skins)) {
             $featuredSkin = $skins[array_rand($skins)];
+        }
+
+        // Get a random merch for recommendation
+        $merches = $merchRepository->findAll();
+        $featuredMerch = null;
+        if (!empty($merches)) {
+            $featuredMerch = $merches[array_rand($merches)];
         }
 
         return $this->render('dashboard/index.html.twig', [
@@ -30,6 +38,7 @@ class DashboardController extends AbstractController
                 'winRate' => 62,
             ],
             'featuredSkin' => $featuredSkin,
+            'featuredMerch' => $featuredMerch,
             'upcomingMatches' => [
                 [
                     'tournament' => 'VALORANT TOURNAMENT',

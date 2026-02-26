@@ -3,7 +3,7 @@
 {% block body %}
     <div id="mainContent" class="flex h-screen w-full opacity-0 transition-opacity duration-500" style="opacity: 1;">
       <!-- Sidebar -->
-      {% embed 'components/_sidebar.html.twig' %}
+      {% embed 'components/_sidebar.html.twig' with {featuredMerch: featuredMerch} %}
         {% block sidebar_bottom %}
         <!-- Bottom Ad/Recommendation (Sidebar Widget) -->
         {% if featuredSkin is defined and featuredSkin %}

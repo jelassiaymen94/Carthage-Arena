@@ -42,7 +42,7 @@ class MerchAdminController extends AbstractController
         $em->remove($merch);
         $em->flush();
 
-        return $this->redirectToRoute('admin_merch_index');
+        return $this->redirectToRoute('app_shop', ['type' => 'merch']);
     }
 
     #[Route('/edit/{id}', name: 'admin_merch_edit', methods: ['GET','POST'])]
@@ -59,7 +59,8 @@ class MerchAdminController extends AbstractController
             $merch->setImageUrl($request->request->get('imageUrl'));
 
             $em->flush();
-            return $this->redirectToRoute('admin_merch_index');
+            // redirect to public shop filtered by merch
+            return $this->redirectToRoute('app_shop', ['type' => 'merch']);
         }
 
         return $this->render('admin/merch/edit.html.twig', [

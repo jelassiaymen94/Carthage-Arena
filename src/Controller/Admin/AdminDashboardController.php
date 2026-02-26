@@ -24,10 +24,12 @@ use App\Repository\ReclamationRepository;
 use App\Enum\ReclamationStatus;
 use App\Repository\TeamRepository;
 use App\Entity\Profile;
+use App\Service\AiService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Routing\Attribute\Route;
 
@@ -44,6 +46,7 @@ class AdminDashboardController extends AbstractController
         private readonly MerchRepository $merchRepository,
         private readonly LicenseRepository $licenseRepository,
         private readonly EntityManagerInterface $entityManager,
+        private readonly AiService $aiService,
     ) {
     }
     #[Route('/', name: 'admin_dashboard')]
@@ -427,7 +430,7 @@ class AdminDashboardController extends AbstractController
             $this->entityManager->flush();
 
             $this->addFlash('success', 'L\'article "' . $merch->getName() . '" a été ajouté avec succès !');
-            return $this->redirectToRoute('admin_shop');
+            return $this->redirectToRoute('app_shop', ['type' => 'merch']);
         }
 
         return $this->render('admin/shop/merch_form.html.twig', [
@@ -446,7 +449,7 @@ class AdminDashboardController extends AbstractController
             $this->entityManager->flush();
 
             $this->addFlash('success', 'L\'article "' . $merch->getName() . '" a été mis à jour avec succès !');
-            return $this->redirectToRoute('admin_shop');
+            return $this->redirectToRoute('app_shop', ['type' => 'merch']);
         }
 
         return $this->render('admin/shop/merch_form.html.twig', [
@@ -462,7 +465,7 @@ class AdminDashboardController extends AbstractController
         $this->entityManager->flush();
 
         $this->addFlash('success', 'L\'article a été supprimé avec succès.');
-        return $this->redirectToRoute('admin_shop');
+        return $this->redirectToRoute('app_shop', ['type' => 'merch']);
     }
 
     #[Route('/games', name: 'admin_games', methods: ['GET', 'POST'])]
@@ -514,4 +517,79 @@ class AdminDashboardController extends AbstractController
             'form' => $form->createView(),
         ]);
     }
+
+    #[Route('/api/generate-merch-description', name: 'admin_api_generate_merch_description', methods: ['POST'])]
+    public function generateMerchDescription(Request $request): JsonResponse
+    {
+        $this->denyAccessUnlessGranted('ROLE_ADMIN');
+
+        $data = json_decode($request->getContent(), true);
+        $name = $data['name'] ?? null;
+        $type = $data['type'] ?? null;
+        $price = $data['price'] ?? null;
+
+        if (!$name || !$type || !$price) {
+            return $this->json(['error' => 'Name, type, and price are required'], 400);
+        }
+
+        try {
+            $description = $this->aiService->generateMerchDescription($name, $type, (int)$price);
+            return $this->json([
+                'success' => true,
+                'description' => $description,
+            ]);
+        } catch (\Exception $e) {
+            return $this->json(['error' => $e->getMessage()], 500);
+        }
+    }
+
+    #[Route('/api/calculate-merch-price', name: 'admin_api_calculate_merch_price', methods: ['POST'])]
+    public function calculateMerchPrice(Request $request): JsonResponse
+    {
+        $this->denyAccessUnlessGranted('ROLE_ADMIN');
+
+        $data = json_decode($request->getContent(), true);
+        $basePrice = $data['basePrice'] ?? null;
+        $stock = $data['stock'] ?? null;
+
+        if ($basePrice === null || $stock === null) {
+            return $this->json(['error' => 'Base price and stock are required'], 400);
+        }
+
+        try {
+            $price = $this->aiService->calculateDynamicPrice((int)$basePrice, (int)$stock);
+            return $this->json([
+                'success' => true,
+                'dynamicPrice' => round($price, 2),
+            ]);
+        } catch (\Exception $e) {
+            return $this->json(['error' => $e->getMessage()], 500);
+        }
+    }
+
+    #[Route('/api/calculate-fraud-score', name: 'admin_api_calculate_fraud_score', methods: ['POST'])]
+    public function calculateFraudScore(Request $request): JsonResponse
+    {
+        $this->denyAccessUnlessGranted('ROLE_ADMIN');
+
+        $data = json_decode($request->getContent(), true);
+        $quantity = $data['quantity'] ?? null;
+        $totalPrice = $data['totalPrice'] ?? null;
+
+        if ($quantity === null || $totalPrice === null) {
+            return $this->json(['error' => 'Quantity and total price are required'], 400);
+        }
+
+        try {
+            $score = $this->aiService->fraudScore((int)$quantity, (int)$totalPrice);
+            return $this->json([
+                'success' => true,
+                'fraudScore' => $score,
+                'riskLevel' => $score > 0.7 ? 'HIGH' : ($score > 0.4 ? 'MEDIUM' : 'LOW'),
+            ]);
+        } catch (\Exception $e) {
+            return $this->json(['error' => $e->getMessage()], 500);
+        }
+    }
 }
+
