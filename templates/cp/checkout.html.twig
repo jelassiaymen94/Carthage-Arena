@@ -203,10 +203,22 @@ form.addEventListener('submit', async (e) => {
         const webhookSet = {{ webhook_secret_set ? 'true' : 'false' }};
         if (!webhookSet) {
             try {
+                let simObject = paymentIntent;
+                if (!simObject.metadata || Object.keys(simObject.metadata).length === 0) {
+                    simObject = {
+                        ...simObject,
+                        metadata: {
+                            user_id: document.getElementById('user_id').value,
+                            cp_amount: document.getElementById('cp_amount').value,
+                            package_type: document.getElementById('package_type').value
+                        }
+                    };
+                }
+
                 await fetch('{{ path("app_cp_webhook_success") }}', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ type: 'payment_intent.succeeded', data: { object: paymentIntent } })
+                    body: JSON.stringify({ type: 'payment_intent.succeeded', data: { object: simObject } })
                 });
             } catch (err) {
                 // ignore errors from simulated webhook

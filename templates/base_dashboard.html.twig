@@ -14,9 +14,15 @@
               <p class="text-[10px] font-bold uppercase tracking-widest text-primary">Recommandation IA</p>
               <span class="material-symbols-outlined text-primary text-sm">auto_awesome</span>
             </div>
+            {% if featuredSkin.imageUrl starts with 'http' or featuredSkin.imageUrl starts with 'https' %}
             <div class="h-24 w-full rounded-lg bg-cover bg-center shadow-inner"
               style="background-image: url('{{ featuredSkin.imageUrl }}');"
             ></div>
+            {% else %}
+            <div class="h-24 w-full rounded-lg bg-cover bg-center shadow-inner"
+              style="background-image: url('{{ asset('uploads/skins/' ~ featuredSkin.imageUrl) }}');"
+            ></div>
+            {% endif %}
             <div>
               <h4 class="text-sm font-bold text-white line-clamp-1">{{ featuredSkin.name }}</h4>
               <p class="text-xs text-gray-400 mt-1">

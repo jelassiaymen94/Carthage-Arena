@@ -18,9 +18,15 @@
               <p class="text-[10px] font-bold uppercase tracking-widest text-primary">Offre du Jour</p>
               <span class="material-symbols-outlined text-primary text-sm">local_fire_department</span>
             </div>
+            {% if featuredItem.imageUrl starts with 'http' or featuredItem.imageUrl starts with 'https' %}
             <div class="h-24 w-full rounded-lg bg-cover bg-center shadow-inner"
               style="background-image: url('{{ featuredItem.imageUrl }}');"
             ></div>
+            {% else %}
+            <div class="h-24 w-full rounded-lg bg-cover bg-center shadow-inner"
+              style="background-image: url('{{ asset('uploads/skins/' ~ featuredItem.imageUrl) }}');"
+            ></div>
+            {% endif %}
             <div>
               <h4 class="text-sm font-bold text-white line-clamp-1">{{ featuredItem.name }}</h4>
               <div class="flex items-center gap-2 mt-1">
@@ -140,7 +146,11 @@
             <div class="group relative flex flex-col overflow-hidden rounded-2xl bg-surface-dark border border-white/5 transition-all {{ item.insufficient ? 'opacity-80 hover:opacity-100' : 'hover:border-primary/30 hover:shadow-xl hover:-translate-y-1' }}">
               <div class="aspect-[4/3] w-full bg-gray-900 bg-center bg-cover relative {{ item.insufficient ? 'grayscale group-hover:grayscale-0 transition-all duration-500' : '' }}">
                 {% if item.imageUrl %}
-                    <img src="{{ item.imageUrl }}" alt="{{ item.name }}" class="w-full h-full object-cover">
+                    {% if item.imageUrl starts with 'http' or item.imageUrl starts with 'https' %}
+                        <img src="{{ item.imageUrl }}" alt="{{ item.name }}" class="w-full h-full object-cover">
+                    {% else %}
+                        <img src="{{ asset('uploads/skins/' ~ item.imageUrl) }}" alt="{{ item.name }}" class="w-full h-full object-cover">
+                    {% endif %}
                 {% else %}
                     <div class="w-full h-full flex items-center justify-center bg-white/5">
                         <span class="material-symbols-outlined text-white/20 text-4xl">image_not_supported</span>

@@ -67,6 +67,7 @@ class CPController extends AbstractController
 
         $publishable = $_ENV['STRIPE_PUBLISHABLE'] ?? getenv('STRIPE_PUBLISHABLE');
         $webhookSecret = $_ENV['STRIPE_WEBHOOK_SECRET'] ?? getenv('STRIPE_WEBHOOK_SECRET');
+        $isWebhookSecretValid = !empty($webhookSecret) && $webhookSecret !== 'whsec_YOUR_WEBHOOK_SECRET';
 
         return $this->render('cp/checkout.html.twig', [
             'package' => $package,
@@ -75,7 +76,7 @@ class CPController extends AbstractController
             'client_secret' => $clientSecret,
             'stripe_available' => $stripeAvailable,
             'stripe_publishable' => $publishable,
-            'webhook_secret_set' => (bool) $webhookSecret,
+            'webhook_secret_set' => $isWebhookSecretValid,
         ]);
     }
 
@@ -86,9 +87,10 @@ class CPController extends AbstractController
         $sigHeader = $request->headers->get('stripe-signature');
 
         $webhookSecret = $_ENV['STRIPE_WEBHOOK_SECRET'] ?? getenv('STRIPE_WEBHOOK_SECRET');
+        $isWebhookSecretValid = !empty($webhookSecret) && $webhookSecret !== 'whsec_YOUR_WEBHOOK_SECRET';
         $event = null;
 
-        if ($webhookSecret && class_exists(Webhook::class)) {
+        if ($isWebhookSecretValid && class_exists(Webhook::class)) {
             try {
                 $event = Webhook::constructEvent($payload, $sigHeader, $webhookSecret);
             } catch (\UnexpectedValueException $e) {
@@ -110,13 +112,21 @@ class CPController extends AbstractController
             $userId = $metadata['user_id'] ?? null;
             $cpAmount = isset($metadata['cp_amount']) ? (int)$metadata['cp_amount'] : 0;
 
+            error_log("Webhook success: type=$type, userId=$userId, cpAmount=$cpAmount");
+
             if ($userId) {
                 $user = $em->getRepository(User::class)->find($userId);
+                error_log("Webhook user found: " . ($user ? 'yes' : 'no') . " with balance " . ($user ? $user->getBalance() : 0));
                 if ($user) {
                     $user->setBalance($user->getBalance() + $cpAmount);
                     $em->flush();
+                    error_log("Webhook user new balance: " . $user->getBalance());
                 }
+            } else {
+                error_log("Webhook no user id found in metadata: " . json_encode($metadata));
             }
+        } else {
+            error_log("Webhook received unsupported type: $type");
         }
 
         return $this->json(['success' => true]);

@@ -11,8 +11,12 @@
             <div class="bg-white/5 rounded-2xl p-6 mb-6">
                 <div class="flex items-center gap-4 mb-4">
                     {% if skin.imageUrl %}
+                        {% if skin.imageUrl starts with 'http' or skin.imageUrl starts with 'https' %}
                         <img src="{{ skin.imageUrl }}" alt="{{ skin.name }}" class="w-16 h-16 rounded-lg object-cover">
-                    {% endif %}
+                        {% else %}
+                        <img src="{{ asset('uploads/skins/' ~ skin.imageUrl) }}" alt="{{ skin.name }}" class="w-16 h-16 rounded-lg object-cover">
+                        {% endif %}
+                    {% else %}
                     <div>
                         <h3 class="text-xl font-semibold">{{ skin.name }}</h3>
                         <p class="text-white/60">{{ skin.price }} DT</p>

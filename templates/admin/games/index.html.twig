@@ -72,7 +72,11 @@
                         {# Game Header with Illustration #}
                         <div class="relative h-48 bg-background-light flex items-center justify-center overflow-hidden">
                             {% if game.imageUrl %}
-                                <img src="{{ game.imageUrl }}" alt="{{ game.name }}" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
+                                {% if game.imageUrl starts with 'http' or game.imageUrl starts with 'https' %}
+                                    <img src="{{ game.imageUrl }}" alt="{{ game.name }}" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
+                                {% else %}
+                                    <img src="{{ asset('uploads/games/' ~ game.imageUrl) }}" alt="{{ game.name }}" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
+                                {% endif %}
                             {% else %}
                                 <div class="w-full h-full bg-gradient-to-br from-primary/20 to-primary/5 flex items-center justify-center">
                                     <span class="material-symbols-outlined text-[64px] text-primary/40">sports_esports</span>
@@ -186,7 +190,13 @@
             </div>
 
             <div>
-                {{ form_label(form.imageUrl, 'Image URL', {'label_attr': {'class': 'block text-sm font-medium text-white/60 mb-1.5'}}) }}
+                {{ form_label(form.imageFile, 'Uploader une image', {'label_attr': {'class': 'block text-sm font-medium text-white/60 mb-1.5'}}) }}
+                {{ form_widget(form.imageFile, {'attr': {'class': 'w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white placeholder-white/30 focus:border-primary/50 outline-none transition-all'}}) }}
+                {{ form_errors(form.imageFile) }}
+            </div>
+
+            <div>
+                {{ form_label(form.imageUrl, 'OU URL de l\'image existante', {'label_attr': {'class': 'block text-sm font-medium text-white/60 mb-1.5'}}) }}
                 {{ form_widget(form.imageUrl, {'attr': {'class': 'w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white placeholder-white/30 focus:border-primary/50 outline-none transition-all'}}) }}
                 {{ form_errors(form.imageUrl) }}
             </div>
