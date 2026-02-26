@@ -1,0 +1,12 @@
+vich_uploader:
+    db_driver: orm
+
+    mappings:
+        skins:
+            uri_prefix: /uploads/skins
+            upload_destination: '%kernel.project_dir%/public/uploads/skins'
+            namer: Vich\UploaderBundle\Naming\SmartUniqueNamer
+        games:
+            uri_prefix: /uploads/games
+            upload_destination: '%kernel.project_dir%/public/uploads/games'
+            namer: Vich\UploaderBundle\Naming\SmartUniqueNamer
