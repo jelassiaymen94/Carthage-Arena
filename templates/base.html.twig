@@ -10,25 +10,10 @@
       href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;700;900&display=swap"
       rel="stylesheet"
     />
-    <meta name="csrf-token" content="{{ csrf_token('authenticate') }}">
     <link
       href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
       rel="stylesheet"
     />
-
-    {# Google Analytics (External API) #}
-    {% set ga_id = app.request.server.get('GA_MEASUREMENT_ID')|default(null) %}
-    {% if ga_id %}
-    <!-- Google tag (gtag.js) -->
-    <script async src="https://www.googletagmanager.com/gtag/js?id={{ ga_id }}"></script>
-    <script>
-      window.dataLayer = window.dataLayer || [];
-      function gtag(){dataLayer.push(arguments);}
-      gtag('js', new Date());
-      gtag('config', '{{ ga_id }}');
-    </script>
-    {% endif %}
-
     <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
     <script id="tailwind-config">
       tailwind.config = {
@@ -468,8 +453,8 @@
         background-color: #333;
       }
 
+      {% block stylesheets %}{% endblock %}
     </style>
-    {% block stylesheets %}{% endblock %}
   </head>
   <body class="{% block body_class %}bg-background-dark text-white font-display{% endblock %}">
     <!-- Loading Screen - MonsterPlay Style -->
@@ -541,10 +526,8 @@
         const loadingScreen = document.getElementById("loadingScreen");
         const mainContent = document.getElementById("mainContent");
         if (loadingScreen.classList.contains('hidden')) {
-            if (mainContent) {
-                mainContent.classList.remove("opacity-0");
-                mainContent.classList.add("opacity-100");
-            }
+            mainContent.classList.remove("opacity-0");
+            mainContent.classList.add("opacity-100");
             return;
         }
         const progressBar = document.getElementById("progressBar");
@@ -554,7 +537,7 @@
         const skipLoading = urlParams.has('q') || urlParams.has('game') || urlParams.has('sort');
 
         let progress = 0;
-        const duration = skipLoading ? 100 : 1500; 
+        const duration = skipLoading ? 100 : 2500; // Much faster if skipLoading
         const interval = 25; 
         const increment = 100 / (duration / interval);
 
@@ -564,12 +547,11 @@
             progress = 100;
             clearInterval(progressInterval);
 
+            // Hide loading screen after reaching 100%
             setTimeout(function () {
               loadingScreen.classList.add("hidden");
-              if (mainContent) {
-                mainContent.classList.remove("opacity-0");
-                mainContent.classList.add("opacity-100");
-              }
+              mainContent.classList.remove("opacity-0");
+              mainContent.classList.add("opacity-100");
             }, skipLoading ? 0 : 200);
           }
 
@@ -615,55 +597,6 @@
         });
       });
     </script>
-    {% block javascripts %}
-        {{ importmap('app') }}
-    {% endblock %}
-
-    {# Floating AI Chat #}
-    <div data-controller="ai-chat" data-ai-chat-url-value="{{ path('app_ai_chat') }}" class="fixed bottom-8 right-8 z-50">
-        {# Chat Window #}
-        <div data-ai-chat-target="window" class="hidden absolute bottom-20 right-0 w-[380px] h-[550px] bg-background-dark/95 backdrop-blur-2xl border border-white/10 rounded-3xl shadow-2xl flex flex-col overflow-hidden">
-            <div class="p-6 bg-gradient-to-r from-primary to-primary/80 flex items-center justify-between shadow-lg">
-                <div class="flex items-center gap-3">
-                    <div class="w-10 h-10 rounded-xl bg-white/20 backdrop-blur-md flex items-center justify-center">
-                        <span class="material-symbols-outlined text-white">smart_toy</span>
-                    </div>
-                    <div>
-                        <h3 class="text-white font-bold leading-none">Carthage AI</h3>
-                        <span class="text-[10px] text-white/70 uppercase font-black tracking-widest">Powered by Grok</span>
-                    </div>
-                </div>
-                <button data-action="click->ai-chat#toggle" class="p-2 hover:bg-white/10 rounded-lg text-white/80 transition-colors">
-                    <span class="material-symbols-outlined">close</span>
-                </button>
-            </div>
-
-            <div data-ai-chat-target="messages" class="flex-1 overflow-y-auto p-6 scrollbar-hide">
-                <div class="flex justify-start mb-4">
-                    <div class="max-w-[80%] rounded-2xl px-4 py-2 bg-white/10 text-gray-200 backdrop-blur-md border border-white/10 rounded-tl-none">
-                        Salut soldat ! ⚔️ Je suis Grok, ton assistant Carthage Arena. Comment puis-je t'aider aujourd'hui ?
-                    </div>
-                </div>
-            </div>
-
-            <div class="p-4 bg-white/5 border-t border-white/10">
-                <form data-action="submit->ai-chat#send" class="relative">
-                    <input data-ai-chat-target="input" type="text" placeholder="Pose ta question..." 
-                           class="w-full bg-white/5 border border-white/10 rounded-2xl pl-5 pr-12 py-3 text-white focus:outline-none focus:border-primary transition-all">
-                    <button type="submit" class="absolute right-2 top-1.5 p-2 bg-primary text-white rounded-xl hover:scale-105 transition-transform">
-                        <span class="material-symbols-outlined text-sm">send</span>
-                    </button>
-                </form>
-            </div>
-        </div>
-
-        {# Trigger Button #}
-        <button data-ai-chat-target="trigger" data-action="click->ai-chat#toggle" 
-                class="w-16 h-16 rounded-full bg-primary text-white shadow-2xl shadow-primary/40 flex items-center justify-center hover:scale-110 active:scale-95 transition-all group relative overflow-hidden">
-            <div class="absolute inset-0 bg-white/20 opacity-0 group-hover:opacity-100 transition-opacity"></div>
-            <span class="material-symbols-outlined text-3xl group-hover:rotate-12 transition-transform">chat_bubble</span>
-            <span class="absolute -top-1 -right-1 w-4 h-4 bg-green-500 rounded-full border-2 border-background-dark"></span>
-        </button>
-    </div>
+    {% block javascripts %}{% endblock %}
   </body>
 </html>

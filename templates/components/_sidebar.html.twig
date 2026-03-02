@@ -47,7 +47,7 @@
         href="{{ path('app_team') }}"
       >
         <span class="material-symbols-outlined text-[24px]" {{ app.request.get('_route') starts with 'app_team' ? 'data-weight="fill"' : '' }}>groups</span>
-        <span class="text-sm font-medium tracking-wide">├ëquipe</span>
+        <span class="text-sm font-medium tracking-wide">ëquipe</span>
       </a>
 
       <a
@@ -62,7 +62,7 @@
         href="{{ path('app_reclamation_index') }}"
       >
         <span class="material-symbols-outlined text-[24px]" {{ app.request.get('_route') starts with 'app_reclamation' ? 'data-weight="fill"' : '' }}>support_agent</span>
-        <span class="text-sm font-medium tracking-wide">R├®clamations</span>
+        <span class="text-sm font-medium tracking-wide">Réclamations</span>
       </a>
       <a
         class="group flex items-center gap-4 rounded-full px-4 py-3 transition-all hover:bg-surface-hover hover:text-white {{ app.request.get('_route') starts with 'app_settings' ? 'bg-primary/10 text-primary' : 'text-gray-400' }}"
@@ -92,7 +92,7 @@
       <div>
         <h4 class="text-sm font-bold text-white">Bienvenue</h4>
         <p class="text-xs text-gray-400 mt-1">
-          Pr├¬t ├á jouer ?
+          Prêt à jouer ?
         </p>
       </div>
     </div>
@@ -116,7 +116,7 @@
     <a href="{{ path('app_logout') }}"
        class="flex items-center justify-center gap-2 w-full py-2.5 rounded-xl border border-red-500/20 text-sm font-semibold text-red-400/70 hover:text-red-400 hover:bg-red-500/10 transition-all duration-200">
       <span class="material-symbols-outlined text-[18px]">logout</span>
-      D├®connexion
+      Déconnexion
     </a>
   </div>
   {% endif %}

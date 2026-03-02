@@ -18,15 +18,9 @@
               <p class="text-[10px] font-bold uppercase tracking-widest text-primary">Offre du Jour</p>
               <span class="material-symbols-outlined text-primary text-sm">local_fire_department</span>
             </div>
-            {% if featuredItem.imageUrl starts with 'http' or featuredItem.imageUrl starts with 'https' %}
             <div class="h-24 w-full rounded-lg bg-cover bg-center shadow-inner"
               style="background-image: url('{{ featuredItem.imageUrl }}');"
             ></div>
-            {% else %}
-            <div class="h-24 w-full rounded-lg bg-cover bg-center shadow-inner"
-              style="background-image: url('{{ asset('uploads/skins/' ~ featuredItem.imageUrl) }}');"
-            ></div>
-            {% endif %}
             <div>
               <h4 class="text-sm font-bold text-white line-clamp-1">{{ featuredItem.name }}</h4>
               <div class="flex items-center gap-2 mt-1">
@@ -51,7 +45,7 @@
           <div class="flex flex-col">
             <h2 class="text-2xl font-bold text-white">Boutique de Skins</h2>
             <p class="text-xs text-gray-400">
-              Am├®liorez votre arsenal avec des skins exclusifs.
+              Améliorez votre arsenal avec des skins exclusifs.
             </p>
           </div>
           {% include 'components/_header_user_pill.html.twig' %}
@@ -82,8 +76,8 @@
                 League of Legends
               </a>
               <a
-                href="{{ path('app_shop', {'game': 'Counter-Strike 2', 'q': currentSearch, 'sort': currentSort}) }}"
-                class="px-5 py-2.5 rounded-full {{ currentGame == 'Counter-Strike 2' ? 'bg-primary text-white shadow-lg shadow-primary/20' : 'bg-white/5 text-gray-400' }} text-sm font-medium hover:bg-white/10 hover:text-white transition-all whitespace-nowrap"
+                href="{{ path('app_shop', {'game': 'CS2', 'q': currentSearch, 'sort': currentSort}) }}"
+                class="px-5 py-2.5 rounded-full {{ currentGame == 'CS2' ? 'bg-primary text-white shadow-lg shadow-primary/20' : 'bg-white/5 text-gray-400' }} text-sm font-medium hover:bg-white/10 hover:text-white transition-all whitespace-nowrap"
               >
                 CS2
               </a>
@@ -91,12 +85,12 @@
             <div class="flex items-center gap-4 w-full md:w-auto">
               <div class="relative group">
                 <select 
-                  onchange="window.location.href = '{{ path('app_shop', {'game': currentGame, 'q': currentSearch}) }}{{ currentGame or currentSearch ? '&' : '?' }}sort=' + this.value"
+                  onchange="window.location.href = '{{ path('app_shop', {'game': currentGame, 'q': currentSearch}) }}' + '&sort=' + this.value"
                   class="bg-surface-dark border border-white/10 rounded-full py-2.5 pl-4 pr-10 text-sm text-white focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all appearance-none cursor-pointer"
                 >
                   <option value="" {{ not currentSort ? 'selected' : '' }}>Trier par</option>
                   <option value="price_asc" {{ currentSort == 'price_asc' ? 'selected' : '' }}>Prix croissant</option>
-                  <option value="price_desc" {{ currentSort == 'price_desc' ? 'selected' : '' }}>Prix d├®croissant</option>
+                  <option value="price_desc" {{ currentSort == 'price_desc' ? 'selected' : '' }}>Prix décroissant</option>
                 </select>
                 <span class="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 pointer-events-none">expand_content</span>
               </div>
@@ -146,11 +140,7 @@
             <div class="group relative flex flex-col overflow-hidden rounded-2xl bg-surface-dark border border-white/5 transition-all {{ item.insufficient ? 'opacity-80 hover:opacity-100' : 'hover:border-primary/30 hover:shadow-xl hover:-translate-y-1' }}">
               <div class="aspect-[4/3] w-full bg-gray-900 bg-center bg-cover relative {{ item.insufficient ? 'grayscale group-hover:grayscale-0 transition-all duration-500' : '' }}">
                 {% if item.imageUrl %}
-                    {% if item.imageUrl starts with 'http' or item.imageUrl starts with 'https' %}
-                        <img src="{{ item.imageUrl }}" alt="{{ item.name }}" class="w-full h-full object-cover">
-                    {% else %}
-                        <img src="{{ asset('uploads/skins/' ~ item.imageUrl) }}" alt="{{ item.name }}" class="w-full h-full object-cover">
-                    {% endif %}
+                    <img src="{{ item.imageUrl }}" alt="{{ item.name }}" class="w-full h-full object-cover">
                 {% else %}
                     <div class="w-full h-full flex items-center justify-center bg-white/5">
                         <span class="material-symbols-outlined text-white/20 text-4xl">image_not_supported</span>
