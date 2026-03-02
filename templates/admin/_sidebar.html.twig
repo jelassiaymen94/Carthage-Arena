@@ -71,17 +71,29 @@
                     Jeux
                 </a>
             </li>
+            {% set boutiqueActive = app.request.get('_route') starts with 'admin_merch' or app.request.get('_route') == 'admin_shop' %}
             <li>
-                <a href="{{ path('admin_shop') }}"
-                   class="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all duration-200
-                          {{ app.request.get('_route') starts with 'admin_merch' or app.request.get('_route') == 'admin_shop'
+                <button onclick="toggleBoutique()"
+                   class="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all duration-200
+                          {{ boutiqueActive
                               ? 'bg-primary/10 text-primary'
                               : 'text-white/60 hover:text-white hover:bg-white/5' }}">
                     <span class="material-symbols-outlined text-[20px]">shopping_bag</span>
                     Boutique
-                    <span class="material-symbols-outlined ml-auto text-[16px]">expand_more</span>
-                </a>
-                <ul class="ml-8 mt-1 flex flex-col gap-1">
+                    <span class="material-symbols-outlined ml-auto text-[16px] transition-transform duration-200" id="boutiqueChevron"
+                          style="{{ boutiqueActive ? 'transform: rotate(180deg)' : '' }}">expand_more</span>
+                </button>
+                <ul id="boutiqueMenu" class="ml-8 mt-1 flex flex-col gap-1 {{ boutiqueActive ? '' : 'hidden' }}">
+                    <li>
+                        <a href="{{ path('admin_shop') }}"
+                           class="flex items-center gap-2 px-3 py-2 rounded-lg text-xs font-medium transition-all duration-200
+                                  {{ app.request.get('_route') == 'admin_shop'
+                                      ? 'text-primary font-semibold'
+                                      : 'text-white/50 hover:text-white hover:bg-white/5' }}">
+                            <span class="material-symbols-outlined text-[16px]">storefront</span>
+                            Skins
+                        </a>
+                    </li>
                     <li>
                         <a href="{{ path('admin_merch_index') }}"
                            class="flex items-center gap-2 px-3 py-2 rounded-lg text-xs font-medium transition-all duration-200
@@ -114,6 +126,15 @@
                     </li>
                 </ul>
             </li>
+            <script>
+            function toggleBoutique() {
+                const menu = document.getElementById('boutiqueMenu');
+                const chevron = document.getElementById('boutiqueChevron');
+                const isHidden = menu.classList.contains('hidden');
+                menu.classList.toggle('hidden');
+                chevron.style.transform = isHidden ? 'rotate(180deg)' : '';
+            }
+            </script>
             <li>
                 <a href="{{ path('admin_reports') }}"
                    class="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all duration-200
