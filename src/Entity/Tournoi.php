@@ -11,30 +11,9 @@ use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\Types\UuidType;
 use Symfony\Component\Uid\Uuid;
-use ApiPlatform\Metadata\ApiResource;
-use ApiPlatform\Metadata\Get;
-use ApiPlatform\Metadata\GetCollection;
-use ApiPlatform\Metadata\Post;
-use App\Controller\Api\TournoiMatchGenerationController;
-use Gedmo\Mapping\Annotation as Gedmo;
 use Symfony\Component\Validator\Constraints as Assert;
-use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ORM\Entity(repositoryClass: TournoiRepository::class)]
-#[ApiResource(
-    operations: [
-        new Get(normalizationContext: ['groups' => ['tournoi:read']]),
-        new GetCollection(normalizationContext: ['groups' => ['tournoi:read']]),
-        new Post(denormalizationContext: ['groups' => ['tournoi:write']]),
-        new Post(
-            uriTemplate: '/tournois/{id}/generate',
-            controller: TournoiMatchGenerationController::class,
-            name: 'generate_matches',
-        )
-    ],
-    normalizationContext: ['groups' => ['tournoi:read']],
-    denormalizationContext: ['groups' => ['tournoi:write']],
-)]
 class Tournoi
 {
     #[ORM\Id]

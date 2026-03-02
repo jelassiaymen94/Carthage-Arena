@@ -19,13 +19,12 @@ final class Version20260226015913 extends AbstractMigration
 
     public function up(Schema $schema): void
     {
-        // skin columns (type, stock, api_provider, delivery_method) already exist in DB
-        // Only update user_skin status default
-        $this->addSql('ALTER TABLE user_skin CHANGE status status VARCHAR(255) DEFAULT \'active\' NOT NULL');
+        // user_skin table is preserved and already has the correct status default.
+        // This migration is intentionally a no-op to avoid altering existing data.
     }
 
     public function down(Schema $schema): void
     {
-        $this->addSql('ALTER TABLE user_skin CHANGE status status VARCHAR(255) NOT NULL');
+        // no-op
     }
 }
