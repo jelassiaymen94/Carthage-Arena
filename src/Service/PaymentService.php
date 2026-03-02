@@ -23,7 +23,7 @@ class PaymentService
 
     public function createPaymentIntent(Skin $skin, User $user): array
     {
-        // Simuler cr├®ation d'intent de paiement Stripe
+        // Simuler création d'intent de paiement Stripe
         // $stripe = new \Stripe\StripeClient($this->stripeSecretKey);
         // $intent = $stripe->paymentIntents->create([
         //     'amount' => $skin->getPrice() * 100,
@@ -39,7 +39,7 @@ class PaymentService
 
     public function handleWebhook(Request $request): void
     {
-        // V├®rifier la signature Stripe
+        // Vérifier la signature Stripe
         // $event = \Stripe\Webhook::constructEvent($request->getContent(), $request->headers->get('stripe-signature'), $this->webhookSecret);
 
         // Simuler traitement
@@ -70,7 +70,7 @@ class PaymentService
     private function deliverDigitalSkin(Skin $skin, User $user): void
     {
         if ($skin->getApiProvider() === 'steam') {
-            // Int├®grer avec Steam API pour livrer le skin
+            // Intégrer avec Steam API pour livrer le skin
         }
     }
 }

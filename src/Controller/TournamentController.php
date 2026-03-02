@@ -14,11 +14,13 @@ class TournamentController extends AbstractController
     public function index(TournoiRepository $tournoiRepository, \Symfony\Component\HttpFoundation\Request $request): Response
     {
         $filter = $request->query->get('filter');
-        $tournois = $tournoiRepository->findByFilter($filter, $this->getUser());
+        $query = $request->query->get('query');
+        $tournois = $tournoiRepository->findByFilter($filter, $this->getUser(), $query);
 
         return $this->render('tournament/index.html.twig', [
             'tournois' => $tournois,
             'currentFilter' => $filter,
+            'currentQuery' => $query,
         ]);
     }
 

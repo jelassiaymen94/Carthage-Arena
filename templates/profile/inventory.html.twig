@@ -19,7 +19,7 @@
         </div>
         <div>
           <h4 class="text-sm font-bold text-white">Votre Collection</h4>
-          <p class="text-xs text-gray-400 mt-1">{{ totalSkins }} item{{ totalSkins != 1 ? 's' : '' }} poss├®d├®{{ totalSkins != 1 ? 's' : '' }}</p>
+          <p class="text-xs text-gray-400 mt-1">{{ totalSkins }} item{{ totalSkins != 1 ? 's' : '' }} possédé{{ totalSkins != 1 ? 's' : '' }}</p>
         </div>
       </div>
     </div>
@@ -97,10 +97,10 @@
               <span class="material-symbols-outlined text-6xl text-white/20">inventory_2</span>
             </div>
             <h2 class="text-2xl font-bold mb-2">Inventaire Vide</h2>
-            <p class="text-white/60 text-center mb-8 max-w-md">Votre inventaire est vide. Visitez la boutique pour acqu├®rir des skins!</p>
+            <p class="text-white/60 text-center mb-8 max-w-md">Votre inventaire est vide. Visitez la boutique pour acquérir des skins!</p>
             <a href="{{ path('app_shop') }}" class="bg-primary hover:bg-primary/80 text-white font-bold py-3 px-8 rounded-2xl transition-all flex items-center gap-2">
               <span class="material-symbols-outlined">shopping_cart</span>
-              Aller ├á la Boutique
+              Aller à la Boutique
             </a>
           </div>
         {% endif %}

@@ -22,7 +22,7 @@ class Purchase
     #[ORM\JoinColumn(nullable: false)]
     private ?Merch $merch = null;
 
-    #[ORM\ManyToOne(inversedBy: 'purchases')]
+    #[ORM\ManyToOne]
     #[ORM\JoinColumn(nullable: false)]
     private ?User $user = null;
 

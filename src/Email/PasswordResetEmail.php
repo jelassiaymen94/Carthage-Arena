@@ -15,7 +15,7 @@ class PasswordResetEmail extends TemplatedEmail
         $this
             ->from(new Address('no-reply@demomailtrap.co', 'Carthage Arena'))
             ->to(new Address($user->getEmail(), $user->getName()))
-            ->subject('R├®initialisation de votre mot de passe ÔÇö Carthage Arena')
+            ->subject('Réinitialisation de votre mot de passe — Carthage Arena')
             ->htmlTemplate('emails/password_reset.html.twig')
             ->context([
                 'user' => $user,

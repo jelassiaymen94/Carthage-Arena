@@ -20,7 +20,7 @@ class InventoryService
             return $skin->getStock() > 0;
         }
 
-        // Pour digital, v├®rifier via API tierce
+        // Pour digital, vérifier via API tierce
         return $this->checkDigitalStock($skin);
     }
 

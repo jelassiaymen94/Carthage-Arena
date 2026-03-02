@@ -1,6 +1,6 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Carthage Arena - V├®rifiez votre e-mail{% endblock %}
+{% block title %}Carthage Arena - Vérifiez votre e-mail{% endblock %}
 
 {% block body_class %}bg-background-dark text-white font-display min-h-screen flex items-center justify-center p-4{% endblock %}
 
@@ -36,14 +36,14 @@
 
           <!-- Text -->
           <div>
-            <h2 class="text-2xl font-bold text-white mb-3">V├®rifiez votre bo├«te de r├®ception !</h2>
+            <h2 class="text-2xl font-bold text-white mb-3">Vérifiez votre boîte de réception !</h2>
             <p class="text-sm text-gray-400 leading-relaxed">
-              Un e-mail de v├®rification a ├®t├® envoy├® ├á<br>
+              Un e-mail de vérification a été envoyé à<br>
               <strong class="text-white text-base">{{ email }}</strong>
             </p>
             <p class="text-sm text-gray-500 mt-3 leading-relaxed">
               Cliquez sur le lien dans l'e-mail pour activer votre compte.<br>
-              Pensez ├á v├®rifier vos spams si vous ne le trouvez pas.
+              Pensez à vérifier vos spams si vous ne le trouvez pas.
             </p>
           </div>
 
@@ -52,7 +52,7 @@
 
           <!-- Resend form -->
           <div class="w-full">
-            <p class="text-xs text-gray-500 mb-3">Vous n'avez pas re├ºu l'e-mail ?</p>
+            <p class="text-xs text-gray-500 mb-3">Vous n'avez pas reçu l'e-mail ?</p>
             <form method="post" action="{{ path('app_resend_verification') }}">
               <input type="hidden" name="_token" value="{{ csrf_token('resend_verification') }}">
               <input type="hidden" name="email" value="{{ email }}">
@@ -61,14 +61,14 @@
                 class="w-full rounded-xl border border-white/10 py-3 text-sm font-semibold text-gray-300 hover:border-white/25 hover:text-white transition-all"
               >
                 <span class="material-symbols-outlined text-[18px] align-middle mr-1">send</span>
-                Renvoyer l'e-mail de v├®rification
+                Renvoyer l'e-mail de vérification
               </button>
             </form>
           </div>
 
           <!-- Back to login -->
           <a href="{{ path('app_login') }}" class="text-xs text-gray-500 hover:text-primary transition-colors">
-            ÔåÉ Retour ├á la connexion
+            ← Retour à la connexion
           </a>
 
         </div>

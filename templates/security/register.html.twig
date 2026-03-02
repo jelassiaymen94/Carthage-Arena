@@ -41,7 +41,7 @@
         <!-- Register Form -->
         <div class="bg-surface-dark border border-white/5 rounded-3xl p-8 shadow-2xl">
 
-          <h2 class="text-xl font-bold text-white mb-6 text-center">Cr├®er un compte</h2>
+          <h2 class="text-xl font-bold text-white mb-6 text-center">Créer un compte</h2>
 
           {# Global form errors #}
           {% for error in registrationForm.vars.errors %}
@@ -97,7 +97,7 @@
 
             {# License ID field - only visible for referees #}
             <div id="licenseIdField" class="hidden">
-              <label for="{{ registrationForm.licenseId.vars.id }}" class="block text-sm font-medium text-gray-400 mb-2">Num├®ro de licence</label>
+              <label for="{{ registrationForm.licenseId.vars.id }}" class="block text-sm font-medium text-gray-400 mb-2">Numéro de licence</label>
               {{ form_widget(registrationForm.licenseId) }}
               {% for error in registrationForm.licenseId.vars.errors %}
                 <p class="text-xs text-red-400 mt-1">{{ error.message }}</p>
@@ -153,7 +153,7 @@
 
         <!-- Footer -->
         <p class="text-center text-xs text-gray-500 mt-6">
-          D├®j├á un compte ?
+          Déjà un compte ?
           <a href="{{ path('app_login') }}" class="text-primary hover:text-white transition-colors"
             >Se connecter</a
           >

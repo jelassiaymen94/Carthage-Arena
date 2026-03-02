@@ -30,7 +30,7 @@ class AuthService
             );
 
             // Delete any existing token via raw SQL, bypassing the ORM entirely.
-            // We do NOT call em->clear() ÔÇö that would detach the User entity and
+            // We do NOT call em->clear() — that would detach the User entity and
             // cause cascade:persist to try re-inserting it.
             $conn->executeStatement(
                 'DELETE FROM auth_token WHERE user_id = ?',

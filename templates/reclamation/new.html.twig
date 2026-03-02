@@ -38,10 +38,20 @@
                     {{ form_errors(form.subject) }}
                 </div>
 
-                <div>
-                    {{ form_label(form.message) }}
-                    {{ form_widget(form.message) }}
-                    <p class="text-xs text-gray-500 mt-2">Soyez aussi précis que possible pour nous aider à résoudre votre problème rapidement.</p>
+                <div data-controller="voice-recorder">
+                    <div class="flex items-center justify-between mb-2">
+                        {{ form_label(form.message) }}
+                        <button type="button" 
+                                data-voice-recorder-target="button"
+                                data-action="click->voice-recorder#toggle"
+                                class="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-white/5 border border-white/10 text-xs font-bold text-gray-400 hover:text-white hover:bg-white/10 transition-all group">
+                            <span class="material-symbols-outlined text-[18px]">mic</span>
+                            <span>Open Mic</span>
+                            <span data-voice-recorder-target="status" class="text-[10px] text-primary ml-1"></span>
+                        </button>
+                    </div>
+                    {{ form_widget(form.message, {'attr': {'data-voice-recorder-target': 'input'}}) }}
+                    <p class="text-xs text-gray-500 mt-2">Vous pouvez taper ou utiliser le micro pour dicter votre message.</p>
                     {{ form_errors(form.message) }}
                 </div>
 

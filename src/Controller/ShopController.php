@@ -95,7 +95,7 @@ class ShopController extends AbstractController
         }
 
         if (!$item) {
-            throw $this->createNotFoundException('Article non trouv├®');
+            throw $this->createNotFoundException('Article non trouvé');
         }
 
         // Normalize data for view
@@ -136,20 +136,20 @@ class ShopController extends AbstractController
 
         $skin = $skinRepository->find($id);
         if (!$skin) {
-            throw $this->createNotFoundException('Skin non trouv├®');
+            throw $this->createNotFoundException('Skin non trouvé');
         }
 
         if (!$inventoryService->checkStock($skin)) {
-            $this->addFlash('error', 'Stock ├®puis├®');
+            $this->addFlash('error', 'Stock épuisé');
             return $this->redirectToRoute('app_shop_item', ['id' => $id]);
         }
 
-        // V├®rifier si l'utilisateur a suffisamment de CP
+        // Vérifier si l'utilisateur a suffisamment de CP
         if ($user->getBalance() >= $skin->getPrice()) {
-            // D├®duire du solde et valider l'achat
+            // Déduire du solde et valider l'achat
             $user->setBalance($user->getBalance() - $skin->getPrice());
 
-            // Cr├®er un enregistrement de propri├®t├® du skin
+            // Créer un enregistrement de propriété du skin
             $userSkin = new UserSkin();
             $userSkin->setUser($user);
             $userSkin->setSkin($skin);
@@ -157,10 +157,10 @@ class ShopController extends AbstractController
             $entityManager->persist($userSkin);
             $entityManager->flush();
 
-            // R├®server le stock
+            // Réserver le stock
             $inventoryService->reserveStock($skin);
 
-            $this->addFlash('success', 'Skin achet├® avec succ├¿s! V├®rifiez votre historique d\'achat.');
+            $this->addFlash('success', 'Skin acheté avec succès! Vérifiez votre historique d\'achat.');
             return $this->redirectToRoute('app_profile_historique_achat');
         }
 

@@ -140,21 +140,21 @@ class SecurityController extends AbstractController
         }
 
         if ($user->isVerified()) {
-            $this->addFlash('success', 'Votre adresse e-mail est d├®j├á v├®rifi├®e. Connectez-vous.');
+            $this->addFlash('success', 'Votre adresse e-mail est déjà vérifiée. Connectez-vous.');
             return $this->redirectToRoute('app_login');
         }
 
         try {
             $emailVerificationService->validateRequest($user, $request);
         } catch (VerifyEmailExceptionInterface $e) {
-            $this->addFlash('error', 'Le lien de v├®rification est invalide ou a expir├®. Veuillez vous r├®inscrire ou demander un nouveau lien.');
+            $this->addFlash('error', 'Le lien de vérification est invalide ou a expiré. Veuillez vous réinscrire ou demander un nouveau lien.');
             return $this->redirectToRoute('app_register');
         }
 
         $user->setIsVerified(true);
         $entityManager->flush();
 
-        $this->addFlash('success', 'Votre adresse e-mail a ├®t├® v├®rifi├®e avec succ├¿s ! Vous pouvez maintenant vous connecter.');
+        $this->addFlash('success', 'Votre adresse e-mail a été vérifiée avec succès ! Vous pouvez maintenant vous connecter.');
         return $this->redirectToRoute('app_login');
     }
 
@@ -166,7 +166,7 @@ class SecurityController extends AbstractController
         EmailVerificationService $emailVerificationService,
     ): Response {
         if (!$this->isCsrfTokenValid('resend_verification', $request->request->get('_token'))) {
-            $this->addFlash('error', 'Token de s├®curit├® invalide. Veuillez r├®essayer.');
+            $this->addFlash('error', 'Token de sécurité invalide. Veuillez réessayer.');
             return $this->redirectToRoute('app_register');
         }
 
@@ -209,7 +209,7 @@ class SecurityController extends AbstractController
         if ($request->isMethod('POST')) {
             // CSRF protection
             if (!$this->isCsrfTokenValid('forgot_password', $request->request->get('_token'))) {
-                $this->addFlash('error', 'Token de s├®curit├® invalide. Veuillez r├®essayer.');
+                $this->addFlash('error', 'Token de sécurité invalide. Veuillez réessayer.');
                 return $this->redirectToRoute('app_forgot_password');
             }
 
@@ -239,7 +239,7 @@ class SecurityController extends AbstractController
 
             $this->addFlash(
                 'success',
-                'Si un compte correspond ├á cette adresse e-mail, vous recevrez un lien de r├®initialisation dans quelques minutes.'
+                'Si un compte correspond à cette adresse e-mail, vous recevrez un lien de réinitialisation dans quelques minutes.'
             );
 
             return $this->redirectToRoute('app_forgot_password');
@@ -272,7 +272,7 @@ class SecurityController extends AbstractController
         if ($request->isMethod('POST')) {
             // CSRF protection
             if (!$this->isCsrfTokenValid('reset_password_' . $token, $request->request->get('_token'))) {
-                $this->addFlash('error', 'Token de s├®curit├® invalide. Veuillez r├®essayer.');
+                $this->addFlash('error', 'Token de sécurité invalide. Veuillez réessayer.');
                 return $this->redirectToRoute('app_reset_password', ['token' => $token]);
             }
 
@@ -280,7 +280,7 @@ class SecurityController extends AbstractController
             $confirmPassword = $request->request->get('password_confirm', '');
 
             if (strlen($newPassword) < 6) {
-                $this->addFlash('error', 'Le mot de passe doit contenir au moins 6 caract├¿res.');
+                $this->addFlash('error', 'Le mot de passe doit contenir au moins 6 caractères.');
                 return $this->render('security/reset_password.html.twig', [
                     'tokenValid' => true,
                     'token' => $token,
@@ -303,7 +303,7 @@ class SecurityController extends AbstractController
 
             $entityManager->flush();
 
-            $this->addFlash('success', 'Mot de passe r├®initialis├® avec succ├¿s. Vous pouvez maintenant vous connecter.');
+            $this->addFlash('success', 'Mot de passe réinitialisé avec succès. Vous pouvez maintenant vous connecter.');
             return $this->redirectToRoute('app_login');
         }
 

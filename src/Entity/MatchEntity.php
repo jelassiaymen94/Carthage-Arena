@@ -6,12 +6,31 @@ use App\Enum\MatchStatus;
 use App\Repository\MatchRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use ApiPlatform\Metadata\ApiResource;
+use ApiPlatform\Metadata\Get;
+use ApiPlatform\Metadata\GetCollection;
+use ApiPlatform\Metadata\Post;
+use ApiPlatform\Metadata\Patch;
+use ApiPlatform\Metadata\Delete;
+use Gedmo\Mapping\Annotation as Gedmo;
 use Symfony\Bridge\Doctrine\Types\UuidType;
 use Symfony\Component\Uid\Uuid;
 use Symfony\Component\Validator\Constraints as Assert;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ORM\Entity(repositoryClass: MatchRepository::class)]
 #[ORM\Table(name: 'match_game')]
+#[ApiResource(
+    operations: [
+        new Get(),
+        new GetCollection(),
+        new Post(),
+        new Patch(),
+        new Delete(),
+    ],
+    normalizationContext: ['groups' => ['match:read']],
+    denormalizationContext: ['groups' => ['match:write']],
+)]
 class MatchEntity
 {
     #[ORM\Id]
@@ -20,39 +39,59 @@ class MatchEntity
     #[ORM\CustomIdGenerator(class: 'doctrine.uuid_generator')]
     private ?Uuid $id = null;
 
+    #[ORM\Column]
+    #[Gedmo\Timestampable(on: 'create')]
+    #[Groups(['match:read'])]
+    private ?\DateTimeImmutable $createdAt = null;
+
+    #[ORM\Column]
+    #[Gedmo\Timestampable(on: 'update')]
+    #[Groups(['match:read'])]
+    private ?\DateTimeImmutable $updatedAt = null;
+
     #[ORM\Column(type: 'integer')]
+    #[Groups(['match:read', 'match:write'])]
     #[Assert\NotBlank(message: "Le round est obligatoire")]
     #[Assert\Positive(message: "Le round doit être positif")]
     private ?int $round = null;
 
     #[ORM\Column(type: 'string', enumType: MatchStatus::class)]
+    #[Groups(['match:read', 'match:write'])]
     private MatchStatus $status = MatchStatus::SCHEDULED;
 
     #[ORM\Column(nullable: true)]
+    #[Groups(['match:read', 'match:write'])]
     private ?\DateTimeImmutable $scheduledAt = null;
 
     #[ORM\Column(nullable: true)]
+    #[Groups(['match:read', 'match:write'])]
     private ?\DateTimeImmutable $startedAt = null;
 
     #[ORM\Column(nullable: true)]
+    #[Groups(['match:read', 'match:write'])]
     private ?\DateTimeImmutable $completedAt = null;
 
     #[ORM\Column(type: Types::JSON, nullable: true)]
+    #[Groups(['match:read', 'match:write'])]
     private ?array $score = null;
 
     #[ORM\ManyToOne(inversedBy: 'matches')]
     #[ORM\JoinColumn(nullable: false)]
+    #[Groups(['match:read', 'match:write'])]
     private ?Tournoi $tournoi = null;
 
     #[ORM\ManyToOne]
     #[ORM\JoinColumn(nullable: true)]
+    #[Groups(['match:read', 'match:write'])]
     private ?Team $team1 = null;
 
     #[ORM\ManyToOne]
     #[ORM\JoinColumn(nullable: true)]
+    #[Groups(['match:read', 'match:write'])]
     private ?Team $team2 = null;
 
     #[ORM\ManyToOne]
+    #[Groups(['match:read', 'match:write'])]
     private ?Team $winner = null;
 
     public function __construct()
@@ -173,5 +212,15 @@ class MatchEntity
     {
         $this->winner = $winner;
         return $this;
+    }
+
+    public function getCreatedAt(): ?\DateTimeImmutable
+    {
+        return $this->createdAt;
+    }
+
+    public function getUpdatedAt(): ?\DateTimeImmutable
+    {
+        return $this->updatedAt;
     }
 }

@@ -47,13 +47,12 @@ class CPController extends AbstractController
         $clientSecret = null;
         $stripeAvailable = class_exists(StripeClient::class);
         if ($stripeAvailable) {
-            $stripeSecret = $_ENV['STRIPE_SECRET_KEY'] ?? getenv('STRIPE_SECRET_KEY');
-            if ($stripeSecret && $stripeSecret !== 'sk_test_YOUR_SECRET_KEY') {
+            $stripeSecret = $_ENV['STRIPE_SECRET'] ?? getenv('STRIPE_SECRET');
+            if ($stripeSecret) {
                 $stripe = new StripeClient($stripeSecret);
                 $intent = $stripe->paymentIntents->create([
                     'amount' => (int) round($packageData['price'] * 100),
                     'currency' => 'usd',
-                    'automatic_payment_methods' => ['enabled' => true, 'allow_redirects' => 'never'],
                     'metadata' => [
                         'user_id' => $user->getId(),
                         'cp_amount' => $packageData['amount'],
@@ -65,7 +64,7 @@ class CPController extends AbstractController
             }
         }
 
-        $publishable = $_ENV['STRIPE_PUBLISHABLE_KEY'] ?? getenv('STRIPE_PUBLISHABLE_KEY');
+        $publishable = $_ENV['STRIPE_PUBLISHABLE'] ?? getenv('STRIPE_PUBLISHABLE');
         $webhookSecret = $_ENV['STRIPE_WEBHOOK_SECRET'] ?? getenv('STRIPE_WEBHOOK_SECRET');
         $isWebhookSecretValid = !empty($webhookSecret) && $webhookSecret !== 'whsec_YOUR_WEBHOOK_SECRET';
 
@@ -75,55 +74,9 @@ class CPController extends AbstractController
             'user' => $user,
             'client_secret' => $clientSecret,
             'stripe_available' => $stripeAvailable,
-            'stripe_publishable' => ($publishable !== 'pk_test_YOUR_PUBLISHABLE_KEY' ? $publishable : ''),
+            'stripe_publishable' => $publishable,
             'webhook_secret_set' => $isWebhookSecretValid,
         ]);
-    }
-
-    #[Route('/payment-success', name: 'app_cp_payment_success', methods: ['POST'])]
-    public function paymentSuccess(Request $request, EntityManagerInterface $em): Response
-    {
-        /** @var User $user */
-        $user = $this->getUser();
-        if (!$user) {
-            return $this->json(['error' => 'Unauthorized'], 401);
-        }
-
-        $data = json_decode($request->getContent(), true);
-        $cpAmount = isset($data['cp_amount']) ? (int) $data['cp_amount'] : 0;
-        $paymentIntentId = $data['payment_intent_id'] ?? null;
-
-        if (!$cpAmount || !$paymentIntentId) {
-            return $this->json(['error' => 'Invalid data'], 400);
-        }
-
-        // Verify the payment intent with Stripe to ensure it actually succeeded
-        $stripeSecret = $_ENV['STRIPE_SECRET_KEY'] ?? getenv('STRIPE_SECRET_KEY');
-        if (!$stripeSecret || $stripeSecret === 'sk_test_YOUR_SECRET_KEY') {
-            return $this->json(['error' => 'Stripe not configured'], 500);
-        }
-
-        try {
-            $stripe = new StripeClient($stripeSecret);
-            $intent = $stripe->paymentIntents->retrieve($paymentIntentId);
-
-            if ($intent->status !== 'succeeded') {
-                return $this->json(['error' => 'Payment not completed'], 400);
-            }
-
-            // Verify this intent belongs to this user
-            $intentUserId = $intent->metadata['user_id'] ?? null;
-            if ((string) $intentUserId !== (string) $user->getId()) {
-                return $this->json(['error' => 'Unauthorized'], 403);
-            }
-
-            $user->setBalance($user->getBalance() + $cpAmount);
-            $em->flush();
-
-            return $this->json(['success' => true, 'new_balance' => $user->getBalance()]);
-        } catch (\Exception $e) {
-            return $this->json(['error' => 'Stripe error: ' . $e->getMessage()], 500);
-        }
     }
 
     #[Route('/webhook/payment-success', name: 'app_cp_webhook_success', methods: ['POST'])]

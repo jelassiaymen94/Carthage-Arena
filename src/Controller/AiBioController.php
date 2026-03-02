@@ -21,12 +21,12 @@ class AiBioController extends AbstractController
         /** @var User $user */
         $user = $this->getUser();
         if (!$user) {
-            return $this->json(['error' => 'Non authentifi├®.'], 401);
+            return $this->json(['error' => 'Non authentifié.'], 401);
         }
 
         $apiKey = $_ENV['NVIDIA_API_KEY'] ?? '';
         if (!$apiKey) {
-            return $this->json(['error' => 'Cl├® API manquante.'], 500);
+            return $this->json(['error' => 'Clé API manquante.'], 500);
         }
 
         $profile = $user->getProfile();
@@ -35,14 +35,14 @@ class AiBioController extends AbstractController
         $bio     = $profile ? ($profile->getBio() ?? '') : '';
 
         $prompt = <<<PROMPT
-Tu es un assistant sp├®cialis├® dans la cr├®ation de biographies de joueurs pour une plateforme d'esport tunisienne nomm├®e Carthage Arena.
+Tu es un assistant spécialisé dans la création de biographies de joueurs pour une plateforme d'esport tunisienne nommée Carthage Arena.
 
-G├®n├¿re une courte biographie de joueur en fran├ºais (max 300 caract├¿res) pour le joueur suivant :
+Génère une courte biographie de joueur en français (max 300 caractères) pour le joueur suivant :
 - Nom : {$name}
-- R├┤le : {$role}
-- Biographie actuelle (peut ├¬tre vide) : {$bio}
+- Rôle : {$role}
+- Biographie actuelle (peut être vide) : {$bio}
 
-La biographie doit ├¬tre enthousiaste, dynamique, ├á la premi├¿re personne, et mettre en avant la passion pour le gaming comp├®titif. Ne d├®passe pas 300 caract├¿res. R├®ponds uniquement avec la biographie, sans guillemets ni explication.
+La biographie doit être enthousiaste, dynamique, à la première personne, et mettre en avant la passion pour le gaming compétitif. Ne dépasse pas 300 caractères. Réponds uniquement avec la biographie, sans guillemets ni explication.
 PROMPT;
 
         try {
@@ -78,7 +78,7 @@ PROMPT;
 
             return $this->json(['bio' => $bio]);
         } catch (\Exception $e) {
-            return $this->json(['error' => 'Erreur lors de la g├®n├®ration : ' . $e->getMessage()], 500);
+            return $this->json(['error' => 'Erreur lors de la génération : ' . $e->getMessage()], 500);
         }
     }
 }

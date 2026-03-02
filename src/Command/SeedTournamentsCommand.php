@@ -79,7 +79,8 @@ class SeedTournamentsCommand extends Command
                 'status' => TournamentStatus::UPCOMING,
                 'dateDebut' => new \DateTimeImmutable('+1 week'),
                 'dateFin' => new \DateTimeImmutable('+2 weeks'),
-                'teams' => array_slice($teams, 0, 2) // Join first 2 teams
+                'teams' => array_slice($teams, 0, 2), // Join first 2 teams
+                'place' => 'Carthage Arena, Tunis'
             ],
             [
                 'name' => 'Valorant Spike Rush',
@@ -87,7 +88,8 @@ class SeedTournamentsCommand extends Command
                 'status' => TournamentStatus::ONGOING,
                 'dateDebut' => new \DateTimeImmutable('-1 day'),
                 'dateFin' => new \DateTimeImmutable('+5 days'),
-                'teams' => array_slice($teams, 0, 4) // Join all 4 teams
+                'teams' => array_slice($teams, 0, 4), // Join all 4 teams
+                'place' => 'El Menzah Sports Palace, Tunis'
             ],
             [
                 'name' => 'Legends Showdown',
@@ -95,7 +97,8 @@ class SeedTournamentsCommand extends Command
                 'status' => TournamentStatus::UPCOMING,
                 'dateDebut' => new \DateTimeImmutable('+1 month'),
                 'dateFin' => new \DateTimeImmutable('+1 month 1 week'),
-                'teams' => [$teams[0] ?? null] // Join 1 team
+                'teams' => [$teams[0] ?? null], // Join 1 team
+                'place' => 'Radès Olympic Stadium, Ben Arous'
             ]
         ];
 
@@ -109,6 +112,7 @@ class SeedTournamentsCommand extends Command
             $tournoi->setDateFin($data['dateFin']);
             $tournoi->setNbEquipesMax(16);
             $tournoi->setPrizePool(5000);
+            $tournoi->setPlace($data['place'] ?? null);
 
             // Add teams
             foreach ($data['teams'] as $team) {

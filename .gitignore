@@ -15,7 +15,6 @@
 ###< phpunit/phpunit ###
 
 ###> symfony/asset-mapper ###
-/public/assets/
 /assets/vendor/
 ###< symfony/asset-mapper ###
 
@@ -28,6 +27,7 @@
 ### Claude
 /CLAUDE.md
 AGENTS.md
+.claude
 
 ### Acli
 acli.exe

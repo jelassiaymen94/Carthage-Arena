@@ -125,7 +125,7 @@
                   >
                     <option {{ user.language == 'Fran&ccedil;ais' ? 'selected' : '' }}>Fran&ccedil;ais</option>
                     <option {{ user.language == 'English' ? 'selected' : '' }}>English</option>
-                    <option {{ user.language == 'Ïº┘äÏ╣Ï▒Ï¿┘èÏ®' ? 'selected' : '' }}>Ïº┘äÏ╣Ï▒Ï¿┘èÏ®</option>
+                    <option {{ user.language == 'العربية' ? 'selected' : '' }}>العربية</option>
                   </select>
                 </div>
                 <div>
@@ -172,14 +172,14 @@
                     class="flex items-center gap-1.5 rounded-full border border-primary/40 bg-primary/10 px-3 py-1.5 text-xs font-bold text-primary hover:bg-primary/20 hover:border-primary transition-all"
                   >
                     <span id="aiBioSettingsIcon" class="material-symbols-outlined text-[14px]">auto_awesome</span>
-                    <span id="aiBioSettingsLabel">G├®n├®rer avec IA</span>
+                    <span id="aiBioSettingsLabel">Générer avec IA</span>
                   </button>
                 </div>
                 {{ form_widget(profileForm.bio) }}
                 {% for error in profileForm.bio.vars.errors %}
                   <p class="text-xs text-red-400 mt-1">{{ error.message }}</p>
                 {% endfor %}
-                <p class="text-xs text-gray-500 mt-1">Max 500 caract├¿res.</p>
+                <p class="text-xs text-gray-500 mt-1">Max 500 caractères.</p>
               </div>
 
               <div class="flex justify-end">
@@ -203,7 +203,7 @@
             <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 rounded-xl bg-white/5 p-5">
               <div>
                 <p class="font-bold text-white text-sm">Mot de passe</p>
-                <p class="text-xs text-gray-400 mt-0.5">Pour changer votre mot de passe, contactez le support (bient├┤t disponible).</p>
+                <p class="text-xs text-gray-400 mt-0.5">Pour changer votre mot de passe, contactez le support (bientôt disponible).</p>
               </div>
             </div>
           </section>
@@ -351,7 +351,7 @@
         btn.addEventListener('click', async function () {
           btn.disabled = true;
           icon.classList.add('animate-spin');
-          label.textContent = 'G├®n├®rationÔÇª';
+          label.textContent = 'Génération…';
 
           try {
             const resp = await fetch('{{ path('app_ai_generate_bio') }}', {
@@ -373,11 +373,11 @@
               alert(data.error || "Une erreur inattendue s'est produite.");
             }
           } catch (e) {
-            alert("Impossible de joindre le serveur. Veuillez r├®essayer.");
+            alert("Impossible de joindre le serveur. Veuillez réessayer.");
           } finally {
             btn.disabled = false;
             icon.classList.remove('animate-spin');
-            label.textContent = 'G├®n├®rer avec IA';
+            label.textContent = 'Générer avec IA';
           }
         });
       })();

@@ -22,7 +22,10 @@ use App\Repository\TournoiRepository;
 use App\Repository\UserRepository;
 use App\Repository\ReclamationRepository;
 use App\Enum\ReclamationStatus;
+use App\Enum\TournamentStatus;
+use App\Service\ReclamationAiService;
 use App\Repository\TeamRepository;
+use App\Repository\MatchRepository;
 use App\Entity\Profile;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -43,11 +46,13 @@ class AdminDashboardController extends AbstractController
         private readonly SkinRepository $skinRepository,
         private readonly MerchRepository $merchRepository,
         private readonly LicenseRepository $licenseRepository,
+        private readonly MatchRepository $matchRepository,
         private readonly EntityManagerInterface $entityManager,
     ) {
     }
+
     #[Route('/', name: 'admin_dashboard')]
-    public function index(): Response
+    public function index(ReclamationAiService $aiService): Response
     {
         $tournois = $this->tournoiRepository->findBy([], ['dateDebut' => 'DESC'], 5);
         $totalUsers = $this->userRepository->count([]);
@@ -59,21 +64,25 @@ class AdminDashboardController extends AbstractController
             5
         );
 
+        // Fetch AI Summary for the main dashboard
+        $aiSummary = $aiService->getSummary($recentReclamations);
+
         return $this->render('admin/dashboard/index.html.twig', [
             'stats' => [
                 'totalUsers' => $totalUsers,
-                'activeUsers' => $totalUsers, // Simplification for now
+                'activeUsers' => $this->userRepository->count(['status' => AccountStatus::ACTIVE]),
                 'totalTournaments' => $totalTournaments,
-                'activeTournaments' => count($this->tournoiRepository->findBy(['status' => 'ongoing'])),
-                'totalRevenue' => '125,450 DT',
+                'activeTournaments' => $this->tournoiRepository->count(['status' => TournamentStatus::ONGOING]),
+                'totalRevenue' => '125,450 DT', // Simulation
                 'pendingReclamations' => count($recentReclamations),
-                'monthlyRevenue' => '18,200 DT',
-                'totalMatches' => 3421,
-                'todayMatches' => 28,
+                'monthlyRevenue' => '18,200 DT', // Simulation
+                'totalMatches' => $this->matchRepository->count([]),
+                'todayMatches' => $this->matchRepository->countTodayMatches(),
             ],
             'recentUsers' => $this->userRepository->findBy([], ['id' => 'DESC'], 5),
             'recentReclamations' => $recentReclamations,
             'recentTournaments' => $tournois,
+            'aiSummary' => $aiSummary,
             'systemHealth' => [
                 'serverStatus' => 'online',
                 'cpuUsage' => 45,
@@ -229,7 +238,7 @@ class AdminDashboardController extends AbstractController
             }
 
             $licenseCode = $request->request->get('license_code');
-            
+
             if (empty($licenseCode)) {
                 $this->addFlash('error', 'Le code de licence est obligatoire.');
                 return $this->render('admin/users/assign_license.html.twig', [
@@ -238,7 +247,7 @@ class AdminDashboardController extends AbstractController
             }
 
             $license = $this->licenseRepository->findAvailableByCode($licenseCode);
-            
+
             if (!$license) {
                 // Check if it exists but is used
                 $existingLicense = $this->licenseRepository->findOneBy(['licenseCode' => $licenseCode]);
@@ -284,9 +293,17 @@ class AdminDashboardController extends AbstractController
             }
         }
 
+        $query = $request->query->get('query');
+        $gameId = $request->query->get('game');
+        $status = $request->query->get('status');
+
         return $this->render('admin/tournaments/index.html.twig', [
-            'tournaments' => $this->tournoiRepository->findAll(),
+            'tournaments' => $this->tournoiRepository->searchAndFilter($query, $gameId, $status),
+            'games' => $this->gameRepository->findAll(),
             'form' => $form->createView(),
+            'currentQuery' => $query,
+            'currentGame' => $gameId,
+            'currentStatus' => $status,
         ]);
     }
 

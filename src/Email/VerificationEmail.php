@@ -15,7 +15,7 @@ class VerificationEmail extends TemplatedEmail
         $this
             ->from(new Address('no-reply@demomailtrap.co', 'Carthage Arena'))
             ->to(new Address($user->getEmail(), $user->getName()))
-            ->subject('V├®rifiez votre adresse e-mail ÔÇö Carthage Arena')
+            ->subject('Vérifiez votre adresse e-mail — Carthage Arena')
             ->htmlTemplate('emails/verification.html.twig')
             ->context([
                 'user' => $user,

@@ -1,4 +1,4 @@
-{% extends 'base.html.twig' %}
+﻿{% extends 'base.html.twig' %}
 
 {% block title %}Paiement - Carthage Arena{% endblock %}
 
@@ -18,8 +18,8 @@
           <span class="material-symbols-outlined text-secondary text-sm">credit_card</span>
         </div>
         <div>
-          <h4 class="text-sm font-bold text-white">Sécurisé par Stripe</h4>
-          <p class="text-xs text-gray-400 mt-1">Vos informations de paiement sont protégées.</p>
+          <h4 class="text-sm font-bold text-white">S├®curis├® par Stripe</h4>
+          <p class="text-xs text-gray-400 mt-1">Vos informations de paiement sont prot├®g├®es.</p>
         </div>
       </div>
     </div>
@@ -52,7 +52,7 @@
                                 <p class="text-xl font-bold">{{ packageData.label }}</p>
                             </div>
                             <div class="text-right">
-                                <p class="text-white/60 text-sm mb-1">Quantité</p>
+                                <p class="text-white/60 text-sm mb-1">Quantit├®</p>
                                 <p class="text-2xl font-bold text-secondary">1x</p>
                             </div>
                         </div>
@@ -84,7 +84,7 @@
                                 <label class="block text-sm font-medium text-white/60 mb-2">
                                     Nom sur la carte
                                 </label>
-                                <input type="text" id="cardholder-name" placeholder="Jean Dupont" class="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-3 text-white placeholder-white/20 focus:border-primary focus:ring-1 focus:ring-primary/20 outline-none transition-all" required>
+                                <input type="text" placeholder="Jean Dupont" class="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-3 text-white placeholder-white/20 focus:border-primary focus:ring-1 focus:ring-primary/20 outline-none transition-all" required>
                             </div>
 
                             <!-- Card Element will be inserted here -->
@@ -92,7 +92,7 @@
                                 <label class="block text-sm font-medium text-white/60 mb-2">
                                     Informations Carte
                                 </label>
-                                <div id="card-element" class="bg-white/5 border border-white/10 rounded-lg px-4 py-3 min-h-[44px]"></div>
+                                <div id="card-element" class="bg-white/5 border border-white/10 rounded-lg px-4 py-3"></div>
                                 <div id="card-errors" class="text-red-400 text-sm mt-2" role="alert"></div>
                             </div>
 
@@ -118,7 +118,7 @@
                             </button>
 
                             <p class="text-xs text-white/40 text-center mt-4">
-                                Paiement sécurisé par Stripe
+                                Paiement s├®curis├® par Stripe
                             </p>
                         </form>
                     </div>
@@ -127,7 +127,7 @@
                 <!-- Order Summary Sidebar (Mobile) -->
                 <div class="lg:col-span-1">
                     <div class="sticky top-24 bg-white/5 rounded-2xl border border-white/10 p-6">
-                        <h3 class="font-bold mb-6">Résumé</h3>
+                        <h3 class="font-bold mb-6">R├®sum├®</h3>
 
                         <div class="bg-gradient-to-br from-secondary/20 to-secondary/10 rounded-xl p-4 mb-6 border border-secondary/20">
                             <p class="text-white/60 text-sm mb-1">Vous allez recevoir</p>
@@ -146,9 +146,9 @@
                         </div>
 
                         <div class="space-y-2 text-xs text-white/40">
-                            <p>Instantané</p>
-                            <p>Sécurisé</p>
-                            <p>Pas de frais cachés</p>
+                            <p>Ô£ô Instantan├®</p>
+                            <p>Ô£ô S├®curis├®</p>
+                            <p>Ô£ô Pas de frais cach├®s</p>
                         </div>
                     </div>
                 </div>
@@ -161,104 +161,75 @@
 
 <script src="https://js.stripe.com/v3/"></script>
 <script>
-const STRIPE_PUBLISHABLE = {{ stripe_publishable ? ('"' ~ stripe_publishable ~ '"') : 'null' }};
-const CLIENT_SECRET = {{ client_secret ? ('"' ~ client_secret ~ '"') : 'null' }};
-const CP_AMOUNT = {{ packageData.amount }};
-const SUCCESS_URL = '{{ path("app_cp_shop") }}?success=true';
-const PAYMENT_SUCCESS_URL = '{{ path("app_cp_payment_success") }}';
+const stripe = Stripe('{{ stripe_publishable ?: "pk_test_YOUR_PUBLISHABLE_KEY" }}'); // Replace with your publishable key if empty
+const elements = stripe.elements();
+const cardElement = elements.create('card');
+cardElement.mount('#card-element');
 
+const form = document.getElementById('payment-form');
 const cardErrors = document.getElementById('card-errors');
-const submitBtn = document.querySelector('#payment-form button[type="submit"]');
-const submitBtnText = submitBtn.querySelector('span.btn-text') || submitBtn;
 
-function showError(msg) {
-    cardErrors.textContent = msg;
-    submitBtn.disabled = false;
-    submitBtn.innerHTML = '<span class="material-symbols-outlined">lock</span> Payer ${{ packageData.price }}';
-}
+cardElement.on('change', function(event) {
+    if (event.error) {
+        cardErrors.textContent = event.error.message;
+    } else {
+        cardErrors.textContent = '';
+    }
+});
 
-if (!STRIPE_PUBLISHABLE) {
-    cardErrors.textContent = 'Stripe non configuré. Veuillez contacter l\'administrateur.';
-    submitBtn.disabled = true;
-} else {
-    const stripe = Stripe(STRIPE_PUBLISHABLE);
-    const elements = stripe.elements();
-    const cardElement = elements.create('card', {
-        style: {
-            base: {
-                color: '#ffffff',
-                fontFamily: '"Inter", sans-serif',
-                fontSize: '16px',
-                fontSmoothing: 'antialiased',
-                '::placeholder': { color: 'rgba(255, 255, 255, 0.4)' },
-                iconColor: '#ffffff',
-            },
-            invalid: {
-                color: '#f87171',
-                iconColor: '#f87171',
-            },
-        },
-    });
-    cardElement.mount('#card-element');
+form.addEventListener('submit', async (e) => {
+    e.preventDefault();
 
-    cardElement.on('change', function(event) {
-        cardErrors.textContent = event.error ? event.error.message : '';
+    const clientSecret = '{{ client_secret|default('') }}';
+    if (!clientSecret) {
+        cardErrors.textContent = 'Paiement non configur├® (cl├® manquante).';
+        return;
+    }
+
+    const name = document.querySelector('input[placeholder="Jean Dupont"]').value || '';
+
+    const { error, paymentIntent } = await stripe.confirmCardPayment(clientSecret, {
+        payment_method: {
+            card: cardElement,
+            billing_details: { name }
+        }
     });
 
-    const form = document.getElementById('payment-form');
-    form.addEventListener('submit', async (e) => {
-        e.preventDefault();
-
-        if (!CLIENT_SECRET) {
-            showError('Erreur de configuration du paiement. Veuillez réessayer.');
-            return;
-        }
-
-        // Disable button and show loading
-        submitBtn.disabled = true;
-        submitBtn.innerHTML = '<span class="material-symbols-outlined animate-spin">progress_activity</span> Traitement en cours...';
-
-        const nameInput = document.getElementById('cardholder-name');
-        const name = nameInput ? nameInput.value.trim() : '';
-
-        const { error, paymentIntent } = await stripe.confirmCardPayment(CLIENT_SECRET, {
-            payment_method: {
-                card: cardElement,
-                billing_details: { name },
-            },
-        });
-
-        if (error) {
-            showError(error.message);
-            return;
-        }
-
-        if (paymentIntent && paymentIntent.status === 'succeeded') {
+    if (error) {
+        cardErrors.textContent = error.message;
+    } else if (paymentIntent && paymentIntent.status === 'succeeded') {
+        // Payment succeeded.
+        // If webhook secret is not set (local/dev), post a simulated event to the webhook endpoint
+        const webhookSet = {{ webhook_secret_set ? 'true' : 'false' }};
+        if (!webhookSet) {
             try {
-                // Credit CP to user account by verifying the payment intent server-side
-                const res = await fetch(PAYMENT_SUCCESS_URL, {
+                let simObject = paymentIntent;
+                if (!simObject.metadata || Object.keys(simObject.metadata).length === 0) {
+                    simObject = {
+                        ...simObject,
+                        metadata: {
+                            user_id: document.getElementById('user_id').value,
+                            cp_amount: document.getElementById('cp_amount').value,
+                            package_type: document.getElementById('package_type').value
+                        }
+                    };
+                }
+
+                await fetch('{{ path("app_cp_webhook_success") }}', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        payment_intent_id: paymentIntent.id,
-                        cp_amount: CP_AMOUNT,
-                    }),
+                    body: JSON.stringify({ type: 'payment_intent.succeeded', data: { object: simObject } })
                 });
-                const json = await res.json();
-                if (!res.ok) {
-                    showError('Paiement reçu mais erreur lors du crédit: ' + (json.error || 'Contactez le support.'));
-                    return;
-                }
             } catch (err) {
-                showError('Erreur réseau lors du crédit CP. Contactez le support.');
-                return;
+                // ignore errors from simulated webhook
             }
-
-            window.location.href = SUCCESS_URL;
-        } else {
-            showError('Échec du paiement, réessayez.');
         }
-    });
-}
+
+        // Redirect to shop with success.
+        window.location.href = '{{ path("app_cp_shop") }}?success=true';
+    } else {
+        cardErrors.textContent = '├ëchec du paiement, r├®essayez.';
+    }
+});
 </script>
 {% endblock %}

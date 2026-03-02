@@ -29,20 +29,13 @@ class MatchGeneratorService
         };
     }
 
-    /**
-     * Generate single elimination bracket
-     * Requires power of 2 teams (4, 8, 16, 32, etc.)
-     */
     private function generateSingleEliminationBracket(Tournoi $tournoi): array
     {
         $teams = $tournoi->getTeams()->toArray();
         $teamCount = count($teams);
 
-        // Validate power of 2
-        if ($teamCount < 2 || ($teamCount & ($teamCount - 1)) !== 0) {
-            throw new \InvalidArgumentException(
-                sprintf('Single elimination requires a power of 2 teams (4, 8, 16, etc.). Current: %d teams', $teamCount)
-            );
+        if ($teamCount < 2) {
+            throw new \InvalidArgumentException('Single elimination requires at least 2 teams');
         }
 
         // Shuffle teams for fairness
@@ -50,36 +43,60 @@ class MatchGeneratorService
 
         $matches = [];
         $round = 1;
-        $currentRoundTeams = $teams;
 
-        // Generate first round matches
-        for ($i = 0; $i < count($currentRoundTeams); $i += 2) {
+        // Find the largest power of 2 less than or equal to teamCount
+        $pow2 = 1;
+        while ($pow2 * 2 < $teamCount) {
+            $pow2 *= 2;
+        }
+
+        // Number of matches in Round 1 (Qualifiers to get to a power of 2 for Round 2)
+        // If teamCount is 8, pow2 is 4. M = 8 - 4 = 4. (Standard 8-team bracket)
+        // If teamCount is 5, pow2 is 4. M = 5 - 4 = 1. (1 match, 3 byes)
+        $round1MatchesCount = $teamCount - $pow2;
+
+        for ($i = 0; $i < $round1MatchesCount; $i++) {
             $match = new MatchEntity();
             $match->setTournoi($tournoi);
-            $match->setTeam1($currentRoundTeams[$i]);
-            $match->setTeam2($currentRoundTeams[$i + 1]);
+            $match->setTeam1($teams[$i * 2]);
+            $match->setTeam2($teams[$i * 2 + 1]);
             $match->setRound($round);
             $match->setStatus(MatchStatus::SCHEDULED);
             $match->setScheduledAt($tournoi->getDateDebut());
-
             $matches[] = $match;
         }
 
-        // Generate subsequent rounds (placeholders - winners will be determined later)
-        $remainingMatches = count($matches);
-        while ($remainingMatches > 1) {
-            $round++;
-            $remainingMatches = (int) ($remainingMatches / 2);
+        // Total matches in a single elimination bracket is always N-1
+        $totalMatchesNeeded = $teamCount - 1;
+        $createdMatchesCount = count($matches);
 
-            for ($i = 0; $i < $remainingMatches; $i++) {
+        // Subsequent rounds
+        while ($createdMatchesCount < $totalMatchesNeeded) {
+            $round++;
+            // The number of participants in this round will be half the previous "virtual" participants
+            // This is complex, but we know we just need to fill up to N-1 matches.
+            // For simplicity, we can just create the remaining matches as placeholders.
+
+            // Remaining matches for this round is pow2 / 2, then pow2 / 4 etc.
+            $matchesInThisRound = $pow2 / 2;
+            if ($matchesInThisRound < 1)
+                $matchesInThisRound = 1;
+
+            for ($i = 0; $i < $matchesInThisRound; $i++) {
+                if ($createdMatchesCount >= $totalMatchesNeeded)
+                    break;
+
                 $match = new MatchEntity();
                 $match->setTournoi($tournoi);
                 $match->setRound($round);
                 $match->setStatus(MatchStatus::SCHEDULED);
-                // Teams will be set after previous round completes
+                // For teams with byes in Round 1, we can pre-set them in Round 2 if it's the right round
+                // But usually, it's better to let the management logic handle advancements.
 
                 $matches[] = $match;
+                $createdMatchesCount++;
             }
+            $pow2 /= 2;
         }
 
         return $matches;
