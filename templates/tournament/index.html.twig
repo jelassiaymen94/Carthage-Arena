@@ -3,163 +3,263 @@
 {% block title %}Mes Tournois - Carthage Arena{% endblock %}
 
 {% block body %}
-    <div
-      id="mainContent"
-      class="flex min-h-screen w-full opacity-0 transition-opacity duration-500"
-    >
-      <!-- Sidebar -->
+    {# FullCalendar CSS — loaded only on this page #}
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.14/index.global.min.css">
+
+    <div id="mainContent" class="flex min-h-screen w-full opacity-0 transition-opacity duration-500">
+
+      {# Sidebar #}
       {% embed 'components/_sidebar.html.twig' %}
         {% block sidebar_bottom %}
         <div class="relative overflow-hidden rounded-2xl bg-gradient-to-br from-gray-900 to-black p-4 border border-white/10">
           <div class="absolute -right-6 -top-6 h-24 w-24 rounded-full bg-secondary/20 blur-2xl"></div>
           <div class="relative z-10 flex flex-col gap-3">
             <div class="flex items-center justify-between">
-              <p class="text-[10px] font-bold uppercase tracking-widest text-secondary">
-                Prochain Tournoi
-              </p>
+              <p class="text-[10px] font-bold uppercase tracking-widest text-secondary">Prochain Tournoi</p>
               <span class="material-symbols-outlined text-secondary text-sm">event</span>
             </div>
             <div>
               <h4 class="text-sm font-bold text-white">Carthage Championship</h4>
-              <p class="text-xs text-gray-400 mt-1">
-                Inscriptions ouvertes
-              </p>
+              <p class="text-xs text-gray-400 mt-1">Inscriptions ouvertes</p>
             </div>
           </div>
         </div>
         {% endblock %}
       {% endembed %}
 
-      <!-- Main Content -->
-      <main
-        class="flex flex-1 flex-col ml-72 bg-background-dark relative h-screen overflow-y-auto"
-      >
-        <!-- Header -->
-        <header
-          class="sticky top-0 z-50 flex h-20 items-center justify-between border-b border-white/5 bg-background-dark/80 backdrop-blur-md px-8 py-4"
-        >
+      {# Main Content #}
+      <main class="flex flex-1 flex-col ml-72 bg-background-dark relative h-screen overflow-y-auto">
+
+        {# Header #}
+        <header class="sticky top-0 z-50 flex h-20 items-center justify-between border-b border-white/5 bg-background-dark/80 backdrop-blur-md px-8 py-4">
           <div class="flex flex-col">
             <h2 class="text-2xl font-bold text-white">Mes Tournois</h2>
-            <p class="text-xs text-gray-400">G&eacute;rez vos inscriptions et d&eacute;couvrez de nouveaux tournois.</p>
+            <p class="text-xs text-gray-400">Gérez vos inscriptions et découvrez de nouveaux tournois.</p>
           </div>
           {% include 'components/_header_user_pill.html.twig' %}
         </header>
 
         <div class="flex flex-col gap-8 p-8 max-w-7xl mx-auto w-full">
-          <!-- Filter Tabs -->
-          <div class="flex flex-wrap items-center gap-3">
-            <a 
-              href="{{ path('app_tournaments') }}" 
-              class="rounded-full px-5 py-2 text-sm font-bold transition-all {{ not currentFilter ? 'bg-primary text-white shadow-lg shadow-red-900/30' : 'bg-white/5 border border-white/10 text-gray-400 hover:bg-white/10 hover:text-white' }}"
-            >
-              Tous les Tournois
-            </a>
-            <a 
-              href="{{ path('app_tournaments', {'filter': 'inscribed'}) }}" 
-              class="rounded-full px-5 py-2 text-sm font-bold transition-all {{ currentFilter == 'inscribed' ? 'bg-primary text-white shadow-lg shadow-red-900/30' : 'bg-white/5 border border-white/10 text-gray-400 hover:bg-white/10 hover:text-white' }}"
-            >
-              Mes Inscriptions
-            </a>
-            <a 
-              href="{{ path('app_tournaments', {'filter': 'completed'}) }}" 
-              class="rounded-full px-5 py-2 text-sm font-bold transition-all {{ currentFilter == 'completed' ? 'bg-primary text-white shadow-lg shadow-red-900/30' : 'bg-white/5 border border-white/10 text-gray-400 hover:bg-white/10 hover:text-white' }}"
-            >
-              Termin&eacute;s
-            </a>
+
+          {# ── Top bar: filters + view toggle ── #}
+          <div class="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-12">
+            <div class="flex flex-col sm:flex-row items-start sm:items-center gap-4 flex-1">
+              {# Search Bar #}
+              <form action="{{ path('app_tournaments') }}" method="GET" class="relative w-full sm:w-80">
+                <span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-gray-500 text-[20px]">search</span>
+                <input type="text" name="query" value="{{ currentQuery }}" placeholder="Rechercher un tournoi..."
+                       class="w-full bg-white/5 border border-white/10 rounded-full pl-12 pr-4 py-2 text-sm text-white placeholder-gray-500 focus:border-primary/50 focus:ring-1 focus:ring-primary/30 outline-none transition-all" />
+                {% if currentFilter %}
+                  <input type="hidden" name="filter" value="{{ currentFilter }}">
+                {% endif %}
+                <button type="submit" class="hidden">Rechercher</button>
+              </form>
+
+              {# Filter tabs #}
+              <div class="flex flex-wrap items-center gap-3">
+                <a href="{{ path('app_tournaments', {'query': currentQuery}) }}"
+                   class="rounded-full px-5 py-2 text-sm font-bold transition-all {{ not currentFilter ? 'bg-primary text-white shadow-lg shadow-red-900/30' : 'bg-white/5 border border-white/10 text-gray-400 hover:bg-white/10 hover:text-white' }}">
+                  Tous les Tournois
+                </a>
+                <a href="{{ path('app_tournaments', {'filter': 'inscribed', 'query': currentQuery}) }}"
+                   class="rounded-full px-5 py-2 text-sm font-bold transition-all {{ currentFilter == 'inscribed' ? 'bg-primary text-white shadow-lg shadow-red-900/30' : 'bg-white/5 border border-white/10 text-gray-400 hover:bg-white/10 hover:text-white' }}">
+                  Mes Inscriptions
+                </a>
+                <a href="{{ path('app_tournaments', {'filter': 'completed', 'query': currentQuery}) }}"
+                   class="rounded-full px-5 py-2 text-sm font-bold transition-all {{ currentFilter == 'completed' ? 'bg-primary text-white shadow-lg shadow-red-900/30' : 'bg-white/5 border border-white/10 text-gray-400 hover:bg-white/10 hover:text-white' }}">
+                  Terminés
+                </a>
+              </div>
+            </div>
+
+            {# View toggle — Grid / Calendar #}
+            <div class="flex items-center gap-1 p-1 bg-white/5 border border-white/10 rounded-full">
+              <button id="btn-grid"
+                      onclick="setView('grid')"
+                      class="flex items-center gap-1.5 px-4 py-1.5 rounded-full text-xs font-bold transition-all bg-primary text-white">
+                <span class="material-symbols-outlined text-[16px]">grid_view</span>
+                Grille
+              </button>
+              <button id="btn-cal"
+                      onclick="setView('calendar')"
+                      class="flex items-center gap-1.5 px-4 py-1.5 rounded-full text-xs font-bold transition-all text-gray-400 hover:text-white">
+                <span class="material-symbols-outlined text-[16px]">calendar_month</span>
+                Calendrier
+              </button>
+            </div>
           </div>
 
-          <!-- Tournament Cards Grid -->
-          <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
-            {% for tournament in tournois %}
-            <div class="group relative overflow-hidden rounded-2xl bg-surface-dark border border-white/5 transition-all hover:border-primary/30 hover:shadow-[0_0_30px_rgba(230,0,19,0.1)] hover:-translate-y-1">
-              <!-- Image -->
-              <div class="relative h-44 overflow-hidden">
-                <div
-                  class="absolute inset-0 bg-cover bg-center transition-transform duration-500 group-hover:scale-110"
-                  {% if tournament.game and tournament.game.imageUrl %}
-                      {% if tournament.game.imageUrl starts with 'http' or tournament.game.imageUrl starts with 'https' %}
-                          style="background-image: url('{{ tournament.game.imageUrl }}');"
-                      {% else %}
-                          style="background-image: url('{{ asset('uploads/games/' ~ tournament.game.imageUrl) }}');"
+          {# ── GRID VIEW ── #}
+          <div id="view-grid">
+            <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+              {% for tournament in tournois %}
+              <div class="group relative overflow-hidden rounded-2xl bg-surface-dark border border-white/5 transition-all hover:border-primary/30 hover:shadow-[0_0_30px_rgba(230,0,19,0.1)] hover:-translate-y-1">
+                {# Image #}
+                <div class="relative h-44 overflow-hidden">
+                  <div class="absolute inset-0 bg-cover bg-center transition-transform duration-500 group-hover:scale-110"
+                       style="background-image: url('{{ (tournament.game and tournament.game.imageUrl) ? tournament.game.imageUrl : 'https://images.unsplash.com/photo-1542751371-adc38448a05e?w=600&h=300&fit=crop' }}');"></div>
+                  <div class="absolute inset-0 bg-gradient-to-t from-surface-dark via-transparent to-transparent"></div>
+                  {# Status Badge #}
+                  <div class="absolute top-4 left-4">
+                    <span class="rounded-full px-3 py-1 text-[10px] font-bold uppercase tracking-wider
+                      {% if tournament.status.value == 'upcoming' %}bg-green-500/20 text-green-400 border border-green-500/30
+                      {% elseif tournament.status.value == 'ongoing' %}bg-primary/20 text-primary border border-primary/30
+                      {% elseif tournament.status.value == 'completed' %}bg-gray-500/20 text-gray-400 border border-gray-500/30
+                      {% else %}bg-secondary/20 text-secondary border border-secondary/30{% endif %}">
+                      {% if tournament.status.value == 'ongoing' %}
+                        <span class="inline-block w-1.5 h-1.5 rounded-full bg-primary mr-1 animate-pulse"></span>
                       {% endif %}
-                  {% else %}
-                      style="background-image: url('https://images.unsplash.com/photo-1542751371-adc38448a05e?w=600&h=300&fit=crop');"
+                      {{ tournament.status.value }}
+                    </span>
+                  </div>
+                  {# Game Badge #}
+                  {% if tournament.game %}
+                  <div class="absolute top-4 right-4">
+                    <span class="rounded-full bg-black/60 backdrop-blur-sm px-3 py-1 text-[10px] font-bold uppercase tracking-wider text-white border border-white/10">
+                      {{ tournament.game.name }}
+                    </span>
+                  </div>
                   {% endif %}
-                ></div>
-                <div class="absolute inset-0 bg-gradient-to-t from-surface-dark via-transparent to-transparent"></div>
-                <!-- Status Badge -->
-                <div class="absolute top-4 left-4">
-                  <span class="rounded-full px-3 py-1 text-[10px] font-bold uppercase tracking-wider
-                    {% if tournament.status.value == 'upcoming' %}
-                      bg-green-500/20 text-green-400 border border-green-500/30
-                    {% elseif tournament.status.value == 'ongoing' %}
-                      bg-primary/20 text-primary border border-primary/30
-                    {% elseif tournament.status.value == 'completed' %}
-                      bg-gray-500/20 text-gray-400 border border-gray-500/30
-                    {% else %}
-                      bg-secondary/20 text-secondary border border-secondary/30
-                    {% endif %}
-                  ">
-                    {% if tournament.status.value == 'ongoing' %}
-                      <span class="inline-block w-1.5 h-1.5 rounded-full bg-primary mr-1 animate-pulse"></span>
-                    {% endif %}
-                    {{ tournament.status.value }}
-                  </span>
                 </div>
-                <!-- Game Badge -->
-                {% if tournament.game %}
-                <div class="absolute top-4 right-4">
-                  <span class="rounded-full bg-black/60 backdrop-blur-sm px-3 py-1 text-[10px] font-bold uppercase tracking-wider text-white border border-white/10">
-                    {{ tournament.game.name }}
-                  </span>
-                </div>
-                {% endif %}
-              </div>
-              <!-- Content -->
-              <div class="p-5 flex flex-col gap-4">
-                <div>
-                  <h3 class="text-lg font-bold text-white group-hover:text-primary transition-colors mb-2">
-                    {{ tournament.nom }}
-                  </h3>
-                  <div class="flex flex-wrap items-center gap-4 text-xs text-gray-400">
-                    <span class="flex items-center gap-1">
-                      <span class="material-symbols-outlined text-[14px]">calendar_today</span>
-                      {{ tournament.dateDebut|date('d M Y') }}
-                    </span>
-                    <span class="flex items-center gap-1">
-                      <span class="material-symbols-outlined text-[14px]">groups</span>
-                      {{ tournament.teams|length }}/{{ tournament.nbEquipesMax }}
-                    </span>
-                    <span class="flex items-center gap-1">
-                      <span class="material-symbols-outlined text-[14px]">sports_esports</span>
-                      {{ tournament.type.value }}
-                    </span>
-                  </div>
-                </div>
-                <!-- Footer -->
-                <div class="flex items-center justify-between pt-3 border-t border-white/5">
+                {# Content #}
+                <div class="p-5 flex flex-col gap-4">
                   <div>
-                    <p class="text-[10px] uppercase text-gray-500 font-bold tracking-wider">Prize Pool</p>
-                    <p class="text-lg font-black text-secondary">{{ tournament.prizePool|number_format(0, ',', ' ') }} DT</p>
+                    <h3 class="text-lg font-bold text-white group-hover:text-primary transition-colors mb-2">{{ tournament.nom }}</h3>
+                    <div class="flex flex-wrap items-center gap-4 text-xs text-gray-400">
+                      <span class="flex items-center gap-1">
+                        <span class="material-symbols-outlined text-[14px]">calendar_today</span>
+                        {{ tournament.dateDebut|date('d M Y') }}
+                      </span>
+                      <span class="flex items-center gap-1">
+                        <span class="material-symbols-outlined text-[14px]">groups</span>
+                        {{ tournament.teams|length }}/{{ tournament.nbEquipesMax }}
+                      </span>
+                      <span class="flex items-center gap-1">
+                        <span class="material-symbols-outlined text-[14px]">sports_esports</span>
+                        {{ tournament.type.value }}
+                      </span>
+                    </div>
                   </div>
-                  <a
-                    href="{{ path('app_tournament_details', {'id': tournament.id}) }}"
-                    class="rounded-full bg-white/5 border border-white/10 px-5 py-2 text-sm font-bold text-gray-300 hover:bg-primary hover:border-primary hover:text-white transition-all flex items-center gap-2"
-                  >
-                    Voir D&eacute;tails
-                    <span class="material-symbols-outlined text-[16px]">arrow_forward</span>
-                  </a>
+                  <div class="flex items-center justify-between pt-3 border-t border-white/5">
+                    <div>
+                      <p class="text-[10px] uppercase text-gray-500 font-bold tracking-wider">Prize Pool</p>
+                      <p class="text-lg font-black text-secondary">{{ tournament.prizePool|number_format(0, ',', ' ') }} DT</p>
+                    </div>
+                    <a href="{{ path('app_tournament_details', {'id': tournament.id}) }}"
+                       class="rounded-full bg-white/5 border border-white/10 px-5 py-2 text-sm font-bold text-gray-300 hover:bg-primary hover:border-primary hover:text-white transition-all flex items-center gap-2">
+                      Voir Détails
+                      <span class="material-symbols-outlined text-[16px]">arrow_forward</span>
+                    </a>
+                  </div>
                 </div>
               </div>
-            </div>
-            {% else %}
-            <div class="col-span-1 md:col-span-2 xl:col-span-3 text-center py-12">
+              {% else %}
+              <div class="col-span-1 md:col-span-2 xl:col-span-3 text-center py-12">
                 <p class="text-gray-400">Aucun tournoi disponible pour le moment.</p>
+              </div>
+              {% endfor %}
             </div>
-            {% endfor %}
           </div>
+
+          {# ── CALENDAR VIEW ── #}
+          <div id="view-calendar" class="hidden">
+            {# Legend #}
+            <div class="flex flex-wrap gap-3 mb-4">
+              <span class="flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-semibold" style="background:#3b82f620;border:1px solid #3b82f655;color:#3b82f6">
+                <span class="w-2 h-2 rounded-full inline-block bg-blue-500"></span>À venir
+              </span>
+              <span class="flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-semibold" style="background:#22c55e20;border:1px solid #22c55e55;color:#22c55e">
+                <span class="w-2 h-2 rounded-full inline-block bg-green-500"></span>En cours
+              </span>
+              <span class="flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-semibold" style="background:#6b728020;border:1px solid #6b728055;color:#9ca3af">
+                <span class="w-2 h-2 rounded-full inline-block bg-gray-500"></span>Terminé
+              </span>
+              <span class="flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-semibold" style="background:#ef444420;border:1px solid #ef444455;color:#ef4444">
+                <span class="w-2 h-2 rounded-full inline-block bg-red-500"></span>Annulé
+              </span>
+            </div>
+            <div class="bg-[#161616] border border-white/5 rounded-2xl p-6">
+              <div id="tournament-calendar"></div>
+            </div>
+          </div>
+
         </div>
         {% include 'components/_mobile_nav.html.twig' %}
-</main>
+      </main>
     </div>
+
+{# ── FullCalendar JS ── #}
+<script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.14/index.global.min.js"></script>
+<script>
+// View toggle
+function setView(v) {
+    const grid    = document.getElementById('view-grid');
+    const cal     = document.getElementById('view-calendar');
+    const btnGrid = document.getElementById('btn-grid');
+    const btnCal  = document.getElementById('btn-cal');
+    const active  = 'bg-primary text-white';
+    const idle    = 'text-gray-400 hover:text-white';
+
+    if (v === 'grid') {
+        grid.classList.remove('hidden');
+        cal.classList.add('hidden');
+        btnGrid.className = btnGrid.className.replace(idle, active);
+        btnCal.className  = btnCal.className.replace(active, idle);
+    } else {
+        grid.classList.add('hidden');
+        cal.classList.remove('hidden');
+        btnGrid.className = btnGrid.className.replace(active, idle);
+        btnCal.className  = btnCal.className.replace(idle, active);
+        if (!window._calInit) { initCalendar(); window._calInit = true; }
+    }
+}
+
+// Lazy-init FullCalendar so it only renders when first needed
+function initCalendar() {
+    const calendar = new FullCalendar.Calendar(document.getElementById('tournament-calendar'), {
+        locale: 'fr',
+        initialView: 'dayGridMonth',
+        headerToolbar: {
+            left:   'prev,next today',
+            center: 'title',
+            right:  'dayGridMonth,listMonth'
+        },
+        buttonText: { today: "Aujourd'hui", month: 'Mois', list: 'Liste' },
+        events: '{{ path('app_tournoi_calendar_events') }}',
+        eventDisplay: 'block',
+        dayMaxEvents: 3,
+        eventClick: function (info) {
+            info.jsEvent.preventDefault();
+            if (info.event.url) window.location.href = info.event.url;
+        },
+    });
+    calendar.render();
+}
+</script>
+
+{# Dark theme for FullCalendar #}
+<style>
+:root {
+    --fc-border-color: rgba(255,255,255,0.07);
+    --fc-today-bg-color: rgba(230,0,19,0.08);
+    --fc-page-bg-color: transparent;
+    --fc-button-bg-color: #dc2626;
+    --fc-button-border-color: #dc2626;
+    --fc-button-hover-bg-color: #b91c1c;
+    --fc-button-hover-border-color: #b91c1c;
+    --fc-button-active-bg-color: #991b1b;
+}
+.fc { color: #e2e8f0; }
+.fc .fc-toolbar-title { font-size: 1.1rem; font-weight: 700; color: #fff; }
+.fc .fc-col-header-cell-cushion,
+.fc .fc-daygrid-day-number,
+.fc .fc-list-event-title a { color: #d1d5db; text-decoration: none; }
+.fc .fc-button { font-size: 0.78rem; font-weight: 600; border-radius: 8px; }
+.fc .fc-event { border-radius: 5px; font-size: 0.75rem; font-weight: 600; cursor: pointer; }
+.fc .fc-more-link { color: #ef4444; font-size: 0.72rem; }
+.fc th { background: rgba(255,255,255,0.03); }
+</style>
+
 {% endblock %}
+
+

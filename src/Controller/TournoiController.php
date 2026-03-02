@@ -9,6 +9,7 @@ use App\Repository\TeamRepository;
 use App\Service\MatchGeneratorService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
@@ -22,6 +23,59 @@ final class TournoiController extends AbstractController
         return $this->render('tournoi/index.html.twig', [
             'tournois' => $tournoiRepository->findAll(),
         ]);
+    }
+
+    // ── Calendar ──────────────────────────────────────────────────────────────
+
+    #[Route('/calendar', name: 'app_tournoi_calendar', methods: ['GET'])]
+    public function calendar(): Response
+    {
+        return $this->render('tournoi/calendar.html.twig');
+    }
+
+    #[Route('/calendar/events', name: 'app_tournoi_calendar_events', methods: ['GET'])]
+    public function calendarEvents(TournoiRepository $tournoiRepository): JsonResponse
+    {
+        $tournois = $tournoiRepository->findAll();
+        $events = [];
+
+        $colorMap = [
+            'upcoming' => '#3b82f6',   // blue
+            'ongoing' => '#22c55e',   // green
+            'completed' => '#6b7280',   // gray
+            'cancelled' => '#ef4444',   // red
+        ];
+
+        foreach ($tournois as $tournoi) {
+            if (!$tournoi->getDateDebut() || !$tournoi->getDateFin()) {
+                continue;
+            }
+
+            $statusValue = $tournoi->getStatus()->value;
+            $color = $colorMap[$statusValue] ?? '#a855f7';
+
+            // FullCalendar end date is exclusive, so add 1 day for all-day events
+            $endDate = $tournoi->getDateFin()->modify('+1 day');
+
+            $events[] = [
+                'id' => (string) $tournoi->getId(),
+                'title' => $tournoi->getNom(),
+                'start' => $tournoi->getDateDebut()->format('Y-m-d'),
+                'end' => $endDate->format('Y-m-d'),
+                'url' => $this->generateUrl('app_tournoi_show', ['id' => $tournoi->getId()]),
+                'backgroundColor' => $color,
+                'borderColor' => $color,
+                'textColor' => '#ffffff',
+                'extendedProps' => [
+                    'status' => $tournoi->getStatus()->label ?? $statusValue,
+                    'type' => $tournoi->getType()?->label ?? '',
+                    'teams' => $tournoi->getNbEquipesMax(),
+                    'prize' => $tournoi->getPrizePool(),
+                ],
+            ];
+        }
+
+        return new JsonResponse($events);
     }
 
     #[Route('/new', name: 'app_tournoi_new', methods: ['GET', 'POST'])]

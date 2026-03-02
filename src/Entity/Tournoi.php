@@ -22,50 +22,76 @@ class Tournoi
     #[ORM\CustomIdGenerator(class: 'doctrine.uuid_generator')]
     private ?Uuid $id = null;
 
+    #[ORM\Column]
+    #[Gedmo\Timestampable(on: 'create')]
+    #[Groups(['tournoi:read'])]
+    private ?\DateTimeImmutable $createdAt = null;
+
+    #[ORM\Column]
+    #[Gedmo\Timestampable(on: 'update')]
+    #[Groups(['tournoi:read'])]
+    private ?\DateTimeImmutable $updatedAt = null;
+
     #[ORM\Column(length: 255)]
+    #[Groups(['tournoi:read', 'tournoi:write'])]
     #[Assert\NotBlank(message: "Le nom du tournoi est obligatoire")]
     private ?string $nom = null;
 
     #[ORM\Column(type: Types::DATE_IMMUTABLE)]
+    #[Groups(['tournoi:read', 'tournoi:write'])]
     #[Assert\NotBlank(message: "La date de début est obligatoire")]
     private ?\DateTimeImmutable $dateDebut = null;
 
     #[ORM\Column(type: Types::DATE_IMMUTABLE)]
+    #[Groups(['tournoi:read', 'tournoi:write'])]
     #[Assert\NotBlank(message: "La date de fin est obligatoire")]
     #[Assert\GreaterThan(propertyPath: "dateDebut", message: "La date de fin doit être postérieure à la date de début")]
     private ?\DateTimeImmutable $dateFin = null;
 
     #[ORM\Column]
+    #[Groups(['tournoi:read', 'tournoi:write'])]
     #[Assert\NotBlank(message: "Le nombre d'équipes max est obligatoire")]
     #[Assert\Positive(message: "Le nombre d'équipes doit être positif")]
     private ?int $nbEquipesMax = null;
 
     #[ORM\Column]
+    #[Groups(['tournoi:read', 'tournoi:write'])]
     #[Assert\NotBlank]
     #[Assert\PositiveOrZero]
     private ?int $prizePool = 0;
 
     #[ORM\Column(type: 'string', enumType: TournamentStatus::class)]
+    #[Groups(['tournoi:read', 'tournoi:write'])]
     private TournamentStatus $status = TournamentStatus::UPCOMING;
 
     #[ORM\Column(type: 'string', enumType: TournamentType::class)]
+    #[Groups(['tournoi:read', 'tournoi:write'])]
     #[Assert\NotBlank(message: "Le type de tournoi est obligatoire")]
     private ?TournamentType $type = null;
 
     #[ORM\ManyToOne(inversedBy: 'tournois')]
+    #[Groups(['tournoi:read', 'tournoi:write'])]
     private ?Game $game = null;
 
     #[ORM\ManyToMany(targetEntity: Team::class)]
+    #[Groups(['tournoi:read', 'tournoi:write'])]
     private Collection $teams;
 
     #[ORM\OneToMany(mappedBy: 'tournoi', targetEntity: MatchEntity::class)]
+    #[Groups(['tournoi:read'])]
     private Collection $matches;
 
     #[ORM\ManyToOne]
+    #[Groups(['tournoi:read', 'tournoi:write'])]
     private ?Team $winner = null;
 
     #[ORM\ManyToOne]
+    #[Groups(['tournoi:read', 'tournoi:write'])]
     private ?User $referee = null;
+
+    #[ORM\Column(length: 255, nullable: true)]
+    #[Groups(['tournoi:read', 'tournoi:write'])]
+    private ?string $place = null;
 
     public function __construct()
     {
@@ -248,6 +274,28 @@ class Tournoi
     public function setReferee(?User $referee): static
     {
         $this->referee = $referee;
+
+        return $this;
+    }
+
+    public function getCreatedAt(): ?\DateTimeImmutable
+    {
+        return $this->createdAt;
+    }
+
+    public function getUpdatedAt(): ?\DateTimeImmutable
+    {
+        return $this->updatedAt;
+    }
+
+    public function getPlace(): ?string
+    {
+        return $this->place;
+    }
+
+    public function setPlace(?string $place): static
+    {
+        $this->place = $place;
 
         return $this;
     }

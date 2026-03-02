@@ -38,11 +38,11 @@ class Skin
 
     #[ORM\Column(type: 'integer')]
     #[Assert\NotBlank(message: "Le prix est obligatoire")]
-    #[Assert\PositiveOrZero(message: "Le prix doit être positif ou zéro")]
+    #[Assert\PositiveOrZero(message: "Le prix doit ├¬tre positif ou z├®ro")]
     private ?int $price = null;
 
     #[ORM\Column(type: 'string', enumType: SkinRarity::class)]
-    #[Assert\NotBlank(message: "La rareté est obligatoire")]
+    #[Assert\NotBlank(message: "La raret├® est obligatoire")]
     private ?SkinRarity $rarity = null;
 
     #[ORM\Column(type: 'string', enumType: SkinType::class, name: 'type')]

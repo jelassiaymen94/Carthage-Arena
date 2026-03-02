@@ -19,8 +19,8 @@ use Symfony\Component\Validator\Constraints as Assert;
 #[ORM\Table(name: '`user`')]
 #[ORM\UniqueConstraint(name: 'UNIQ_EMAIL', fields: ['email'])]
 #[ORM\UniqueConstraint(name: 'UNIQ_USERNAME', fields: ['username'])]
-#[UniqueEntity(fields: ['email'], message: 'Cet email est déjà utilisé.')]
-#[UniqueEntity(fields: ['username'], message: 'Ce nom d\'utilisateur est déjà pris.')]
+#[UniqueEntity(fields: ['email'], message: 'Cet email est d├®j├á utilis├®.')]
+#[UniqueEntity(fields: ['username'], message: 'Ce nom d\'utilisateur est d├®j├á pris.')]
 class User implements UserInterface, PasswordAuthenticatedUserInterface
 {   
     #[ORM\Id]
@@ -40,20 +40,20 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[Assert\Length(
         min: 3,
         max: 50,
-        minMessage: 'Le nom d\'utilisateur doit contenir au moins 3 caractères.',
-        maxMessage: 'Le nom d\'utilisateur ne peut pas dépasser 50 caractères.'
+        minMessage: 'Le nom d\'utilisateur doit contenir au moins 3 caract├¿res.',
+        maxMessage: 'Le nom d\'utilisateur ne peut pas d├®passer 50 caract├¿res.'
     )]
     private ?string $username = null;
 
     #[ORM\Column(length: 50, nullable: true)]
-    #[Assert\Length(max: 50, maxMessage: 'Le pseudo ne peut pas dépasser 50 caractères.')]
+    #[Assert\Length(max: 50, maxMessage: 'Le pseudo ne peut pas d├®passer 50 caract├¿res.')]
     private ?string $nickname = null;
 
     #[ORM\Column]
     #[Assert\NotBlank(message: 'Le mot de passe est obligatoire.', groups: ['registration'])]
     #[Assert\Length(
         min: 6,
-        minMessage: 'Le mot de passe doit contenir au moins 6 caractères.',
+        minMessage: 'Le mot de passe doit contenir au moins 6 caract├¿res.',
         groups: ['registration']
     )]
     private ?string $password = null;

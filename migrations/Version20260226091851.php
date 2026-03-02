@@ -10,7 +10,7 @@ use Doctrine\Migrations\AbstractMigration;
 /**
  * Auto-generated Migration: Please modify to your needs!
  */
-final class Version20260226015913 extends AbstractMigration
+final class Version20260226091851 extends AbstractMigration
 {
     public function getDescription(): string
     {
@@ -19,12 +19,13 @@ final class Version20260226015913 extends AbstractMigration
 
     public function up(Schema $schema): void
     {
-        // user_skin table is preserved and already has the correct status default.
-        // This migration is intentionally a no-op to avoid altering existing data.
+        // this up() migration is auto-generated, please modify it to your needs
+        $this->addSql('ALTER TABLE reclamation ADD attachment_url VARCHAR(500) DEFAULT NULL');
     }
 
     public function down(Schema $schema): void
     {
-        // no-op
+        // this down() migration is auto-generated, please modify it to your needs
+        $this->addSql('ALTER TABLE reclamation DROP attachment_url');
     }
 }
