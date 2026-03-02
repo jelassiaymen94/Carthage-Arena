@@ -56,12 +56,21 @@
               <!-- Main Image -->
               <div class="relative overflow-hidden rounded-2xl bg-surface-dark border border-white/5">
                 {% if item.imageUrl %}
+                {% if item.imageUrl starts with 'http' or item.imageUrl starts with 'https' %}
                 <img
                   src="{{ item.imageUrl }}"
                   alt="{{ item.name }}"
                   class="w-full aspect-video object-cover"
                   id="mainProductImage"
-                />
+                >
+                {% else %}
+                <img
+                  src="{{ asset('uploads/skins/' ~ item.imageUrl) }}"
+                  alt="{{ item.name }}"
+                  class="w-full aspect-video object-cover"
+                  id="mainProductImage"
+                >
+                {% endif %}
                 {% else %}
                 <div class="w-full aspect-video bg-gradient-to-br from-surface-dark to-background-dark flex items-center justify-center">
                   <span class="material-symbols-outlined text-gray-600 text-[64px]">image</span>
@@ -149,7 +158,11 @@
               <div class="group overflow-hidden rounded-2xl bg-white/5 border border-white/5 transition-all hover:border-primary/30 hover:-translate-y-1 cursor-pointer">
                 <div class="h-32 bg-gradient-to-br from-surface-dark to-background-dark relative overflow-hidden flex items-center justify-center">
                   {% if item.imageUrl %}
+                  {% if item.imageUrl starts with 'http' or item.imageUrl starts with 'https' %}
                   <img src="{{ item.imageUrl }}" class="w-full h-full object-cover opacity-50 group-hover:opacity-100 transition-all">
+                  {% else %}
+                  <img src="{{ asset('uploads/skins/' ~ item.imageUrl) }}" class="w-full h-full object-cover opacity-50 group-hover:opacity-100 transition-all">
+                  {% endif %}
                   {% else %}
                   <span class="material-symbols-outlined text-gray-600 text-4xl">image</span>
                   {% endif %}
