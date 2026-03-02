@@ -1,0 +1,78 @@
+{% extends 'base_admin.html.twig' %}
+{% block title %}Ajouter un Merch - Admin{% endblock %}
+
+{% block admin_content %}
+<div class="flex flex-col gap-6 max-w-2xl">
+    <div class="flex items-center gap-4">
+        <a href="{{ path('admin_merch_index') }}"
+           class="flex items-center gap-2 text-gray-400 hover:text-white transition-colors text-sm font-medium">
+            <span class="material-symbols-outlined text-[18px]">arrow_back</span>
+            Retour ├á la liste
+        </a>
+    </div>
+
+    <div>
+        <h1 class="text-2xl font-bold text-white">Ajouter un Merch</h1>
+        <p class="text-sm text-gray-400 mt-1">Cr├®ez un nouvel article de merchandising.</p>
+    </div>
+
+    {% for message in app.flashes('error') %}
+    <div class="rounded-xl bg-red-500/10 border border-red-500/20 px-4 py-3 text-red-400 text-sm font-medium">
+        {{ message }}
+    </div>
+    {% endfor %}
+
+    <div class="rounded-2xl bg-surface-dark border border-white/5 p-6">
+        <form method="post" class="flex flex-col gap-5" novalidate>
+            <div class="flex flex-col gap-1.5">
+                <label class="text-xs font-semibold uppercase tracking-wider text-gray-400">Nom du produit</label>
+                <input type="text" name="name" placeholder="Nom du produit" required
+                       class="bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white placeholder-gray-500 focus:border-primary focus:outline-none transition-all">
+            </div>
+
+            <div class="grid grid-cols-2 gap-4">
+                <div class="flex flex-col gap-1.5">
+                    <label class="text-xs font-semibold uppercase tracking-wider text-gray-400">Prix (CP)</label>
+                    <input type="number" name="price" placeholder="Prix" min="0" required
+                           class="bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white placeholder-gray-500 focus:border-primary focus:outline-none transition-all">
+                </div>
+                <div class="flex flex-col gap-1.5">
+                    <label class="text-xs font-semibold uppercase tracking-wider text-gray-400">Stock</label>
+                    <input type="number" name="stock" placeholder="Stock" min="0" required
+                           class="bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white placeholder-gray-500 focus:border-primary focus:outline-none transition-all">
+                </div>
+            </div>
+
+            <div class="flex flex-col gap-1.5">
+                <label class="text-xs font-semibold uppercase tracking-wider text-gray-400">Type</label>
+                <input type="text" name="type" placeholder="Ex: T-Shirt, Casquette, Accessoire..." required
+                       class="bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white placeholder-gray-500 focus:border-primary focus:outline-none transition-all">
+            </div>
+
+            <div class="flex flex-col gap-1.5">
+                <label class="text-xs font-semibold uppercase tracking-wider text-gray-400">Description</label>
+                <textarea name="description" placeholder="Description du produit" rows="4"
+                          class="bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white placeholder-gray-500 focus:border-primary focus:outline-none transition-all resize-none"></textarea>
+            </div>
+
+            <div class="flex flex-col gap-1.5">
+                <label class="text-xs font-semibold uppercase tracking-wider text-gray-400">URL de l'image</label>
+                <input type="text" name="imageUrl" placeholder="https://..."
+                       class="bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white placeholder-gray-500 focus:border-primary focus:outline-none transition-all">
+            </div>
+
+            <div class="flex items-center gap-3 pt-2 border-t border-white/5">
+                <button type="submit"
+                        class="flex items-center gap-2 px-6 py-2.5 rounded-xl bg-primary text-white text-sm font-bold shadow-lg shadow-red-900/20 hover:bg-red-700 transition-all">
+                    <span class="material-symbols-outlined text-[18px]">add_circle</span>
+                    Ajouter
+                </button>
+                <a href="{{ path('admin_merch_index') }}"
+                   class="flex items-center gap-2 px-6 py-2.5 rounded-xl bg-white/5 border border-white/10 text-white text-sm font-medium hover:bg-white/10 transition-all">
+                    Annuler
+                </a>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

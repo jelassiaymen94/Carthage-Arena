@@ -1,6 +1,6 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Carthage Arena - Boutique de Skins{% endblock %}
+{% block title %}Carthage Arena - Boutique{% endblock %}
 
 {% block body %}
     <div
@@ -45,7 +45,7 @@
           <div class="flex flex-col">
             <h2 class="text-2xl font-bold text-white">Boutique de Skins</h2>
             <p class="text-xs text-gray-400">
-              Améliorez votre arsenal avec des skins exclusifs.
+              Am├®liorez votre arsenal avec des skins exclusifs.
             </p>
           </div>
           {% include 'components/_header_user_pill.html.twig' %}
@@ -90,7 +90,7 @@
                 >
                   <option value="" {{ not currentSort ? 'selected' : '' }}>Trier par</option>
                   <option value="price_asc" {{ currentSort == 'price_asc' ? 'selected' : '' }}>Prix croissant</option>
-                  <option value="price_desc" {{ currentSort == 'price_desc' ? 'selected' : '' }}>Prix décroissant</option>
+                  <option value="price_desc" {{ currentSort == 'price_desc' ? 'selected' : '' }}>Prix d├®croissant</option>
                 </select>
                 <span class="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 pointer-events-none">expand_content</span>
               </div>
@@ -165,8 +165,21 @@
                     {{ item.rarity|trans }}
                   </span>
                 </div>
-                
-                {% if item.insufficient %}
+
+                {% if item.stock is defined and item.stock <= 0 %}
+                <div class="mt-auto flex flex-col gap-3 pt-4 border-t border-white/5">
+                  <div class="flex items-center justify-between">
+                    <div class="flex items-center gap-1.5 text-gray-400">
+                      <span class="material-symbols-outlined text-[18px]">payments</span>
+                      <span class="text-lg font-black">{{ item.price|number_format(0, ',', ' ') }}</span>
+                    </div>
+                    <span class="text-[10px] text-red-500 font-bold uppercase tracking-wider">Rupture de stock</span>
+                  </div>
+                  <button class="w-full py-2 rounded-full bg-white/5 text-gray-500 text-xs font-bold border border-white/5 cursor-not-allowed" disabled>
+                    Rupture de stock
+                  </button>
+                </div>
+                {% elseif item.insufficient %}
                 <div class="mt-auto flex flex-col gap-3 pt-4 border-t border-white/5">
                   <div class="flex items-center justify-between">
                     <div class="flex items-center gap-1.5 text-gray-400 group-hover:text-secondary transition-colors">
@@ -190,6 +203,13 @@
                   </a>
                 </div>
                 {% endif %}
+
+                {% if is_granted('ROLE_ADMIN') %}
+                <div class="flex gap-2 pt-2 border-t border-white/5">
+                    <a href="{{ path('admin_merch_edit', {id: item.id}) }}" class="flex-1 text-center bg-yellow-500/10 text-yellow-400 border border-yellow-500/20 px-2 py-1 rounded-full text-xs font-bold hover:bg-yellow-500/20 transition-colors">Modifier</a>
+                    <button onclick="deleteMerch('{{ item.id }}')" class="flex-1 bg-red-500/10 text-red-400 border border-red-500/20 px-2 py-1 rounded-full text-xs font-bold hover:bg-red-500/20 transition-colors">Supprimer</button>
+                </div>
+                {% endif %}
               </div>
             </div>
             {% endfor %}
@@ -198,4 +218,24 @@
         {% include 'components/_mobile_nav.html.twig' %}
       </main>
     </div>
+
+<script>
+function buyMerch(id) {
+    fetch(`/api/purchase/${id}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ quantity: 1 })
+    })
+    .then(res => res.json())
+    .then(data => alert(data.message || data.error))
+    .catch(err => console.error(err));
+}
+
+function deleteMerch(id) {
+    if (!confirm('Supprimer ce merch ?')) return;
+    fetch(`/admin/merch/delete/${id}`, { method: 'POST' })
+        .then(() => location.reload())
+        .catch(err => console.error(err));
+}
+</script>
 {% endblock %}

@@ -2,18 +2,27 @@
 
 namespace App\Controller;
 
+use App\Email\PasswordResetEmail;
+use App\Email\VerificationEmail;
+use App\Entity\PasswordResetToken;
 use App\Entity\Profile;
 use App\Entity\User;
 use App\Enum\AccountStatus;
 use App\Form\RegistrationType;
+use App\Repository\LicenseRepository;
+use App\Repository\PasswordResetTokenRepository;
+use App\Repository\UserRepository;
+use App\Service\EmailVerificationService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Mailer\MailerInterface;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Security\Http\Authentication\AuthenticationUtils;
-use App\Repository\LicenseRepository;
+use SymfonyCasts\Bundle\VerifyEmail\Exception\VerifyEmailExceptionInterface;
 
 class SecurityController extends AbstractController
 {
@@ -40,7 +49,9 @@ class SecurityController extends AbstractController
         Request $request,
         UserPasswordHasherInterface $userPasswordHasher,
         EntityManagerInterface $entityManager,
-        LicenseRepository $licenseRepository
+        LicenseRepository $licenseRepository,
+        MailerInterface $mailer,
+        EmailVerificationService $emailVerificationService,
     ): Response {
         if ($this->getUser()) {
             return $this->redirectToRoute('app_dashboard');
@@ -55,6 +66,7 @@ class SecurityController extends AbstractController
             $accountType = $form->get('accountType')->getData();
 
             $user->setStatus(AccountStatus::ACTIVE);
+            $user->setIsVerified(false);
             $user->setPassword(
                 $userPasswordHasher->hashPassword(
                     $user,
@@ -65,7 +77,7 @@ class SecurityController extends AbstractController
             // Assign role and license based on account type
             if ($accountType === 'referee') {
                 $user->setRoles(['ROLE_REFEREE']);
-                
+
                 // Get and assign the license
                 $licenseCode = $form->get('licenseId')->getData();
                 if ($licenseCode) {
@@ -87,9 +99,20 @@ class SecurityController extends AbstractController
             $entityManager->persist($profile);
             $entityManager->flush();
 
-            // Auto login would be nice here, but for simplicity let's redirect to login
-            $this->addFlash('success', 'Compte créé avec succès ! Connectez-vous.');
-            return $this->redirectToRoute('app_login');
+            // Generate signed verification URL and send the email
+            $signatureComponents = $emailVerificationService->generateSignature(
+                $user,
+                $this->generateUrl('app_verify_email', [], UrlGeneratorInterface::ABSOLUTE_URL)
+            );
+
+            $mailer->send(new VerificationEmail($user, $signatureComponents->getSignedUrl()));
+
+            $signedUrl = $signatureComponents->getSignedUrl();
+
+            return $this->render('security/verify_email_pending.html.twig', [
+                'email' => $user->getEmail(),
+                'signedUrl' => $signedUrl,
+            ]);
         }
 
         return $this->render('security/register.html.twig', [
@@ -97,9 +120,196 @@ class SecurityController extends AbstractController
         ]);
     }
 
+    #[Route('/verifier-email', name: 'app_verify_email')]
+    public function verifyEmail(
+        Request $request,
+        UserRepository $userRepository,
+        EntityManagerInterface $entityManager,
+        EmailVerificationService $emailVerificationService,
+    ): Response {
+        $id = $request->query->get('id');
+
+        if (!$id) {
+            return $this->redirectToRoute('app_register');
+        }
+
+        $user = $userRepository->find($id);
+
+        if (!$user) {
+            return $this->redirectToRoute('app_register');
+        }
+
+        if ($user->isVerified()) {
+            $this->addFlash('success', 'Votre adresse e-mail est d├®j├á v├®rifi├®e. Connectez-vous.');
+            return $this->redirectToRoute('app_login');
+        }
+
+        try {
+            $emailVerificationService->validateRequest($user, $request);
+        } catch (VerifyEmailExceptionInterface $e) {
+            $this->addFlash('error', 'Le lien de v├®rification est invalide ou a expir├®. Veuillez vous r├®inscrire ou demander un nouveau lien.');
+            return $this->redirectToRoute('app_register');
+        }
+
+        $user->setIsVerified(true);
+        $entityManager->flush();
+
+        $this->addFlash('success', 'Votre adresse e-mail a ├®t├® v├®rifi├®e avec succ├¿s ! Vous pouvez maintenant vous connecter.');
+        return $this->redirectToRoute('app_login');
+    }
+
+    #[Route('/renvoyer-verification', name: 'app_resend_verification', methods: ['POST'])]
+    public function resendVerification(
+        Request $request,
+        UserRepository $userRepository,
+        MailerInterface $mailer,
+        EmailVerificationService $emailVerificationService,
+    ): Response {
+        if (!$this->isCsrfTokenValid('resend_verification', $request->request->get('_token'))) {
+            $this->addFlash('error', 'Token de s├®curit├® invalide. Veuillez r├®essayer.');
+            return $this->redirectToRoute('app_register');
+        }
+
+        $email = $request->request->get('email', '');
+        $user = $userRepository->findOneBy(['email' => $email]);
+
+        // Always show a generic message to prevent user enumeration
+        if ($user && !$user->isVerified()) {
+            $signatureComponents = $emailVerificationService->generateSignature(
+                $user,
+                $this->generateUrl('app_verify_email', [], UrlGeneratorInterface::ABSOLUTE_URL)
+            );
+            $mailer->send(new VerificationEmail($user, $signatureComponents->getSignedUrl()));
+        }
+
+        return $this->render('security/verify_email_pending.html.twig', [
+            'email' => $email,
+            'signedUrl' => null,
+        ]);
+    }
+
     #[Route('/deconnexion', name: 'app_logout')]
     public function logout(): void
     {
         throw new \LogicException('This method can be blank - it will be intercepted by the logout key on your firewall.');
+    }
+
+    #[Route('/mot-de-passe-oublie', name: 'app_forgot_password', methods: ['GET', 'POST'])]
+    public function forgotPassword(
+        Request $request,
+        UserRepository $userRepository,
+        PasswordResetTokenRepository $tokenRepository,
+        EntityManagerInterface $entityManager,
+        MailerInterface $mailer
+    ): Response {
+        if ($this->getUser()) {
+            return $this->redirectToRoute('app_dashboard');
+        }
+
+        if ($request->isMethod('POST')) {
+            // CSRF protection
+            if (!$this->isCsrfTokenValid('forgot_password', $request->request->get('_token'))) {
+                $this->addFlash('error', 'Token de s├®curit├® invalide. Veuillez r├®essayer.');
+                return $this->redirectToRoute('app_forgot_password');
+            }
+
+            $email = trim($request->request->get('email', ''));
+            $user = $userRepository->findOneBy(['email' => $email]);
+
+            // Always show a generic success message to prevent user enumeration
+            if ($user && $user->getStatus() === AccountStatus::ACTIVE) {
+                // Remove any existing tokens for this user before creating a new one
+                $tokenRepository->deleteTokensForUser($user);
+
+                $resetToken = new PasswordResetToken();
+                $resetToken->setUser($user);
+                $resetToken->setToken(bin2hex(random_bytes(32)));
+
+                $entityManager->persist($resetToken);
+                $entityManager->flush();
+
+                $resetUrl = $this->generateUrl(
+                    'app_reset_password',
+                    ['token' => $resetToken->getToken()],
+                    UrlGeneratorInterface::ABSOLUTE_URL
+                );
+
+                $mailer->send(new PasswordResetEmail($user, $resetUrl));
+            }
+
+            $this->addFlash(
+                'success',
+                'Si un compte correspond ├á cette adresse e-mail, vous recevrez un lien de r├®initialisation dans quelques minutes.'
+            );
+
+            return $this->redirectToRoute('app_forgot_password');
+        }
+
+        return $this->render('security/forgot_password.html.twig');
+    }
+
+    #[Route('/reinitialiser-mot-de-passe/{token}', name: 'app_reset_password', methods: ['GET', 'POST'])]
+    public function resetPassword(
+        string $token,
+        Request $request,
+        PasswordResetTokenRepository $tokenRepository,
+        EntityManagerInterface $entityManager,
+        UserPasswordHasherInterface $passwordHasher
+    ): Response {
+        if ($this->getUser()) {
+            return $this->redirectToRoute('app_dashboard');
+        }
+
+        $resetToken = $tokenRepository->findValidToken($token);
+
+        if (!$resetToken) {
+            return $this->render('security/reset_password.html.twig', [
+                'tokenValid' => false,
+                'token' => null,
+            ]);
+        }
+
+        if ($request->isMethod('POST')) {
+            // CSRF protection
+            if (!$this->isCsrfTokenValid('reset_password_' . $token, $request->request->get('_token'))) {
+                $this->addFlash('error', 'Token de s├®curit├® invalide. Veuillez r├®essayer.');
+                return $this->redirectToRoute('app_reset_password', ['token' => $token]);
+            }
+
+            $newPassword = $request->request->get('password', '');
+            $confirmPassword = $request->request->get('password_confirm', '');
+
+            if (strlen($newPassword) < 6) {
+                $this->addFlash('error', 'Le mot de passe doit contenir au moins 6 caract├¿res.');
+                return $this->render('security/reset_password.html.twig', [
+                    'tokenValid' => true,
+                    'token' => $token,
+                ]);
+            }
+
+            if ($newPassword !== $confirmPassword) {
+                $this->addFlash('error', 'Les mots de passe ne correspondent pas.');
+                return $this->render('security/reset_password.html.twig', [
+                    'tokenValid' => true,
+                    'token' => $token,
+                ]);
+            }
+
+            $user = $resetToken->getUser();
+            $user->setPassword($passwordHasher->hashPassword($user, $newPassword));
+
+            // Remove all reset tokens for this user
+            $tokenRepository->deleteTokensForUser($user);
+
+            $entityManager->flush();
+
+            $this->addFlash('success', 'Mot de passe r├®initialis├® avec succ├¿s. Vous pouvez maintenant vous connecter.');
+            return $this->redirectToRoute('app_login');
+        }
+
+        return $this->render('security/reset_password.html.twig', [
+            'tokenValid' => true,
+            'token' => $token,
+        ]);
     }
 }

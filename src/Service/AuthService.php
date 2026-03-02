@@ -17,20 +17,43 @@ class AuthService
 
     public function authenticate(User $user): AuthToken
     {
-        $existingToken = $this->authTokenRepository->findTokenByUser($user);
-        if ($existingToken !== null) {
-            $this->revokeToken($existingToken);
+        $conn = $this->em->getConnection();
+        $userId = $user->getId()->toBinary();
+
+        $conn->beginTransaction();
+        try {
+            // Lock the user row to serialise concurrent logins for the same account.
+            // A second concurrent request blocks here until the first commits.
+            $conn->executeQuery(
+                'SELECT id FROM `user` WHERE id = ? FOR UPDATE',
+                [$userId]
+            );
+
+            // Delete any existing token via raw SQL, bypassing the ORM entirely.
+            // We do NOT call em->clear() ÔÇö that would detach the User entity and
+            // cause cascade:persist to try re-inserting it.
+            $conn->executeStatement(
+                'DELETE FROM auth_token WHERE user_id = ?',
+                [$userId]
+            );
+
+            // Build the new token. Use $user->setAuthToken() to update both sides
+            // of the bidirectional OneToOne so Doctrine's identity map is consistent.
+            $token = new AuthToken();
+            $token->setValue(bin2hex(random_bytes(32)));
+            $token->setExpiresAt(new \DateTimeImmutable('+30 days'));
+            $user->setAuthToken($token);
+
+            $this->em->persist($token);
+            $this->em->flush();
+
+            $conn->commit();
+
+            return $token;
+        } catch (\Throwable $e) {
+            $conn->rollBack();
+            throw $e;
         }
-
-        $token = new AuthToken();
-        $token->setValue(bin2hex(random_bytes(32)));
-        $token->setExpiresAt(new \DateTimeImmutable('+30 days'));
-        $token->setUser($user);
-
-        $this->em->persist($token);
-        $this->em->flush();
-
-        return $token;
     }
 
     public function revokeToken(AuthToken $token): void

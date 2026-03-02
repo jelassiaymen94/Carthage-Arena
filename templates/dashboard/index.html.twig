@@ -13,7 +13,7 @@
       {% endembed %}
       <!-- Main Content -->
       <main
-        class="flex flex-1 flex-col ml-72 bg-background-dark relative"
+        class="flex flex-1 flex-col ml-72 bg-background-dark relative h-screen overflow-y-auto"
       >
         <!-- Header -->
         <header
@@ -82,7 +82,7 @@
                   </div>
                 </div>
                 <div>
-                  <p class="text-sm font-medium text-gray-400">Matchs Joués</p>
+                  <p class="text-sm font-medium text-gray-400">Matchs Jou├®s</p>
                   <h3 class="text-4xl font-black text-white">{{ user.matchesPlayed }}</h3>
                   <p
                     class="mt-1 text-xs text-green-400 flex items-center gap-1"
@@ -133,7 +133,7 @@
               </h2>
               <button
                 class="text-sm font-medium text-primary hover:text-white transition-colors"
-                aria-label="Voir tous les matchs à venir"
+                aria-label="Voir tous les matchs ├á venir"
               >
                 Voir Tout
               </button>
@@ -200,7 +200,7 @@
                     >
                     {% elseif match.region is defined %}
                     <span class="text-[10px] uppercase text-gray-500 font-bold"
-                      >Région</span
+                      >R├®gion</span
                     >
                     <span class="text-sm font-medium text-white"
                       >{{ match.region }}</span
@@ -213,14 +213,14 @@
                   class="w-full flex-shrink-0 cursor-not-allowed rounded-full border border-white/5 bg-transparent py-2 px-4 text-sm font-bold text-gray-600 md:w-auto"
                   disabled=""
                 >
-                  Verrouillé
+                  Verrouill├®
                 </button>
                 {% else %}
                 <button
                   class="w-full flex-shrink-0 rounded-full border border-white/10 bg-surface-hover py-2 px-4 text-sm font-bold text-gray-300 transition-all hover:bg-white/10 hover:text-white md:w-auto"
-                  aria-label="Voir les détails du match contre {{ match.opponent }}"
+                  aria-label="Voir les d├®tails du match contre {{ match.opponent }}"
                 >
-                  Détails
+                  D├®tails
                 </button>
                 {% endif %}
               </div>
@@ -259,11 +259,11 @@
                   </button>
                 </div>
                 <p class="text-sm text-white/50">
-                  Les recommandations personnalisées arrivent bientôt.
+                  Les recommandations personnalis├®es arrivent bient├┤t.
                 </p>
                 <div class="flex items-center gap-2 mt-1 px-3 py-2 rounded-xl bg-white/5 border border-white/5">
                   <span class="material-symbols-outlined text-white/30 text-[18px]">schedule</span>
-                  <span class="text-xs font-semibold text-white/30">Bientôt disponible</span>
+                  <span class="text-xs font-semibold text-white/30">Bient├┤t disponible</span>
                 </div>
               </div>
             </div>

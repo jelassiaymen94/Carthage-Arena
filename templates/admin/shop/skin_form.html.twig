@@ -19,7 +19,7 @@
                         </a>
                         <div>
                             <h1 class="text-2xl font-bold text-white">{{ title }}</h1>
-                            <p class="text-sm text-white/40 mt-0.5">Gérer les skins de la boutique</p>
+                            <p class="text-sm text-white/40 mt-0.5">G├®rer les skins de la boutique</p>
                         </div>
                     </div>
                 </div>
@@ -44,12 +44,12 @@
 
                             <div class="grid grid-cols-2 gap-6">
                                 <div>
-                                    {{ form_label(form.game, 'Jeu associé', {'label_attr': {'class': 'block text-sm font-medium text-white/60 mb-2'}}) }}
+                                    {{ form_label(form.game, 'Jeu associ├®', {'label_attr': {'class': 'block text-sm font-medium text-white/60 mb-2'}}) }}
                                     {{ form_widget(form.game, {'attr': {'class': 'w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white/70 outline-none focus:border-primary/50 form-select [&>option]:text-black'}}) }}
                                     {{ form_errors(form.game) }}
                                 </div>
                                 <div>
-                                    {{ form_label(form.rarity, 'Rareté', {'label_attr': {'class': 'block text-sm font-medium text-white/60 mb-2'}}) }}
+                                    {{ form_label(form.rarity, 'Raret├®', {'label_attr': {'class': 'block text-sm font-medium text-white/60 mb-2'}}) }}
                                     {{ form_widget(form.rarity, {'attr': {'class': 'w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white/70 outline-none focus:border-primary/50 form-select [&>option]:text-black'}}) }}
                                     {{ form_errors(form.rarity) }}
                                 </div>
@@ -64,7 +64,13 @@
                             </div>
 
                             <div>
-                                {{ form_label(form.imageUrl, 'URL de l\'image', {'label_attr': {'class': 'block text-sm font-medium text-white/60 mb-2'}}) }}
+                                {{ form_label(form.imageFile, 'Uploader une image', {'label_attr': {'class': 'block text-sm font-medium text-white/60 mb-2'}}) }}
+                                {{ form_widget(form.imageFile, {'attr': {'class': 'w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder-white/30 focus:border-primary/50 outline-none transition-all'}}) }}
+                                {{ form_errors(form.imageFile) }}
+                            </div>
+
+                            <div>
+                                {{ form_label(form.imageUrl, 'OU URL de l\'image existante', {'label_attr': {'class': 'block text-sm font-medium text-white/60 mb-2'}}) }}
                                 {{ form_widget(form.imageUrl, {'attr': {'class': 'w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder-white/30 focus:border-primary/50 outline-none transition-all'}}) }}
                                 {{ form_errors(form.imageUrl) }}
                             </div>
@@ -85,4 +91,108 @@
         </main>
     </div>
 </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Check if the AI button is needed. It's for creating a Skin
+    const nameField = document.getElementById('skin_name');
+    const descField = document.getElementById('skin_description');
+    const rarityField = document.getElementById('skin_rarity');
+    const gameField = document.getElementById('skin_game');
+    const imageUrlField = document.getElementById('skin_imageUrl');
+
+    if (nameField && descField && rarityField) {
+        // Create the button
+        const aiBtn = document.createElement('button');
+        aiBtn.type = 'button';
+        aiBtn.className = 'w-full mt-2 inline-flex items-center justify-center gap-2 py-2 px-4 bg-secondary/20 hover:bg-secondary/30 text-secondary border border-secondary/30 rounded-xl transition-all text-sm font-bold shadow-[0_0_15px_rgba(var(--color-secondary),0.1)]';
+        aiBtn.innerHTML = '<span class="material-symbols-outlined text-sm">auto_awesome</span> G├®n├®rer D├®tails avec l\'IA';
+        
+        // Find the parent div of the name field to append the button
+        nameField.parentNode.appendChild(aiBtn);
+
+        aiBtn.addEventListener('click', async function() {
+            const skinName = nameField.value.trim();
+            if (!skinName) {
+                alert('Veuillez d\'abord entrer un Nom de skin pour que l\'IA puisse g├®n├®rer les d├®tails.');
+                return;
+            }
+
+            // Get selected game name if any
+            let gameName = '';
+            if (gameField && gameField.options[gameField.selectedIndex].value) {
+                gameName = gameField.options[gameField.selectedIndex].text;
+            }
+
+            aiBtn.innerHTML = '<span class="material-symbols-outlined text-sm animate-spin">refresh</span> G├®n├®ration en cours...';
+            aiBtn.disabled = true;
+
+            try {
+                const response = await fetch('/admin/api/generate-skin', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        name: skinName,
+                        game: gameName
+                    })
+                });
+
+                if (!response.ok) {
+                    throw new Error('Erreur r├®seau ou API');
+                }
+
+                const data = await response.json();
+                
+                if (data.error) {
+                    throw new Error(data.error);
+                }
+
+                // Update fields
+                if (data.description) {
+                    descField.value = data.description;
+                }
+                
+                if (data.rarity) {
+                    // Find the option that matches the rarity
+                    for (let i = 0; i < rarityField.options.length; i++) {
+                        if (rarityField.options[i].value === data.rarity || rarityField.options[i].text.toUpperCase() === data.rarity) {
+                            rarityField.selectedIndex = i;
+                            break;
+                        }
+                    }
+                }
+
+                if (data.game && gameField) {
+                    // Find the option that matches the game name
+                    for (let i = 0; i < gameField.options.length; i++) {
+                        if (gameField.options[i].text.toLowerCase().includes(data.game.toLowerCase())) {
+                            gameField.selectedIndex = i;
+                            break;
+                        }
+                    }
+                }
+
+                if (data.imageUrl && imageUrlField) {
+                    imageUrlField.value = data.imageUrl;
+                }
+
+                aiBtn.innerHTML = '<span class="material-symbols-outlined text-sm">check_circle</span> G├®n├®r├® avec succ├¿s !';
+                setTimeout(() => {
+                    aiBtn.innerHTML = '<span class="material-symbols-outlined text-sm">auto_awesome</span> Re-g├®n├®rer avec l\'IA';
+                    aiBtn.disabled = false;
+                }, 3000);
+
+            } catch (error) {
+                console.error(error);
+                alert('Erreur lors de la g├®n├®ration avec l\'IA: ' + error.message);
+                aiBtn.innerHTML = '<span class="material-symbols-outlined text-sm">auto_awesome</span> R├®essayer l\'IA';
+                aiBtn.disabled = false;
+            }
+        });
+    }
+});
+</script>
 {% endblock %}

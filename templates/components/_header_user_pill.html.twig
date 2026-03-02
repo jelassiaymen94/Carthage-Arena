@@ -41,6 +41,15 @@
         <span class="material-symbols-outlined text-[16px] font-bold">payments</span>
         <span class="text-xs font-black">{{ app.user.balance }} CP</span>
       </div>
+      <!-- Recharge Button -->
+      <a
+        href="{{ path('app_cp_shop') }}"
+        class="flex items-center gap-1 rounded-full bg-primary/20 hover:bg-primary/30 px-3 py-1 text-primary border border-primary/30 hover:border-primary/50 transition-all text-xs font-bold"
+        title="Recharger CP"
+      >
+        <span class="material-symbols-outlined text-[14px]">add</span>
+        Recharger
+      </a>
       <!-- Avatar -->
       {% set avatar_url = app.user.avatar ? '/uploads/avatars/' ~ app.user.avatar : 'https://i.pravatar.cc/300?img=12' %}
       <div

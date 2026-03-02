@@ -4,6 +4,7 @@ namespace App\Entity;
 
 use App\Enum\AccountStatus;
 use App\Repository\UserRepository;
+use DateTimeImmutable;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
@@ -18,10 +19,10 @@ use Symfony\Component\Validator\Constraints as Assert;
 #[ORM\Table(name: '`user`')]
 #[ORM\UniqueConstraint(name: 'UNIQ_EMAIL', fields: ['email'])]
 #[ORM\UniqueConstraint(name: 'UNIQ_USERNAME', fields: ['username'])]
-#[UniqueEntity(fields: ['email'], message: 'Cet email est déjà utilisé.')]
-#[UniqueEntity(fields: ['username'], message: 'Ce nom d\'utilisateur est déjà pris.')]
+#[UniqueEntity(fields: ['email'], message: 'Cet email est d├®j├á utilis├®.')]
+#[UniqueEntity(fields: ['username'], message: 'Ce nom d\'utilisateur est d├®j├á pris.')]
 class User implements UserInterface, PasswordAuthenticatedUserInterface
-{
+{   
     #[ORM\Id]
     #[ORM\Column(type: UuidType::NAME, unique: true)]
     #[ORM\GeneratedValue(strategy: 'CUSTOM')]
@@ -32,26 +33,27 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[Assert\NotBlank(message: 'L\'email est obligatoire.')]
     #[Assert\Email(message: 'L\'email "{{ value }}" n\'est pas valide.')]
     private ?string $email = null;
-
+    #[ORM\OneToMany(mappedBy: 'user', targetEntity: Purchase::class, orphanRemoval: true)]
+    private Collection $purchases;
     #[ORM\Column(length: 50, unique: true)]
     #[Assert\NotBlank(message: 'Le nom d\'utilisateur est obligatoire.')]
     #[Assert\Length(
         min: 3,
         max: 50,
-        minMessage: 'Le nom d\'utilisateur doit contenir au moins 3 caractères.',
-        maxMessage: 'Le nom d\'utilisateur ne peut pas dépasser 50 caractères.'
+        minMessage: 'Le nom d\'utilisateur doit contenir au moins 3 caract├¿res.',
+        maxMessage: 'Le nom d\'utilisateur ne peut pas d├®passer 50 caract├¿res.'
     )]
     private ?string $username = null;
 
     #[ORM\Column(length: 50, nullable: true)]
-    #[Assert\Length(max: 50, maxMessage: 'Le pseudo ne peut pas dépasser 50 caractères.')]
+    #[Assert\Length(max: 50, maxMessage: 'Le pseudo ne peut pas d├®passer 50 caract├¿res.')]
     private ?string $nickname = null;
 
     #[ORM\Column]
     #[Assert\NotBlank(message: 'Le mot de passe est obligatoire.', groups: ['registration'])]
     #[Assert\Length(
         min: 6,
-        minMessage: 'Le mot de passe doit contenir au moins 6 caractères.',
+        minMessage: 'Le mot de passe doit contenir au moins 6 caract├¿res.',
         groups: ['registration']
     )]
     private ?string $password = null;
@@ -83,9 +85,35 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     public function __construct()
     {
-        $this->createdAt = new \DateTimeImmutable();
+        $this->createdAt = new DateTimeImmutable();
         $this->status = AccountStatus::ACTIVE;
         $this->teamMemberships = new ArrayCollection();
+        $this->purchases = new ArrayCollection();
+    }
+        public function getPurchases(): Collection
+    {
+        return $this->purchases;
+    }
+    public function addPurchase(Purchase $purchase): static
+    {
+        if (!$this->purchases->contains($purchase)) {
+            $this->purchases->add($purchase);
+            $purchase->setUser($this);
+        }
+
+        return $this;
+    }
+
+    public function removePurchase(Purchase $purchase): static
+    {
+        if ($this->purchases->removeElement($purchase)) {
+            // set the owning side to null (unless already changed)
+            if ($purchase->getUser() === $this) {
+                $purchase->setUser(null);
+            }
+        }
+
+        return $this;
     }
 
     public function getId(): ?Uuid
@@ -309,11 +337,39 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
+    #[ORM\Column]
+    private bool $isVerified = false;
+
+    #[ORM\Column(length: 64, nullable: true, unique: true)]
+    private ?string $discordId = null;
+
+    public function getDiscordId(): ?string
+    {
+        return $this->discordId;
+    }
+
+    public function setDiscordId(?string $discordId): static
+    {
+        $this->discordId = $discordId;
+        return $this;
+    }
+
     /**
      * Used by templates that reference user.name
      */
     public function getName(): string
     {
         return $this->nickname ?? $this->username ?? '';
+    }
+
+    public function isVerified(): bool
+    {
+        return $this->isVerified;
+    }
+
+    public function setIsVerified(bool $isVerified): static
+    {
+        $this->isVerified = $isVerified;
+        return $this;
     }
 }

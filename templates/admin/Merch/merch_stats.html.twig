@@ -1,0 +1,105 @@
+{% extends 'base_admin.html.twig' %}
+{% block title %}Top 3 Merch - Admin{% endblock %}
+
+{% block admin_content %}
+<div class="flex flex-col gap-6 p-8 max-w-7xl mx-auto w-full">
+    <h1 class="text-2xl font-bold mb-4">Top 3 Merch</h1>
+
+    <div class="flex flex-col lg:flex-row gap-8">
+        <!-- Chart -->
+        <div class="flex-1 bg-surface-dark p-6 rounded-2xl border border-white/10">
+            <canvas id="topMerchChart"></canvas>
+        </div>
+
+        <!-- Table -->
+        <div class="flex-1 bg-surface-dark p-6 rounded-2xl border border-white/10">
+            <h2 class="text-xl font-semibold mb-4">D├®tails des ventes</h2>
+            <table class="min-w-full text-left border-collapse">
+                <thead>
+                    <tr>
+                        <th class="border-b px-4 py-2">Image</th>
+                        <th class="border-b px-4 py-2">Nom</th>
+                        <th class="border-b px-4 py-2">Prix</th>
+                        <th class="border-b px-4 py-2">Stock</th>
+                        <th class="border-b px-4 py-2">Total Vendu</th>
+                    </tr>
+                </thead>
+                <tbody id="topMerchTable">
+                    <tr><td colspan="5" class="text-center py-4">Chargement...</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+fetch('/api/stats/top-merch')
+    .then(res => res.json())
+    .then(data => {
+        // Populate Table
+        const table = document.getElementById('topMerchTable');
+        table.innerHTML = '';
+        data.forEach(item => {
+            const row = document.createElement('tr');
+            row.innerHTML = `
+                <td class="border-b px-4 py-2"><img src="${item.imageUrl}" alt="${item.name}" class="w-16 h-16 object-cover rounded"></td>
+                <td class="border-b px-4 py-2">${item.name}</td>
+                <td class="border-b px-4 py-2">${item.price} CP</td>
+                <td class="border-b px-4 py-2">${item.stock}</td>
+                <td class="border-b px-4 py-2">${item.totalPurchased}</td>
+            `;
+            table.appendChild(row);
+        });
+
+        // Chart.js setup with images on top of bars
+        const ctx = document.getElementById('topMerchChart').getContext('2d');
+        const merchImages = data.map(item => {
+            const img = new Image();
+            img.src = item.imageUrl;
+            return img;
+        });
+
+        new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: data.map(item => item.name),
+                datasets: [{
+                    label: 'Total Vendu',
+                    data: data.map(item => item.totalPurchased),
+                    backgroundColor: 'rgba(79, 70, 229, 0.7)',
+                    borderColor: 'rgba(79, 70, 229, 1)',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: { display: false },
+                    title: { display: true, text: 'Top 3 Merch les plus vendus' }
+                },
+                scales: {
+                    y: { beginAtZero: true, ticks: { stepSize: 1 } }
+                }
+            },
+            plugins: [{
+                id: 'imageOnBar',
+                afterDatasetsDraw(chart) {
+                    const { ctx, data, scales } = chart;
+                    chart.getDatasetMeta(0).data.forEach((bar, index) => {
+                        const img = merchImages[index];
+                        const x = bar.x;
+                        const y = bar.y - 20; // position image above bar
+                        ctx.drawImage(img, x - 16, y - 32, 32, 32); // size 32x32
+                    });
+                }
+            }]
+        });
+    })
+    .catch(err => {
+        console.error('Erreur r├®cup├®ration top merch:', err);
+        document.getElementById('topMerchTable').innerHTML =
+            '<tr><td colspan="5" class="text-center py-4 text-red-500">Erreur de chargement</td></tr>';
+    });
+</script>
+{% endblock %}

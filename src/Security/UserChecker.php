@@ -16,8 +16,12 @@ class UserChecker implements UserCheckerInterface
             return;
         }
 
+        if (!$user->isVerified()) {
+            throw new CustomUserMessageAccountStatusException('Veuillez v├®rifier votre adresse e-mail avant de vous connecter. Consultez votre bo├«te de r├®ception.');
+        }
+
         if ($user->getStatus() === AccountStatus::SUSPENDED) {
-            throw new CustomUserMessageAccountStatusException('Votre compte a été suspendu.');
+            throw new CustomUserMessageAccountStatusException('Votre compte a ├®t├® suspendu.');
         }
 
         if ($user->getStatus() === AccountStatus::DELETED) {

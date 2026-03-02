@@ -110,7 +110,7 @@
          Mediterranean terracotta, and ancient Punic geometry.
          =================================== */
 
-      /* Mosaic grid pattern — subtle background texture for section headers */
+      /* Mosaic grid pattern ÔÇö subtle background texture for section headers */
       .carthage-mosaic {
         background-image:
           linear-gradient(45deg, rgba(230, 0, 19, 0.03) 25%, transparent 25%),
@@ -121,7 +121,7 @@
         background-position: 0 0, 0 10px, 10px -10px, -10px 0;
       }
 
-      /* Amphitheater arch — curved top accent for hero cards & headers */
+      /* Amphitheater arch ÔÇö curved top accent for hero cards & headers */
       .carthage-arch {
         position: relative;
         overflow: hidden;
@@ -144,7 +144,7 @@
       }
 
 
-      /* Mediterranean gold shimmer — for rarity badges & special items */
+      /* Mediterranean gold shimmer ÔÇö for rarity badges & special items */
       .carthage-gold {
         background: linear-gradient(135deg, #c8a455 0%, #f5d88e 40%, #c8a455 60%, #f5d88e 100%);
         background-size: 200% 200%;
@@ -159,7 +159,7 @@
         50% { background-position: 100% 50%; }
       }
 
-      /* Arena glow — pulsing red accent for live/active elements */
+      /* Arena glow ÔÇö pulsing red accent for live/active elements */
       .carthage-glow {
         box-shadow: 0 0 15px rgba(230, 0, 19, 0.2),
                     0 0 30px rgba(230, 0, 19, 0.1);
@@ -177,7 +177,7 @@
         }
       }
 
-      /* Terracotta divider — Mediterranean-inspired section separator */
+      /* Terracotta divider ÔÇö Mediterranean-inspired section separator */
       .carthage-divider {
         height: 1px;
         background: linear-gradient(
@@ -192,7 +192,7 @@
         margin: 1.5rem 0;
       }
 
-      /* Colosseum columns — subtle vertical line accents for sidebars */
+      /* Colosseum columns ÔÇö subtle vertical line accents for sidebars */
       .carthage-columns {
         background-image: repeating-linear-gradient(
           90deg,
@@ -456,13 +456,13 @@
       {% block stylesheets %}{% endblock %}
     </style>
   </head>
-  <body class="{% block body_class %}bg-background-dark text-white font-display overflow-hidden{% endblock %}">
+  <body class="{% block body_class %}bg-background-dark text-white font-display{% endblock %}">
     <!-- Loading Screen - MonsterPlay Style -->
     {% set skip_loading = app.request.query.has('q') or app.request.query.has('game') or app.request.query.has('sort') %}
     <div id="loadingScreen" class="loading-screen {{ skip_loading ? 'hidden' : '' }}">
       <div class="preloader-content">
         <img
-          src="{{ asset('assets/logo.jpg') }}"
+          src="{{ asset('assets/logo.webp') }}"
           alt="Carthage Arena"
           class="preloader-logo"
         />

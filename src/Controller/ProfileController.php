@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Entity\User;
+use App\Repository\UserSkinRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
@@ -28,14 +29,13 @@ class ProfileController extends AbstractController
                 'role' => in_array('ROLE_ADMIN', $user->getRoles()) ? 'ADMINISTRATEUR' : 'JOUEUR',
                 'balance' => number_format($user->getBalance(), 0, ',', ','),
                 'avatar' => $profile && $profile->getAvatarUrl() ? '/uploads/avatars/' . $profile->getAvatarUrl() : 'https://i.pravatar.cc/300?img=12',
-                'rank' => 'Unranked', // This would come from a real ranking system later
+                'rank' => 'Unranked',
                 'rankProgress' => 0,
                 'level' => 1,
                 'joinDate' => $user->getCreatedAt()->format('F Y'),
-                'country' => 'Tunisie', // Could be added to Profile entity later
+                'country' => 'Tunisie',
                 'bio' => $profile ? $profile->getBio() : 'Aucune biographie.',
             ],
-            // Keep mock data for stats/matches/achievements as they are not part of the current plan's scope for implementation
             'stats' => [
                 'matchesPlayed' => 0,
                 'wins' => 0,
@@ -46,6 +46,27 @@ class ProfileController extends AbstractController
             ],
             'recentMatches' => [],
             'achievements' => [],
+        ]);
+    }
+
+    #[Route('/historique-achat', name: 'app_profile_historique_achat')]
+    public function historiqueAchat(UserSkinRepository $userSkinRepository, EntityManagerInterface $entityManager): Response
+    {
+        /** @var User $user */
+        $user = $this->getUser();
+        if (!$user) {
+            return $this->redirectToRoute('app_login');
+        }
+
+        // Refresh user to ensure fresh data
+        $entityManager->refresh($user);
+
+        // Get user-specific skins
+        $userSkins = $userSkinRepository->findByUser($user, null);
+
+        return $this->render('profile/historique_achat.html.twig', [
+            'userSkins' => $userSkins,
+            'totalSkins' => count($userSkins),
         ]);
     }
 }

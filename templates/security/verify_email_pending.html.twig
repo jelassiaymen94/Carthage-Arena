@@ -1,0 +1,77 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Carthage Arena - V├®rifiez votre e-mail{% endblock %}
+
+{% block body_class %}bg-background-dark text-white font-display min-h-screen flex items-center justify-center p-4{% endblock %}
+
+{% block body %}
+    <div
+      id="mainContent"
+      class="contents opacity-0 transition-opacity duration-500"
+    >
+      <!-- Background Effects -->
+      <div class="fixed inset-0 overflow-hidden pointer-events-none">
+        <div class="absolute -top-40 -left-40 w-96 h-96 bg-primary/20 rounded-full blur-3xl"></div>
+        <div class="absolute -bottom-40 -right-40 w-96 h-96 bg-primary/10 rounded-full blur-3xl"></div>
+      </div>
+
+      <!-- Main Container -->
+      <div class="relative z-10 w-full max-w-md">
+
+        <!-- Logo -->
+        <div class="flex flex-col items-center gap-3 mb-8">
+          <img src="{{ asset('assets/logo.webp') }}" alt="Carthage Arena Logo" class="h-52 w-auto" />
+          <h1 class="text-2xl font-black tracking-tight text-white uppercase italic">
+            Carthage <span class="text-primary">Arena</span>
+          </h1>
+        </div>
+
+        <!-- Card -->
+        <div class="bg-surface-dark border border-white/5 rounded-3xl p-8 shadow-2xl flex flex-col items-center text-center gap-6">
+
+          <!-- Icon -->
+          <div class="w-20 h-20 rounded-full bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center">
+            <span class="material-symbols-outlined text-[44px] text-emerald-400">mark_email_unread</span>
+          </div>
+
+          <!-- Text -->
+          <div>
+            <h2 class="text-2xl font-bold text-white mb-3">V├®rifiez votre bo├«te de r├®ception !</h2>
+            <p class="text-sm text-gray-400 leading-relaxed">
+              Un e-mail de v├®rification a ├®t├® envoy├® ├á<br>
+              <strong class="text-white text-base">{{ email }}</strong>
+            </p>
+            <p class="text-sm text-gray-500 mt-3 leading-relaxed">
+              Cliquez sur le lien dans l'e-mail pour activer votre compte.<br>
+              Pensez ├á v├®rifier vos spams si vous ne le trouvez pas.
+            </p>
+          </div>
+
+          <!-- Divider -->
+          <div class="w-full border-t border-white/5"></div>
+
+          <!-- Resend form -->
+          <div class="w-full">
+            <p class="text-xs text-gray-500 mb-3">Vous n'avez pas re├ºu l'e-mail ?</p>
+            <form method="post" action="{{ path('app_resend_verification') }}">
+              <input type="hidden" name="_token" value="{{ csrf_token('resend_verification') }}">
+              <input type="hidden" name="email" value="{{ email }}">
+              <button
+                type="submit"
+                class="w-full rounded-xl border border-white/10 py-3 text-sm font-semibold text-gray-300 hover:border-white/25 hover:text-white transition-all"
+              >
+                <span class="material-symbols-outlined text-[18px] align-middle mr-1">send</span>
+                Renvoyer l'e-mail de v├®rification
+              </button>
+            </form>
+          </div>
+
+          <!-- Back to login -->
+          <a href="{{ path('app_login') }}" class="text-xs text-gray-500 hover:text-primary transition-colors">
+            ÔåÉ Retour ├á la connexion
+          </a>
+
+        </div>
+      </div>
+    </div>
+{% endblock %}

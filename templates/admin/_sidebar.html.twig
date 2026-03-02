@@ -1,7 +1,7 @@
 <aside class="fixed top-0 left-0 h-screen w-72 bg-[#161616] border-r border-white/5 flex flex-col z-40 carthage-columns">
     {# Logo & Brand #}
     <div class="flex items-center gap-3 px-6 py-5 border-b border-white/5">
-        <img src="{{ asset('assets/logo.jpg') }}" alt="Carthage Arena" class="h-16 w-auto" />
+        <img src="{{ asset('assets/logo.webp') }}" alt="Carthage Arena" class="h-16 w-auto" />
         <div class="flex flex-col leading-tight">
             <span class="text-xs font-bold tracking-[0.25em] text-white/40 uppercase">Admin</span>
             <span class="text-sm font-black tracking-wider text-primary uppercase">Panel</span>
@@ -48,7 +48,7 @@
                               ? 'bg-primary/10 text-primary'
                               : 'text-white/60 hover:text-white hover:bg-white/5' }}">
                     <span class="material-symbols-outlined text-[20px]">support_agent</span>
-                    Réclamations
+                    R├®clamations
                 </a>
             </li>
             <li>
@@ -74,12 +74,45 @@
             <li>
                 <a href="{{ path('admin_shop') }}"
                    class="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all duration-200
-                          {{ app.request.get('_route') == 'admin_shop'
+                          {{ app.request.get('_route') starts with 'admin_merch' or app.request.get('_route') == 'admin_shop'
                               ? 'bg-primary/10 text-primary'
                               : 'text-white/60 hover:text-white hover:bg-white/5' }}">
                     <span class="material-symbols-outlined text-[20px]">shopping_bag</span>
                     Boutique
+                    <span class="material-symbols-outlined ml-auto text-[16px]">expand_more</span>
                 </a>
+                <ul class="ml-8 mt-1 flex flex-col gap-1">
+                    <li>
+                        <a href="{{ path('admin_merch_index') }}"
+                           class="flex items-center gap-2 px-3 py-2 rounded-lg text-xs font-medium transition-all duration-200
+                                  {{ app.request.get('_route') == 'admin_merch_index'
+                                      ? 'text-primary font-semibold'
+                                      : 'text-white/50 hover:text-white hover:bg-white/5' }}">
+                            <span class="material-symbols-outlined text-[16px]">list</span>
+                            Liste Merch
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{{ path('admin_merch_new') }}"
+                           class="flex items-center gap-2 px-3 py-2 rounded-lg text-xs font-medium transition-all duration-200
+                                  {{ app.request.get('_route') == 'admin_merch_new'
+                                      ? 'text-primary font-semibold'
+                                      : 'text-white/50 hover:text-white hover:bg-white/5' }}">
+                            <span class="material-symbols-outlined text-[16px]">add_circle</span>
+                            Ajouter Merch
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{{ path('admin_merch_stats') }}"
+                           class="flex items-center gap-2 px-3 py-2 rounded-lg text-xs font-medium transition-all duration-200
+                                  {{ app.request.get('_route') == 'admin_merch_stats'
+                                      ? 'text-primary font-semibold'
+                                      : 'text-white/50 hover:text-white hover:bg-white/5' }}">
+                            <span class="material-symbols-outlined text-[16px]">bar_chart</span>
+                            Top 3 Merch
+                        </a>
+                    </li>
+                </ul>
             </li>
             <li>
                 <a href="{{ path('admin_reports') }}"
@@ -98,7 +131,7 @@
                               ? 'bg-primary/10 text-primary'
                               : 'text-white/60 hover:text-white hover:bg-white/5' }}">
                     <span class="material-symbols-outlined text-[20px]">settings</span>
-                    Paramètres
+                    Param├¿tres
                 </a>
             </li>
         </ul>
@@ -107,7 +140,7 @@
     {# System Status Widget #}
     <div class="mx-3 mb-3">
         <div class="rounded-2xl border border-primary/30 bg-primary/5 p-4">
-            <div class="text-[10px] font-semibold uppercase tracking-widest text-white/40 mb-2">Système</div>
+            <div class="text-[10px] font-semibold uppercase tracking-widest text-white/40 mb-2">Syst├¿me</div>
             <div class="flex items-center gap-2 mb-1">
                 <span class="relative flex h-2 w-2">
                     <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
@@ -115,7 +148,7 @@
                 </span>
                 <span class="text-sm font-semibold text-white">En ligne</span>
             </div>
-            <p class="text-xs text-white/40">Tous les systèmes opérationnels</p>
+            <p class="text-xs text-white/40">Tous les syst├¿mes op├®rationnels</p>
         </div>
     </div>
 
@@ -134,7 +167,7 @@
         <a href="{{ path('app_logout') }}"
            class="flex items-center justify-center gap-2 w-full py-2.5 rounded-xl border border-red-500/20 text-sm font-semibold text-red-400/70 hover:text-red-400 hover:bg-red-500/10 transition-all duration-200">
             <span class="material-symbols-outlined text-[18px]">logout</span>
-            Déconnexion
+            D├®connexion
         </a>
     </div>
     {% endif %}

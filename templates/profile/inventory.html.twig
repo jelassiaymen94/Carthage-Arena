@@ -1,0 +1,112 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Mon Inventaire - Carthage Arena{% endblock %}
+
+{% block body %}
+<div
+  id="mainContent"
+  class="flex min-h-screen w-full opacity-0 transition-opacity duration-500"
+>
+  <!-- Sidebar -->
+  {% embed 'components/_sidebar.html.twig' %}
+    {% block sidebar_bottom %}
+    <div class="relative overflow-hidden rounded-2xl bg-gradient-to-br from-gray-900 to-black p-4 border border-white/10">
+      <div class="absolute -right-6 -top-6 h-24 w-24 rounded-full bg-secondary/20 blur-2xl"></div>
+      <div class="relative z-10 flex flex-col gap-3">
+        <div class="flex items-center justify-between">
+          <p class="text-[10px] font-bold uppercase tracking-widest text-secondary">Inventaire</p>
+          <span class="material-symbols-outlined text-secondary text-sm">inventory_2</span>
+        </div>
+        <div>
+          <h4 class="text-sm font-bold text-white">Votre Collection</h4>
+          <p class="text-xs text-gray-400 mt-1">{{ totalSkins }} item{{ totalSkins != 1 ? 's' : '' }} poss├®d├®{{ totalSkins != 1 ? 's' : '' }}</p>
+        </div>
+      </div>
+    </div>
+    {% endblock %}
+  {% endembed %}
+
+  <!-- Main Content -->
+  <main class="flex flex-1 flex-col ml-72 bg-background-dark relative">
+    <div class="flex-1 p-8">
+      <div class="max-w-6xl mx-auto">
+        <div class="mb-12">
+          <div class="flex items-center justify-between mb-4">
+            <div>
+              <h1 class="text-4xl font-black mb-2">Mon Inventaire</h1>
+              <p class="text-white/60">{{ totalSkins }} skin{{ totalSkins != 1 ? 's' : '' }} dans votre collection</p>
+            </div>
+            <a href="{{ path('app_shop') }}" class="flex items-center gap-2 bg-primary hover:bg-primary/80 text-white font-bold py-3 px-6 rounded-2xl transition-all">
+              <span class="material-symbols-outlined">shopping_cart</span>
+              Boutique
+            </a>
+          </div>
+        </div>
+
+        {% if userSkins|length > 0 %}
+          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            {% for userSkin in userSkins %}
+              {% set skin = userSkin.getSkin() %}
+              <div class="group relative overflow-hidden rounded-2xl bg-gradient-to-br from-surface-dark to-background-dark border border-white/5 hover:border-primary/30 transition-all duration-300">
+                <div class="w-full aspect-square bg-black relative overflow-hidden">
+                  {% if skin.getImageUrl() %}
+                    {% if skin.getImageUrl() starts with 'http' %}
+                      <img src="{{ skin.getImageUrl() }}" alt="{{ skin.getName() }}" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"/>
+                    {% else %}
+                      <img src="{{ asset('uploads/skins/' ~ skin.getImageUrl()) }}" alt="{{ skin.getName() }}" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"/>
+                    {% endif %}
+                  {% else %}
+                    <div class="w-full h-full flex items-center justify-center bg-gradient-to-br from-gray-800 to-black">
+                      <span class="material-symbols-outlined text-4xl text-gray-600">image</span>
+                    </div>
+                  {% endif %}
+
+                  <div class="absolute top-3 right-3">
+                    {% set rarityColor = 'bg-gray-600' %}
+                    {% if skin.getRarity() %}
+                      {% if skin.getRarity().value == 'LEGENDARY' %}{% set rarityColor = 'bg-yellow-600' %}
+                      {% elseif skin.getRarity().value == 'EPIC' %}{% set rarityColor = 'bg-purple-600' %}
+                      {% elseif skin.getRarity().value == 'RARE' %}{% set rarityColor = 'bg-blue-600' %}
+                      {% else %}{% set rarityColor = 'bg-green-600' %}
+                      {% endif %}
+                    {% endif %}
+                    <span class="{{ rarityColor }} text-white text-xs font-bold px-3 py-1 rounded-full">
+                      {{ skin.getRarity() ? skin.getRarity().value : 'COMMON' }}
+                    </span>
+                  </div>
+                </div>
+
+                <div class="p-6">
+                  <h3 class="font-bold text-lg mb-2 line-clamp-2">{{ skin.getName() }}</h3>
+                  {% if skin.getGame() %}
+                  <p class="text-white/60 text-sm mb-4">{{ skin.getGame().getName() }}</p>
+                  {% endif %}
+                  <div class="border-t border-white/10 pt-4">
+                    <div class="flex justify-between text-sm">
+                      <span class="text-white/60">Obtenu le</span>
+                      <span class="text-secondary">{{ userSkin.getPurchasedAt().format('d/m/Y') }}</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            {% endfor %}
+          </div>
+        {% else %}
+          <div class="flex flex-col items-center justify-center py-24 px-8">
+            <div class="w-24 h-24 rounded-full bg-white/5 flex items-center justify-center mb-6">
+              <span class="material-symbols-outlined text-6xl text-white/20">inventory_2</span>
+            </div>
+            <h2 class="text-2xl font-bold mb-2">Inventaire Vide</h2>
+            <p class="text-white/60 text-center mb-8 max-w-md">Votre inventaire est vide. Visitez la boutique pour acqu├®rir des skins!</p>
+            <a href="{{ path('app_shop') }}" class="bg-primary hover:bg-primary/80 text-white font-bold py-3 px-8 rounded-2xl transition-all flex items-center gap-2">
+              <span class="material-symbols-outlined">shopping_cart</span>
+              Aller ├á la Boutique
+            </a>
+          </div>
+        {% endif %}
+      </div>
+    </div>
+    {% include 'components/_mobile_nav.html.twig' %}
+  </main>
+</div>
+{% endblock %}

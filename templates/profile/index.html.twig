@@ -23,7 +23,7 @@
               <h4 class="text-sm font-bold text-white">{{ user.rank }}</h4>
               <p class="text-xs text-gray-400 mt-1">
                 Niveau {{ user.level }}
-              </p>
+                      <span class="material-symbols-outlined text-[18px]">shopping_cart</span>
             </div>
           </div>
         </div>
@@ -78,13 +78,22 @@
                     </div>
                     <p class="text-gray-400 max-w-xl">{{ user.bio }}</p>
                   </div>
-                  <a
-                    href="{{ path('app_settings') }}"
-                    class="flex items-center gap-2 rounded-full border border-white/10 bg-surface-hover px-5 py-2.5 text-sm font-bold text-gray-300 hover:bg-white/10 hover:text-white transition-all"
-                  >
-                    <span class="material-symbols-outlined text-[18px]">edit</span>
-                    Modifier le Profil
-                  </a>
+                  <div class="flex flex-col gap-2">
+                    <a
+                      href="{{ path('app_settings') }}"
+                      class="flex items-center gap-2 rounded-full border border-white/10 bg-surface-hover px-5 py-2.5 text-sm font-bold text-gray-300 hover:bg-white/10 hover:text-white transition-all"
+                    >
+                      <span class="material-symbols-outlined text-[18px]">edit</span>
+                      Modifier le Profil
+                    </a>
+                    <a
+                      href="{{ path('app_profile_historique_achat') }}"
+                      class="flex items-center gap-2 rounded-full border border-white/10 bg-surface-hover px-5 py-2.5 text-sm font-bold text-gray-300 hover:bg-white/10 hover:text-white transition-all"
+                    >
+                      <span class="material-symbols-outlined text-[18px]">history</span>
+                      Historique Achat
+                    </a>
+                  </div>
                 </div>
                 <!-- Quick Info Row -->
                 <div class="flex flex-wrap gap-3">

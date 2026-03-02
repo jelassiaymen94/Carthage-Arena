@@ -12,6 +12,7 @@ use Symfony\Component\Form\Extension\Core\Type\IntegerType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\Extension\Core\Type\UrlType;
+use Vich\UploaderBundle\Form\Type\VichImageType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
@@ -35,19 +36,27 @@ class SkinType extends AbstractType
             ])
             ->add('rarity', EnumType::class, [
                 'class' => SkinRarity::class,
-                'label' => 'Rareté',
+                'label' => 'Raret├®',
                 'choice_label' => fn($choice) => $choice->name,
                 'attr' => ['class' => 'form-select text-white [&>option]:text-black']
             ])
             ->add('game', EntityType::class, [
                 'class' => Game::class,
                 'choice_label' => 'name',
-                'label' => 'Jeu associé',
-                'placeholder' => 'Sélectionner un jeu',
+                'label' => 'Jeu associ├®',
+                'placeholder' => 'S├®lectionner un jeu',
                 'attr' => ['class' => 'form-select text-white [&>option]:text-black']
             ])
+            ->add('imageFile', VichImageType::class, [
+                'label' => 'Uploader une image',
+                'required' => false,
+                'allow_delete' => true,
+                'download_uri' => false,
+                'image_uri' => true,
+                'asset_helper' => true,
+            ])
             ->add('imageUrl', UrlType::class, [
-                'label' => 'URL de l\'image',
+                'label' => 'OU URL de l\'image existante',
                 'required' => false,
                 'attr' => ['placeholder' => 'https://example.com/image.jpg']
             ]);

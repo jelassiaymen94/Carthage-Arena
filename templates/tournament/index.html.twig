@@ -76,7 +76,15 @@
               <div class="relative h-44 overflow-hidden">
                 <div
                   class="absolute inset-0 bg-cover bg-center transition-transform duration-500 group-hover:scale-110"
-                  style="background-image: url('{{ (tournament.game and tournament.game.imageUrl) ? tournament.game.imageUrl : 'https://images.unsplash.com/photo-1542751371-adc38448a05e?w=600&h=300&fit=crop' }}');"
+                  {% if tournament.game and tournament.game.imageUrl %}
+                      {% if tournament.game.imageUrl starts with 'http' or tournament.game.imageUrl starts with 'https' %}
+                          style="background-image: url('{{ tournament.game.imageUrl }}');"
+                      {% else %}
+                          style="background-image: url('{{ asset('uploads/games/' ~ tournament.game.imageUrl) }}');"
+                      {% endif %}
+                  {% else %}
+                      style="background-image: url('https://images.unsplash.com/photo-1542751371-adc38448a05e?w=600&h=300&fit=crop');"
+                  {% endif %}
                 ></div>
                 <div class="absolute inset-0 bg-gradient-to-t from-surface-dark via-transparent to-transparent"></div>
                 <!-- Status Badge -->
