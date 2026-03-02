@@ -30,6 +30,17 @@
   <main class="flex flex-1 flex-col ml-72 bg-background-dark relative">
     <div class="flex-1 p-8">
       <div class="max-w-6xl mx-auto">
+        <!-- Success Banner -->
+        {% if app.request.query.get('success') %}
+        <div class="mb-8 bg-green-500/10 border border-green-500/30 rounded-2xl p-5 flex items-center gap-4">
+          <span class="material-symbols-outlined text-green-400 text-3xl">check_circle</span>
+          <div>
+            <p class="font-bold text-green-400">Paiement réussi !</p>
+            <p class="text-white/60 text-sm">Vos Carthage Points ont été crédités sur votre compte.</p>
+          </div>
+        </div>
+        {% endif %}
+
         <!-- Header -->
         <div class="mb-12">
           <h1 class="text-4xl font-black mb-2">Recharger votre Solde</h1>

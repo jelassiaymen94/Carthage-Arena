@@ -1,49 +1,81 @@
-{% extends 'base.html.twig' %}
-{% block title %}Modifier {{ merch.name }}{% endblock %}
+{% extends 'base_admin.html.twig' %}
+{% block title %}Modifier {{ merch.name }} - Admin{% endblock %}
 
-{% block body %}
-<h1 class="text-2xl font-bold mb-4">Modifier Merch: {{ merch.name }}</h1>
-
-<form method="post" class="flex flex-col gap-4 max-w-md" novalidate>
-    {# Name Field #}
-    <input type="text" name="name" value="{{ merch.name }}" placeholder="Nom du produit" class="border p-2 rounded">
-    {% for error in errors.name ?? [] %}
-        <span class="text-red-500 text-sm">{{ error.message }}</span>
-    {% endfor %}
-
-    {# Price Field #}
-    <input type="number" name="price" value="{{ merch.price }}" placeholder="Prix" class="border p-2 rounded">
-    {% for error in errors.price ?? [] %}
-        <span class="text-red-500 text-sm">{{ error.message }}</span>
-    {% endfor %}
-
-    {# Stock Field #}
-    <input type="number" name="stock" value="{{ merch.stock }}" placeholder="Stock" class="border p-2 rounded">
-    {% for error in errors.stock ?? [] %}
-        <span class="text-red-500 text-sm">{{ error.message }}</span>
-    {% endfor %}
-
-    {# Type Field #}
-    <input type="text" name="type" value="{{ merch.type }}" placeholder="Type" class="border p-2 rounded">
-    {% for error in errors.type ?? [] %}
-        <span class="text-red-500 text-sm">{{ error.message }}</span>
-    {% endfor %}
-
-    {# Description Field #}
-    <textarea name="description" placeholder="Description" class="border p-2 rounded">{{ merch.description }}</textarea>
-    {% for error in errors.description ?? [] %}
-        <span class="text-red-500 text-sm">{{ error.message }}</span>
-    {% endfor %}
-
-    {# Image URL Field #}
-    <input type="text" name="imageUrl" value="{{ merch.imageUrl }}" placeholder="Image URL" class="border p-2 rounded">
-    {% for error in errors.imageUrl ?? [] %}
-        <span class="text-red-500 text-sm">{{ error.message }}</span>
-    {% endfor %}
-
-    <div class="flex gap-2">
-        <button type="submit" class="bg-primary text-white px-4 py-2 rounded">Enregistrer</button>
-        <a href="{{ path('admin_merch_list') }}" class="bg-gray-500 text-white px-4 py-2 rounded">Annuler</a>
+{% block admin_content %}
+<div class="flex flex-col gap-6 max-w-2xl">
+    <div class="flex items-center gap-4">
+        <a href="{{ path('admin_merch_index') }}"
+           class="flex items-center gap-2 text-gray-400 hover:text-white transition-colors text-sm font-medium">
+            <span class="material-symbols-outlined text-[18px]">arrow_back</span>
+            Retour à la liste
+        </a>
     </div>
-</form>
+
+    <div>
+        <h1 class="text-2xl font-bold text-white">Modifier : {{ merch.name }}</h1>
+        <p class="text-sm text-gray-400 mt-1">Modifiez les informations de cet article.</p>
+    </div>
+
+    {% for message in app.flashes('success') %}
+    <div class="rounded-xl bg-green-500/10 border border-green-500/20 px-4 py-3 text-green-400 text-sm font-medium">
+        {{ message }}
+    </div>
+    {% endfor %}
+
+    <div class="rounded-2xl bg-surface-dark border border-white/5 p-6">
+        <form method="post" class="flex flex-col gap-5" novalidate>
+            <div class="flex flex-col gap-1.5">
+                <label class="text-xs font-semibold uppercase tracking-wider text-gray-400">Nom du produit</label>
+                <input type="text" name="name" value="{{ merch.name }}" placeholder="Nom du produit"
+                       class="bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white placeholder-gray-500 focus:border-primary focus:outline-none transition-all">
+            </div>
+
+            <div class="grid grid-cols-2 gap-4">
+                <div class="flex flex-col gap-1.5">
+                    <label class="text-xs font-semibold uppercase tracking-wider text-gray-400">Prix (CP)</label>
+                    <input type="number" name="price" value="{{ merch.price }}" placeholder="Prix"
+                           class="bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white placeholder-gray-500 focus:border-primary focus:outline-none transition-all">
+                </div>
+                <div class="flex flex-col gap-1.5">
+                    <label class="text-xs font-semibold uppercase tracking-wider text-gray-400">Stock</label>
+                    <input type="number" name="stock" value="{{ merch.stock }}" placeholder="Stock"
+                           class="bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white placeholder-gray-500 focus:border-primary focus:outline-none transition-all">
+                </div>
+            </div>
+
+            <div class="flex flex-col gap-1.5">
+                <label class="text-xs font-semibold uppercase tracking-wider text-gray-400">Type</label>
+                <input type="text" name="type" value="{{ merch.type }}" placeholder="Ex: T-Shirt, Casquette..."
+                       class="bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white placeholder-gray-500 focus:border-primary focus:outline-none transition-all">
+            </div>
+
+            <div class="flex flex-col gap-1.5">
+                <label class="text-xs font-semibold uppercase tracking-wider text-gray-400">Description</label>
+                <textarea name="description" placeholder="Description du produit" rows="4"
+                          class="bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white placeholder-gray-500 focus:border-primary focus:outline-none transition-all resize-none">{{ merch.description }}</textarea>
+            </div>
+
+            <div class="flex flex-col gap-1.5">
+                <label class="text-xs font-semibold uppercase tracking-wider text-gray-400">URL de l'image</label>
+                <input type="text" name="imageUrl" value="{{ merch.imageUrl }}" placeholder="https://..."
+                       class="bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white placeholder-gray-500 focus:border-primary focus:outline-none transition-all">
+                {% if merch.imageUrl %}
+                <img src="{{ merch.imageUrl }}" alt="Aperçu" class="mt-2 h-24 w-24 object-cover rounded-lg border border-white/10">
+                {% endif %}
+            </div>
+
+            <div class="flex items-center gap-3 pt-2 border-t border-white/5">
+                <button type="submit"
+                        class="flex items-center gap-2 px-6 py-2.5 rounded-xl bg-primary text-white text-sm font-bold shadow-lg shadow-red-900/20 hover:bg-red-700 transition-all">
+                    <span class="material-symbols-outlined text-[18px]">save</span>
+                    Enregistrer
+                </button>
+                <a href="{{ path('admin_merch_index') }}"
+                   class="flex items-center gap-2 px-6 py-2.5 rounded-xl bg-white/5 border border-white/10 text-white text-sm font-medium hover:bg-white/10 transition-all">
+                    Annuler
+                </a>
+            </div>
+        </form>
+    </div>
+</div>
 {% endblock %}
