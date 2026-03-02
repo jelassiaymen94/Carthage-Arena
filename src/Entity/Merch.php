@@ -29,13 +29,13 @@ class Merch
 
     #[ORM\Column]
     #[Assert\NotBlank(message: "Le prix est obligatoire")]
-    #[Assert\PositiveOrZero(message: "Le prix doit ├¬tre positif ou z├®ro")]
+    #[Assert\PositiveOrZero(message: "Le prix doit être positif ou zéro")]
     private ?int $price = null;
    #[ORM\OneToMany(mappedBy: 'merch', targetEntity: Purchase::class)]
     private Collection $purchases;
     #[ORM\Column]
     #[Assert\NotBlank(message: "Le stock est obligatoire")]
-    #[Assert\PositiveOrZero(message: "Le stock doit ├¬tre positif ou z├®ro")]
+    #[Assert\PositiveOrZero(message: "Le stock doit être positif ou zéro")]
     private ?int $stock = null;
 
     #[ORM\Column(length: 255, nullable: true)]

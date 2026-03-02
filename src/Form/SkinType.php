@@ -36,15 +36,15 @@ class SkinType extends AbstractType
             ])
             ->add('rarity', EnumType::class, [
                 'class' => SkinRarity::class,
-                'label' => 'Raret├®',
+                'label' => 'Rareté',
                 'choice_label' => fn($choice) => $choice->name,
                 'attr' => ['class' => 'form-select text-white [&>option]:text-black']
             ])
             ->add('game', EntityType::class, [
                 'class' => Game::class,
                 'choice_label' => 'name',
-                'label' => 'Jeu associ├®',
-                'placeholder' => 'S├®lectionner un jeu',
+                'label' => 'Jeu associé',
+                'placeholder' => 'Sélectionner un jeu',
                 'attr' => ['class' => 'form-select text-white [&>option]:text-black']
             ])
             ->add('imageFile', VichImageType::class, [

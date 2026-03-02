@@ -30,7 +30,7 @@ class GameType extends AbstractType
             ])
             ->add('type', EnumType::class, [
                 'class' => GameTypeEnum::class,
-                'label' => 'Cat├®gorie',
+                'label' => 'Catégorie',
                 'choice_label' => fn($choice) => $choice->name
             ])
             ->add('status', EnumType::class, [
