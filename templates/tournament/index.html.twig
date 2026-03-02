@@ -40,7 +40,7 @@
         >
           <div class="flex flex-col">
             <h2 class="text-2xl font-bold text-white">Mes Tournois</h2>
-            <p class="text-xs text-gray-400">G&eacute;rez vos inscriptions et d&eacute;couvrez de nouveaux tournois.</p>
+            <p class="text-xs text-gray-400">Gérez vos inscriptions et découvrez de nouveaux tournois.</p>
           </div>
           {% include 'components/_header_user_pill.html.twig' %}
         </header>
@@ -64,7 +64,7 @@
               href="{{ path('app_tournaments', {'filter': 'completed'}) }}" 
               class="rounded-full px-5 py-2 text-sm font-bold transition-all {{ currentFilter == 'completed' ? 'bg-primary text-white shadow-lg shadow-red-900/30' : 'bg-white/5 border border-white/10 text-gray-400 hover:bg-white/10 hover:text-white' }}"
             >
-              Termin&eacute;s
+              Terminés
             </a>
           </div>
 
