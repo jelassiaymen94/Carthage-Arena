@@ -21,6 +21,7 @@ services:
             - '../src/Kernel.php'
         bind:
             $stripeSecretKey: '%env(default::STRIPE_SECRET_KEY)%'
+            $nvidiaApiKey: '%env(default::NVIDIA_API_KEY)%'
 
     # add more service definitions when explicit configuration is needed
     # please note that last definitions always *replace* previous ones
