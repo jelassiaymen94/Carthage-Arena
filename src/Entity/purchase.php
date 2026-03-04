@@ -23,17 +23,17 @@ class Purchase
     private ?Merch $merch = null;
 
     #[ORM\ManyToOne(inversedBy: 'purchases')]
-    #[ORM\JoinColumn(nullable: false)]
+    #[ORM\JoinColumn(nullable: false, onDelete: 'CASCADE')]
     private ?User $user = null;
 
     #[ORM\Column]
-    private ?int $quantity = null;
+    private int $quantity = 1;
 
     #[ORM\Column]
-    private ?int $totalPrice = null;
+    private int $totalPrice = 0;
 
     #[ORM\Column(type: Types::DATETIME_IMMUTABLE)]
-    private ?\DateTimeImmutable $purchaseDate = null;
+    private \DateTimeImmutable $purchaseDate;
 
     public function __construct()
     {
@@ -44,33 +44,53 @@ class Purchase
 
     // Getters & Setters
 
-    public function getId(): ?Uuid { return $this->id; }
+    public function getId(): ?Uuid
+    {
+        return $this->id;
+    }
 
-    public function getMerch(): ?Merch { return $this->merch; }
-    public function setMerch(?Merch $merch): static {
+    public function getMerch(): ?Merch
+    {
+        return $this->merch;
+    }
+    public function setMerch(?Merch $merch): static
+    {
         $this->merch = $merch;
         return $this;
     }
 
-    public function getUser(): ?User { return $this->user; }
-    public function setUser(?User $user): static {
+    public function getUser(): ?User
+    {
+        return $this->user;
+    }
+    public function setUser(?User $user): static
+    {
         $this->user = $user;
         return $this;
     }
 
-    public function getQuantity(): ?int { return $this->quantity; }
-    public function setQuantity(int $quantity): static {
+    public function getQuantity(): int
+    {
+        return $this->quantity;
+    }
+    public function setQuantity(int $quantity): static
+    {
         $this->quantity = $quantity;
         return $this;
     }
 
-    public function getTotalPrice(): ?int { return $this->totalPrice; }
-    public function setTotalPrice(int $totalPrice): static {
+    public function getTotalPrice(): int
+    {
+        return $this->totalPrice;
+    }
+    public function setTotalPrice(int $totalPrice): static
+    {
         $this->totalPrice = $totalPrice;
         return $this;
     }
 
-    public function getPurchaseDate(): ?\DateTimeImmutable {
+    public function getPurchaseDate(): \DateTimeImmutable
+    {
         return $this->purchaseDate;
     }
 

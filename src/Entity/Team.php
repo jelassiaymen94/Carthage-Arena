@@ -31,7 +31,7 @@ class Team
         minMessage: 'Le nom doit contenir au moins {{ limit }} caractères.',
         maxMessage: 'Le nom ne peut pas dépasser {{ limit }} caractères.'
     )]
-    private ?string $name = null;
+    private string $name = '';
 
     #[ORM\Column(length: 5, unique: true)]
     #[Assert\NotBlank(message: 'Le tag est obligatoire.')]
@@ -41,7 +41,7 @@ class Team
         minMessage: 'Le tag doit contenir au moins {{ limit }} caractères.',
         maxMessage: 'Le tag ne peut pas dépasser {{ limit }} caractères.'
     )]
-    private ?string $tag = null;
+    private string $tag = '';
 
     #[ORM\Column(length: 500, nullable: true)]
     #[Assert\Length(max: 500, maxMessage: 'La description ne peut pas dépasser {{ limit }} caractères.')]
@@ -51,16 +51,16 @@ class Team
     private TeamStatus $status = TeamStatus::ACTIVE;
 
     #[ORM\Column]
-    private ?\DateTimeImmutable $createdAt = null;
+    private \DateTimeImmutable $createdAt;
 
     #[ORM\Column(length: 10, unique: true)]
-    private ?string $inviteCode = null;
+    private string $inviteCode = '';
 
     #[ORM\ManyToOne]
     #[ORM\JoinColumn(nullable: false)]
     private ?User $captain = null;
 
-    #[ORM\OneToMany(mappedBy: 'team', targetEntity: TeamMembership::class, cascade: ['persist', 'remove'])]
+    #[ORM\OneToMany(mappedBy: 'team', targetEntity: TeamMembership::class, cascade: ['persist', 'remove'], orphanRemoval: true)]
     private Collection $members;
 
     public function __construct()
@@ -123,7 +123,7 @@ class Team
         return $this;
     }
 
-    public function getCreatedAt(): ?\DateTimeImmutable
+    public function getCreatedAt(): \DateTimeImmutable
     {
         return $this->createdAt;
     }

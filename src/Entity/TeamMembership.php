@@ -19,18 +19,18 @@ class TeamMembership
     private ?Uuid $id = null;
 
     #[ORM\ManyToOne(inversedBy: 'members')]
-    #[ORM\JoinColumn(nullable: false)]
+    #[ORM\JoinColumn(nullable: false, onDelete: 'CASCADE')]
     private ?Team $team = null;
 
     #[ORM\ManyToOne(inversedBy: 'teamMemberships')]
-    #[ORM\JoinColumn(nullable: false)]
+    #[ORM\JoinColumn(nullable: false, onDelete: 'CASCADE')]
     private ?User $player = null;
 
     #[ORM\Column(length: 255, enumType: TeamRole::class)]
     private TeamRole $role = TeamRole::MEMBER;
 
     #[ORM\Column]
-    private ?\DateTimeImmutable $joinedAt = null;
+    private \DateTimeImmutable $joinedAt;
 
     public function __construct()
     {
@@ -78,7 +78,7 @@ class TeamMembership
         return $this;
     }
 
-    public function getJoinedAt(): ?\DateTimeImmutable
+    public function getJoinedAt(): \DateTimeImmutable
     {
         return $this->joinedAt;
     }

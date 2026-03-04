@@ -18,13 +18,13 @@ class AuthToken
     private ?Uuid $id = null;
 
     #[ORM\Column(length: 64, unique: true)]
-    private ?string $value = null;
+    private string $value = '';
 
-    #[ORM\Column]
+    #[ORM\Column(nullable: true)]
     private ?\DateTimeImmutable $expiresAt = null;
 
     #[ORM\Column]
-    private ?\DateTimeImmutable $createdAt = null;
+    private \DateTimeImmutable $createdAt;
 
     #[ORM\OneToOne(inversedBy: 'authToken', cascade: ['persist'])]
     #[ORM\JoinColumn(nullable: false, onDelete: 'CASCADE')]
@@ -40,7 +40,7 @@ class AuthToken
         return $this->id;
     }
 
-    public function getValue(): ?string
+    public function getValue(): string
     {
         return $this->value;
     }
@@ -62,7 +62,7 @@ class AuthToken
         return $this;
     }
 
-    public function getCreatedAt(): ?\DateTimeImmutable
+    public function getCreatedAt(): \DateTimeImmutable
     {
         return $this->createdAt;
     }

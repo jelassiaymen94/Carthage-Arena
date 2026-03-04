@@ -22,7 +22,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 #[UniqueEntity(fields: ['email'], message: 'Cet email est déjà utilisé.')]
 #[UniqueEntity(fields: ['username'], message: 'Ce nom d\'utilisateur est déjà pris.')]
 class User implements UserInterface, PasswordAuthenticatedUserInterface
-{   
+{
     #[ORM\Id]
     #[ORM\Column(type: UuidType::NAME, unique: true)]
     #[ORM\GeneratedValue(strategy: 'CUSTOM')]
@@ -32,8 +32,8 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(length: 180, unique: true)]
     #[Assert\NotBlank(message: 'L\'email est obligatoire.')]
     #[Assert\Email(message: 'L\'email "{{ value }}" n\'est pas valide.')]
-    private ?string $email = null;
-    #[ORM\OneToMany(mappedBy: 'user', targetEntity: Purchase::class, orphanRemoval: true)]
+    private string $email = '';
+    #[ORM\OneToMany(mappedBy: 'user', targetEntity: Purchase::class, cascade: ['persist'], orphanRemoval: true)]
     private Collection $purchases;
     #[ORM\Column(length: 50, unique: true)]
     #[Assert\NotBlank(message: 'Le nom d\'utilisateur est obligatoire.')]
@@ -43,7 +43,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         minMessage: 'Le nom d\'utilisateur doit contenir au moins 3 caractères.',
         maxMessage: 'Le nom d\'utilisateur ne peut pas dépasser 50 caractères.'
     )]
-    private ?string $username = null;
+    private string $username = '';
 
     #[ORM\Column(length: 50, nullable: true)]
     #[Assert\Length(max: 50, maxMessage: 'Le pseudo ne peut pas dépasser 50 caractères.')]
@@ -56,7 +56,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         minMessage: 'Le mot de passe doit contenir au moins 6 caractères.',
         groups: ['registration']
     )]
-    private ?string $password = null;
+    private string $password = '';
 
     #[ORM\Column(length: 255, enumType: AccountStatus::class)]
     private AccountStatus $status = AccountStatus::ACTIVE;
@@ -66,7 +66,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     private array $roles = [];
 
     #[ORM\Column]
-    private ?\DateTimeImmutable $createdAt = null;
+    private \DateTimeImmutable $createdAt;
 
     #[ORM\Column(type: 'integer')]
     private int $balance = 0;
@@ -80,7 +80,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\OneToOne(mappedBy: 'user', cascade: ['persist', 'remove'], orphanRemoval: true)]
     private ?AuthToken $authToken = null;
 
-    #[ORM\OneToMany(mappedBy: 'player', targetEntity: TeamMembership::class, orphanRemoval: true)]
+    #[ORM\OneToMany(mappedBy: 'player', targetEntity: TeamMembership::class, cascade: ['persist'], orphanRemoval: true)]
     private Collection $teamMemberships;
 
     public function __construct()
@@ -90,7 +90,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         $this->teamMemberships = new ArrayCollection();
         $this->purchases = new ArrayCollection();
     }
-        public function getPurchases(): Collection
+    public function getPurchases(): Collection
     {
         return $this->purchases;
     }

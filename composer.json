@@ -7,6 +7,7 @@
         "php": ">=8.1",
         "ext-ctype": "*",
         "ext-iconv": "*",
+        "ahmed-bhs/doctrine-doctor": "^1.0",
         "api-platform/core": "*",
         "doctrine/doctrine-bundle": "^2.18",
         "doctrine/doctrine-migrations-bundle": "^3.7",
@@ -20,8 +21,8 @@
         "openai-php/client": "^0.19.0",
         "phpdocumentor/reflection-docblock": "^5.3",
         "phpstan/phpdoc-parser": "^2.3",
-        "stripe/stripe-php": "^19.3",
         "stof/doctrine-extensions-bundle": "*",
+        "stripe/stripe-php": "^19.3",
         "symfony/asset": "6.4.*",
         "symfony/asset-mapper": "6.4.*",
         "symfony/console": "6.4.*",
@@ -58,6 +59,7 @@
         "twig/extra-bundle": "^2.12|^3.0",
         "twig/twig": "^2.12|^3.0",
         "vich/uploader-bundle": "^2.9",
+        "webmozart/assert": "1.11",
         "wohali/oauth2-discord-new": "^1.2"
     },
     "config": {
