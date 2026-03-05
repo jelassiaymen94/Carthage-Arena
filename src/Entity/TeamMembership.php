@@ -19,11 +19,11 @@ class TeamMembership
     private ?Uuid $id = null;
 
     #[ORM\ManyToOne(inversedBy: 'members')]
-    #[ORM\JoinColumn(nullable: false)]
+    #[ORM\JoinColumn(nullable: false, onDelete: 'CASCADE')]
     private ?Team $team = null;
 
     #[ORM\ManyToOne(inversedBy: 'teamMemberships')]
-    #[ORM\JoinColumn(nullable: false)]
+    #[ORM\JoinColumn(nullable: false, onDelete: 'CASCADE')]
     private ?User $player = null;
 
     #[ORM\Column(length: 255, enumType: TeamRole::class)]

@@ -7,6 +7,7 @@ use DateTimeImmutable;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\Types\UuidType;
 use Symfony\Component\Uid\Uuid;
+use Symfony\Component\Serializer\Attribute\Ignore;
 
 #[ORM\Entity(repositoryClass: PasswordResetTokenRepository::class)]
 #[ORM\Table(name: 'password_reset_token')]
@@ -23,6 +24,7 @@ class PasswordResetToken
     private ?User $user = null;
 
     #[ORM\Column(length: 64, unique: true)]
+    #[Ignore]
     private ?string $token = null;
 
     #[ORM\Column]
@@ -58,7 +60,7 @@ class PasswordResetToken
         return $this->token;
     }
 
-    public function setToken(string $token): static
+    public function setToken(#[\SensitiveParameter] string $token): static
     {
         $this->token = $token;
         return $this;

@@ -3,74 +3,126 @@
 namespace App\Service;
 
 use App\Entity\Skin;
+use App\Entity\Merch;
 use App\Entity\User;
-use App\Enum\SkinType;
-use App\Message\DeliverSkinMessage;
 use Doctrine\ORM\EntityManagerInterface;
+use Stripe\Exception\SignatureVerificationException;
+use Stripe\StripeClient;
+use Stripe\Webhook;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\Messenger\MessageBusInterface;
-use Symfony\Contracts\HttpClient\HttpClientInterface;
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
 class PaymentService
 {
+    private StripeClient $stripe;
+
     public function __construct(
         private EntityManagerInterface $entityManager,
-        private HttpClientInterface $httpClient,
-        private InventoryService $inventoryService,
-        private MessageBusInterface $messageBus,
-        private string $stripeSecretKey = '',
-    ) {}
-
-    public function createPaymentIntent(Skin $skin, User $user): array
-    {
-        // Simuler création d'intent de paiement Stripe
-        // $stripe = new \Stripe\StripeClient($this->stripeSecretKey);
-        // $intent = $stripe->paymentIntents->create([
-        //     'amount' => $skin->getPrice() * 100,
-        //     'currency' => 'usd',
-        //     'metadata' => ['skin_id' => $skin->getId(), 'user_id' => $user->getId()],
-        // ]);
-
-        return [
-            'client_secret' => 'pi_fake_secret_' . uniqid(),
-            'id' => 'pi_' . uniqid(),
-        ];
+        private PurchaseService $purchaseService,
+        private UrlGeneratorInterface $urlGenerator,
+        private string $stripeSecretKey,
+        private string $stripeWebhookSecret,
+    ) {
+        $this->stripe = new StripeClient($this->stripeSecretKey);
     }
 
-    public function handleWebhook(Request $request): void
-    {
-        // Vérifier la signature Stripe
-        // $event = \Stripe\Webhook::constructEvent($request->getContent(), $request->headers->get('stripe-signature'), $this->webhookSecret);
+    /**
+     * Creates a Stripe Checkout session for any item (skin or merch).
+     */
+    public function createCheckoutSession(
+        Skin|Merch $item,
+        User $user,
+        string $itemType
+    ): string {
+        $itemName = $item->getName();
+        $priceInCents = (int) round($item->getPrice() * 100); // Assume price is in EUR
 
-        // Simuler traitement
-        $payload = json_decode($request->getContent(), true);
-        if ($payload['type'] === 'payment_intent.succeeded') {
-            $this->processSuccessfulPayment($payload['data']['object']);
+        $session = $this->stripe->checkout->sessions->create([
+            'payment_method_types' => ['card'],
+            'mode' => 'payment',
+            'customer_email' => $user->getEmail(),
+            'line_items' => [[
+                'price_data' => [
+                    'currency' => 'eur',
+                    'unit_amount' => $priceInCents,
+                    'product_data' => [
+                        'name' => $itemName,
+                        'description' => method_exists($item, 'getDescription') ? ($item->getDescription() ?? '') : '',
+                        'images' => $item->getImageUrl() ? [$item->getImageUrl()] : [],
+                    ],
+                ],
+                'quantity' => 1,
+            ]],
+            'metadata' => [
+                'item_id'   => (string) $item->getId(),
+                'item_type' => $itemType, // 'skin' or 'merch'
+                'user_id'   => (string) $user->getId(),
+            ],
+            'success_url' => $this->urlGenerator->generate(
+                'app_shop_stripe_success',
+                ['session_id' => '{CHECKOUT_SESSION_ID}'],
+                UrlGeneratorInterface::ABSOLUTE_URL
+            ),
+            'cancel_url' => $this->urlGenerator->generate(
+                'app_shop_stripe_cancel',
+                ['id' => $item->getId(), 'type' => $itemType],
+                UrlGeneratorInterface::ABSOLUTE_URL
+            ),
+        ]);
+
+        return $session->url;
+    }
+
+    /**
+     * Handles incoming Stripe webhooks. Verifies signature and processes events.
+     * Returns true on success, false on failure.
+     */
+    public function handleWebhook(Request $request): bool
+    {
+        $payload = $request->getContent();
+        $sigHeader = $request->headers->get('stripe-signature', '');
+
+        try {
+            $event = Webhook::constructEvent(
+                $payload,
+                $sigHeader,
+                $this->stripeWebhookSecret
+            );
+        } catch (\UnexpectedValueException $e) {
+            // Invalid payload
+            return false;
+        } catch (SignatureVerificationException $e) {
+            // Invalid signature
+            return false;
         }
-    }
 
-    private function processSuccessfulPayment(array $paymentIntent): void
-    {
-        $skinId = $paymentIntent['metadata']['skin_id'];
-        $userId = $paymentIntent['metadata']['user_id'];
-
-        // Envoyer message pour livraison asynchrone
-        $this->messageBus->dispatch(new DeliverSkinMessage($skinId, $userId));
-    }
-
-    private function deliverSkin(Skin $skin, User $user): void
-    {
-        if ($skin->getType() === SkinType::DIGITAL) {
-            $this->deliverDigitalSkin($skin, $user);
-        } else {
-            // Livraison physique : envoyer email ou notification
+        if ($event->type === 'checkout.session.completed') {
+            $session = $event->data->object;
+            $this->fulfillOrder($session);
         }
+
+        return true;
     }
 
-    private function deliverDigitalSkin(Skin $skin, User $user): void
+    /**
+     * Fulfills an order after successful Stripe payment.
+     */
+    private function fulfillOrder(\Stripe\Checkout\Session $session): void
     {
-        if ($skin->getApiProvider() === 'steam') {
-            // Intégrer avec Steam API pour livrer le skin
+        $metadata = $session->metadata;
+        $itemId   = $metadata->item_id ?? null;
+        $itemType = $metadata->item_type ?? null;
+        $userId   = $metadata->user_id ?? null;
+
+        if (!$itemId || !$itemType || !$userId) {
+            return;
         }
+
+        $user = $this->entityManager->getRepository(User::class)->find($userId);
+        if (!$user) {
+            return;
+        }
+
+        $this->purchaseService->fulfillStripeOrder($itemId, $itemType, $user);
     }
 }

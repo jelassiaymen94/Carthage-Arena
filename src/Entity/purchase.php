@@ -22,8 +22,8 @@ class Purchase
     #[ORM\JoinColumn(nullable: false)]
     private ?Merch $merch = null;
 
-    #[ORM\ManyToOne]
-    #[ORM\JoinColumn(nullable: false)]
+    #[ORM\ManyToOne(inversedBy: 'purchases')]
+    #[ORM\JoinColumn(nullable: false, onDelete: 'CASCADE')]
     private ?User $user = null;
 
     #[ORM\Column]

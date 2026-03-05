@@ -42,4 +42,19 @@ class SkinRepository extends ServiceEntityRepository
 
         return $qb->getQuery()->getResult();
     }
+
+    /**
+     * @return array Returns an array of top selling skins with their sales count
+     */
+    public function getTopSkins(int $limit = 3): array
+    {
+        return $this->createQueryBuilder('s')
+            ->select('s as skin, COUNT(us.id) as sales')
+            ->leftJoin('App\Entity\UserSkin', 'us', 'WITH', 'us.skin = s')
+            ->groupBy('s.id')
+            ->orderBy('sales', 'DESC')
+            ->setMaxResults($limit)
+            ->getQuery()
+            ->getResult();
+    }
 }

@@ -14,6 +14,7 @@ use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Uid\Uuid;
 use Symfony\Component\Validator\Constraints as Assert;
+use Symfony\Component\Serializer\Attribute\Ignore;
 
 #[ORM\Entity(repositoryClass: UserRepository::class)]
 #[ORM\Table(name: '`user`')]
@@ -33,7 +34,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[Assert\NotBlank(message: 'L\'email est obligatoire.')]
     #[Assert\Email(message: 'L\'email "{{ value }}" n\'est pas valide.')]
     private ?string $email = null;
-    #[ORM\OneToMany(mappedBy: 'user', targetEntity: Purchase::class, orphanRemoval: true)]
+    #[ORM\OneToMany(mappedBy: 'user', targetEntity: Purchase::class, cascade: ['persist', 'remove'], orphanRemoval: true)]
     private Collection $purchases;
     #[ORM\Column(length: 50, unique: true)]
     #[Assert\NotBlank(message: 'Le nom d\'utilisateur est obligatoire.')]
@@ -56,6 +57,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         minMessage: 'Le mot de passe doit contenir au moins 6 caractères.',
         groups: ['registration']
     )]
+    #[Ignore]
     private ?string $password = null;
 
     #[ORM\Column(length: 255, enumType: AccountStatus::class)]
@@ -80,7 +82,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\OneToOne(mappedBy: 'user', cascade: ['persist', 'remove'], orphanRemoval: true)]
     private ?AuthToken $authToken = null;
 
-    #[ORM\OneToMany(mappedBy: 'player', targetEntity: TeamMembership::class, orphanRemoval: true)]
+    #[ORM\OneToMany(mappedBy: 'player', targetEntity: TeamMembership::class, cascade: ['persist', 'remove'], orphanRemoval: true)]
     private Collection $teamMemberships;
 
     public function __construct()
@@ -187,7 +189,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this->password;
     }
 
-    public function setPassword(string $password): static
+    public function setPassword(#[\SensitiveParameter] string $password): static
     {
         $this->password = $password;
         return $this;

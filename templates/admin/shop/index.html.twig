@@ -78,6 +78,28 @@
                     </div>
                 </div>
 
+                {# Shop Statistics #}
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+                    <div class="bg-surface-dark border border-white/5 rounded-2xl p-6 shadow-xl shadow-black/20">
+                        <h3 class="text-white font-bold mb-4 flex items-center gap-2">
+                            <span class="material-symbols-outlined text-purple-400">pie_chart</span>
+                            Top 3 Skins (Ventes)
+                        </h3>
+                        <div class="h-64 relative">
+                            <canvas id="topSkinsChart"></canvas>
+                        </div>
+                    </div>
+                    <div class="bg-surface-dark border border-white/5 rounded-2xl p-6 shadow-xl shadow-red-900/10">
+                        <h3 class="text-white font-bold mb-4 flex items-center gap-2">
+                            <span class="material-symbols-outlined text-secondary">bar_chart</span>
+                            Top 3 Articles (Quantités Vendues)
+                        </h3>
+                        <div class="h-64 relative">
+                            <canvas id="topMerchChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+
                 {# Shop Items Table #}
                 {% embed 'components/_table.html.twig' with {
                     headers: ['Image', 'Nom', 'Jeu', 'Prix', 'Ventes', 'Revenus', 'Stock', 'Actions'],
@@ -178,4 +200,80 @@
         </main>
     </div>
 </div>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const skinsData = {{ chartDataSkins|raw }};
+            const merchData = {{ chartDataMerch|raw }};
+            
+            Chart.defaults.color = 'rgba(255, 255, 255, 0.7)';
+            Chart.defaults.font.family = 'Inter, sans-serif';
+
+            // Top Skins Chart (Doughnut)
+            const ctxSkins = document.getElementById('topSkinsChart').getContext('2d');
+            new Chart(ctxSkins, {
+                type: 'doughnut',
+                data: {
+                    labels: skinsData.labels.length > 0 ? skinsData.labels : ['Aucune donnée'],
+                    datasets: [{
+                        data: skinsData.data.length > 0 ? skinsData.data : [1],
+                        backgroundColor: [
+                            'rgba(168, 85, 247, 0.8)', // purple-500
+                            'rgba(192, 132, 252, 0.8)', // purple-400
+                            'rgba(216, 180, 254, 0.8)', // purple-300
+                            'rgba(255, 255, 255, 0.1)'
+                        ],
+                        borderColor: 'rgba(24, 24, 27, 1)', // surface-dark (match background)
+                        borderWidth: 2,
+                        hoverOffset: 4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { position: 'right' }
+                    }
+                }
+            });
+
+            // Top Merch Chart (Bar)
+            const ctxMerch = document.getElementById('topMerchChart').getContext('2d');
+            new Chart(ctxMerch, {
+                type: 'bar',
+                data: {
+                    labels: merchData.labels.length > 0 ? merchData.labels : ['Aucune donnée'],
+                    datasets: [{
+                        label: 'Quantité vendue',
+                        data: merchData.data.length > 0 ? merchData.data : [0],
+                        backgroundColor: 'rgba(239, 68, 68, 0.8)', // red-500 (Primary/Secondary)
+                        borderColor: 'rgba(239, 68, 68, 1)',
+                        borderWidth: 1,
+                        borderRadius: 6
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: { 
+                            beginAtZero: true,
+                            ticks: { precision: 0 },
+                            grid: { color: 'rgba(255, 255, 255, 0.1)' }
+                        },
+                        x: {
+                            grid: { display: false }
+                        }
+                    },
+                    plugins: {
+                        legend: { display: false }
+                    }
+                }
+            });
+        });
+    </script>
 {% endblock %}

@@ -60,7 +60,7 @@ class Team
     #[ORM\JoinColumn(nullable: false)]
     private ?User $captain = null;
 
-    #[ORM\OneToMany(mappedBy: 'team', targetEntity: TeamMembership::class, cascade: ['persist', 'remove'])]
+    #[ORM\OneToMany(mappedBy: 'team', targetEntity: TeamMembership::class, cascade: ['persist', 'remove'], orphanRemoval: true)]
     private Collection $members;
 
     public function __construct()

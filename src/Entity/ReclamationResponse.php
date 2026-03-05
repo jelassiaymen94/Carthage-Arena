@@ -29,7 +29,7 @@ class ReclamationResponse
     private bool $isAdminResponse = false;
 
     #[ORM\ManyToOne(inversedBy: 'responses')]
-    #[ORM\JoinColumn(nullable: false)]
+    #[ORM\JoinColumn(nullable: false, onDelete: 'CASCADE')]
     private ?Reclamation $reclamation = null;
 
     #[ORM\ManyToOne]

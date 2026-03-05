@@ -10,14 +10,19 @@ use Symfony\Component\Routing\Attribute\Route;
 
 class WebhookController extends AbstractController
 {
+    /**
+     * Stripe webhook endpoint — must be excluded from CSRF.
+     * Add this URL to your Stripe Dashboard webhook settings.
+     */
     #[Route('/webhook/stripe', name: 'webhook_stripe', methods: ['POST'])]
     public function stripe(Request $request, PaymentService $paymentService): Response
     {
-        try {
-            $paymentService->handleWebhook($request);
-            return new Response('OK', 200);
-        } catch (\Exception $e) {
-            return new Response('Error', 400);
+        $success = $paymentService->handleWebhook($request);
+
+        if (!$success) {
+            return new Response('Webhook signature verification failed.', 400);
         }
+
+        return new Response('OK', 200);
     }
 }

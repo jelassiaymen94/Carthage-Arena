@@ -363,8 +363,25 @@ class AdminDashboardController extends AbstractController
             ];
         }
 
+        $topSkins = $this->skinRepository->getTopSkins(3);
+        $topMerch = $this->merchRepository->getTopMerch(3);
+
+        $chartDataSkins = ['labels' => [], 'data' => []];
+        foreach ($topSkins as $ts) {
+            $chartDataSkins['labels'][] = $ts['skin']->getName();
+            $chartDataSkins['data'][] = $ts['sales'];
+        }
+
+        $chartDataMerch = ['labels' => [], 'data' => []];
+        foreach ($topMerch as $tm) {
+            $chartDataMerch['labels'][] = $tm['merch']->getName();
+            $chartDataMerch['data'][] = $tm['sales'];
+        }
+
         return $this->render('admin/shop/index.html.twig', [
             'items' => $items,
+            'chartDataSkins' => json_encode($chartDataSkins),
+            'chartDataMerch' => json_encode($chartDataMerch),
         ]);
     }
 

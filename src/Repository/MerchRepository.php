@@ -38,4 +38,19 @@ class MerchRepository extends ServiceEntityRepository
 
         return $qb->getQuery()->getResult();
     }
+
+    /**
+     * @return array Returns an array of top selling merch with their sales count
+     */
+    public function getTopMerch(int $limit = 3): array
+    {
+        return $this->createQueryBuilder('m')
+            ->select('m as merch, COALESCE(SUM(p.quantity), 0) as sales')
+            ->leftJoin('App\Entity\Purchase', 'p', 'WITH', 'p.merch = m')
+            ->groupBy('m.id')
+            ->orderBy('sales', 'DESC')
+            ->setMaxResults($limit)
+            ->getQuery()
+            ->getResult();
+    }
 }

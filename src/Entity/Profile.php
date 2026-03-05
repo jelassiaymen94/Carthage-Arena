@@ -30,7 +30,7 @@ class Profile
     #[ORM\Column(type: 'datetime', nullable: true)]
     private ?\DateTimeInterface $updatedAt = null;
 
-    #[ORM\OneToOne(inversedBy: 'profile', cascade: ['persist', 'remove'])]
+    #[ORM\OneToOne(inversedBy: 'profile', cascade: ['persist'])]
     #[ORM\JoinColumn(nullable: false)]
     private ?User $user = null;
 

@@ -20,7 +20,8 @@ services:
             - '../src/Entity/'
             - '../src/Kernel.php'
         bind:
-            $stripeSecretKey: '%env(default::STRIPE_SECRET_KEY)%'
+            $stripeSecretKey: '%env(STRIPE_SECRET_KEY)%'
+            $stripeWebhookSecret: '%env(STRIPE_WEBHOOK_SECRET)%'
 
     # add more service definitions when explicit configuration is needed
     # please note that last definitions always *replace* previous ones
