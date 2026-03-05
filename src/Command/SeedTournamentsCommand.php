@@ -83,7 +83,7 @@ class SeedTournamentsCommand extends Command
             ],
             [
                 'name' => 'Valorant Spike Rush',
-                'game' => $games[1] ?? $games[0], // Valorant or fallback
+                'game' => $games[1], // Valorant
                 'status' => TournamentStatus::ONGOING,
                 'dateDebut' => new \DateTimeImmutable('-1 day'),
                 'dateFin' => new \DateTimeImmutable('+5 days'),
@@ -95,7 +95,7 @@ class SeedTournamentsCommand extends Command
                 'status' => TournamentStatus::UPCOMING,
                 'dateDebut' => new \DateTimeImmutable('+1 month'),
                 'dateFin' => new \DateTimeImmutable('+1 month 1 week'),
-                'teams' => [$teams[0] ?? null] // Join 1 team
+                'teams' => [$teams[0]] // Join 1 team
             ]
         ];
 
@@ -110,11 +110,8 @@ class SeedTournamentsCommand extends Command
             $tournoi->setNbEquipesMax(16);
             $tournoi->setPrizePool(5000);
 
-            // Add teams
             foreach ($data['teams'] as $team) {
-                if ($team) {
-                    $tournoi->addTeam($team);
-                }
+                $tournoi->addTeam($team);
             }
 
             $this->entityManager->persist($tournoi);

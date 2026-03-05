@@ -37,7 +37,9 @@ class ReclamationController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $reclamation->setAuthor($this->getUser());
+            /** @var \App\Entity\User|null $user */
+            $user = $this->getUser();
+            $reclamation->setAuthor($user);
             $entityManager->persist($reclamation);
             $entityManager->flush();
 
@@ -65,9 +67,11 @@ class ReclamationController extends AbstractController
             $messageContent = $request->request->get('message');
 
             if ($messageContent) {
+                /** @var \App\Entity\User|null $user */
+                $user = $this->getUser();
                 $response = new ReclamationResponse();
                 $response->setMessage($messageContent);
-                $response->setAuthor($this->getUser());
+                $response->setAuthor($user);
                 $response->setReclamation($reclamation);
 
                 // If it was resolved/closed, reopen it if user replies? 

@@ -67,38 +67,12 @@ Respond ONLY in JSON format with the following structure:
         }
 
         // --- SECOND CALL: Nano Banana API for robust image generation ---
-        $imageUrl = $result['imageUrl'] ?? '';
-        try {
-            // We use the same API key for the image endpoint
-            $imagePrompt = "Generate a realistic, high-quality, square shop thumbnail for the game skin: {$skinName}";
-            $imageResponse = $this->httpClient->request('POST', 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-image:generateContent?key=' . trim($apiKey), [
-                'headers' => [
-                    'Content-Type' => 'application/json',
-                ],
-                'json' => [
-                    'contents' => [
-                        [
-                            'parts' => [['text' => $imagePrompt]]
-                        ]
-                    ]
-                ]
-            ]);
-
-            $imageData = $imageResponse->toArray(false); // don't throw exception to allow fallback
-            
-            // Extract generation result (usually base64 from inlineData)
-            if (isset($imageData['candidates'][0]['content']['parts'][0]['inlineData'])) {
-                $inline = $imageData['candidates'][0]['content']['parts'][0]['inlineData'];
-                $imageUrl = 'data:' . ($inline['mimeType'] ?? 'image/jpeg') . ';base64,' . $inline['data'];
-            } elseif (isset($imageData['predictions'][0]['url'])) {
-                $imageUrl = $imageData['predictions'][0]['url'];
-            } elseif (isset($imageData['candidates'][0]['content']['parts'][0]['text']) && strpos($imageData['candidates'][0]['content']['parts'][0]['text'], 'http') !== false) {
-                 $imageUrl = trim($imageData['candidates'][0]['content']['parts'][0]['text']);
-            }
-        } catch (\Exception $e) {
-            // If the image API call fails, we just fallback to the Gemini-guessed text URL
-            error_log('Image generation API error: ' . $e->getMessage());
-        }
+        $imageUrl = $result['imageUrl'] ?? 'https://placehold.co/400x400/1E1E1E/e60013?text=' . urlencode('Skin Placeholder');
+        
+        // Removed broken image generation API call since gemini-2.5-flash-image is not available
+        // on standard API keys and Imagen 3 throws 404/403 for predict method.
+        // We now rely entirely on the placeholder URL returned by the text model
+        // or a default placeholder.
 
         return [
             'description' => $result['description'] ?? '',

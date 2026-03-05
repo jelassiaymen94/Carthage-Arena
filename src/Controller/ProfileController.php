@@ -14,7 +14,7 @@ class ProfileController extends AbstractController
     #[Route('/profil', name: 'app_profile')]
     public function index(EntityManagerInterface $entityManager): Response
     {
-        /** @var User $user */
+        /** @var User|null $user */
         $user = $this->getUser();
         if (!$user) {
             return $this->redirectToRoute('app_login');
@@ -53,7 +53,7 @@ class ProfileController extends AbstractController
     #[Route('/historique-achat', name: 'app_profile_historique_achat')]
     public function historiqueAchat(UserSkinRepository $userSkinRepository, EntityManagerInterface $entityManager): Response
     {
-        /** @var User $user */
+        /** @var User|null $user */
         $user = $this->getUser();
         if (!$user) {
             return $this->redirectToRoute('app_login');

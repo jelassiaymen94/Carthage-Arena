@@ -21,7 +21,7 @@ class TeamController extends AbstractController
     #[Route('/equipe', name: 'app_team')]
     public function index(): Response
     {
-        /** @var User $user */
+        /** @var User|null $user */
         $user = $this->getUser();
         if (!$user) {
             return $this->redirectToRoute('app_login');

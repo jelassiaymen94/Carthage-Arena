@@ -21,7 +21,7 @@ class SettingsController extends AbstractController
         EntityManagerInterface $entityManager,
         SluggerInterface $slugger,
     ): Response {
-        /** @var User $user */
+        /** @var User|null $user */
         $user = $this->getUser();
         if (!$user) {
             return $this->redirectToRoute('app_login');

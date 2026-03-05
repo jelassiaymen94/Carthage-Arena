@@ -36,7 +36,7 @@ class CPController extends AbstractController
             throw $this->createNotFoundException('Package not found');
         }
 
-        /** @var User $user */
+        /** @var User|null $user */
         $user = $this->getUser();
         if (!$user) {
             return $this->redirectToRoute('app_login');

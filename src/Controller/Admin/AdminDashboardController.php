@@ -37,7 +37,6 @@ class AdminDashboardController extends AbstractController
     public function __construct(
         private readonly TournoiRepository $tournoiRepository,
         private readonly UserRepository $userRepository,
-        private readonly TeamRepository $teamRepository,
         private readonly ReclamationRepository $reclamationRepository,
         private readonly GameRepository $gameRepository,
         private readonly SkinRepository $skinRepository,

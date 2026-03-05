@@ -14,11 +14,7 @@ use Symfony\Contracts\HttpClient\HttpClientInterface;
 class PaymentService
 {
     public function __construct(
-        private EntityManagerInterface $entityManager,
-        private HttpClientInterface $httpClient,
-        private InventoryService $inventoryService,
         private MessageBusInterface $messageBus,
-        private string $stripeSecretKey = '',
     ) {}
 
     public function createPaymentIntent(Skin $skin, User $user): array
@@ -58,24 +54,5 @@ class PaymentService
         $this->messageBus->dispatch(new DeliverSkinMessage($skinId, $userId));
     }
 
-    private function deliverSkin(Skin $skin, User $user): void
-    {
-        if ($skin->getType() === SkinType::DIGITAL) {
-            // Livraison digitale via API
-            $this->deliverDigitalSkin($skin, $user);
-        } else {
-            // Livraison physique : envoyer email ou notification
-            // ...
-        }
-    }
 
-    private function deliverDigitalSkin(Skin $skin, User $user): void
-    {
-        if ($skin->getApiProvider() === 'steam') {
-            // Intégrer avec Steam API pour livrer le skin
-            // $response = $this->httpClient->request('POST', 'https://api.steampowered.com/IEconService/AddItem/v1/', [
-            //     'query' => ['key' => $this->steamApiKey, 'appid' => 730, 'itemdefid' => $skin->getDeliveryMethod(), 'steamid' => $user->getSteamId()]
-            // ]);
-        }
-    }
 }

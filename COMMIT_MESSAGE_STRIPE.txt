@@ -1,8 +1,0 @@
-Title: Integrate Stripe payment flow for CP purchases
-
-Body:
-- Add server-side PaymentIntent creation in `CPController::checkout`
-- Pass `client_secret` to checkout Twig template and implement `confirmCardPayment` on client
-- Add secure webhook verification in `CPController::webhookSuccess` and credit CP from metadata
-- Add dev fallback to simulate webhooks when `STRIPE_WEBHOOK_SECRET` is not set
-- Add .env.local.dist and docs/STRIPE_TESTING.md with test instructions

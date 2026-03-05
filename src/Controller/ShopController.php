@@ -23,7 +23,7 @@ class ShopController extends AbstractController
         MerchRepository $merchRepository,
         Request $request
     ): Response {
-        /** @var User $user */
+        /** @var User|null $user */
         $user = $this->getUser();
         $userBalance = $user ? $user->getBalance() : 0;
 
@@ -129,7 +129,7 @@ class ShopController extends AbstractController
         InventoryService $inventoryService
     ): Response
     {
-        /** @var User $user */
+        /** @var User|null $user */
         $user = $this->getUser();
         if (!$user) {
             return $this->redirectToRoute('app_login');

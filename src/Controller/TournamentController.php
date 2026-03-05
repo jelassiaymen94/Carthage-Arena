@@ -13,8 +13,10 @@ class TournamentController extends AbstractController
     #[Route('/tournois', name: 'app_tournaments')]
     public function index(TournoiRepository $tournoiRepository, \Symfony\Component\HttpFoundation\Request $request): Response
     {
+        /** @var \App\Entity\User|null $user */
+        $user = $this->getUser();
         $filter = $request->query->get('filter');
-        $tournois = $tournoiRepository->findByFilter($filter, $this->getUser());
+        $tournois = $tournoiRepository->findByFilter($filter, $user);
 
         return $this->render('tournament/index.html.twig', [
             'tournois' => $tournois,

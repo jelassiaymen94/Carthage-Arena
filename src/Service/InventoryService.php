@@ -11,7 +11,6 @@ class InventoryService
 {
     public function __construct(
         private EntityManagerInterface $entityManager,
-        private HttpClientInterface $httpClient,
     ) {}
 
     public function checkStock(Skin $skin): bool

@@ -73,9 +73,11 @@ class ReclamationController extends AbstractController
             }
 
             if ($messageContent) {
+                /** @var \App\Entity\User|null $user */
+                $user = $this->getUser();
                 $response = new ReclamationResponse();
                 $response->setMessage($messageContent);
-                $response->setAuthor($this->getUser());
+                $response->setAuthor($user);
                 $response->setReclamation($reclamation);
                 $response->setIsAdminResponse(true);
 
