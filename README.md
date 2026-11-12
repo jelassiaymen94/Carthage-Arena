@@ -2,6 +2,10 @@
 
 Plateforme esports de gestion de tournois développée avec Symfony 6.4.
 
+## AI Agent Test
+
+Hello, world! This change was created as part of a Jira → Coding Agent delegation test.
+
 ## 📋 Description
 
 **Carthage Arena** est une application web permettant aux joueurs de créer des comptes, former des équipes, participer à des tournois et dépenser de la monnaie virtuelle (Carthage Points — CP) dans une boutique. Les arbitres officient les matchs et les administrateurs gèrent l'ensemble du système.
